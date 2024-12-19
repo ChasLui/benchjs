@@ -4,6 +4,11 @@ import { Sidebar } from "./Sidebar";
 const meta: Meta<typeof Sidebar> = {
   title: "Editor/Sidebar",
   component: Sidebar,
+  render: (args) => (
+    <div className="inline-block relative">
+      <Sidebar {...args} />
+    </div>
+  ),
 };
 export default meta;
 
