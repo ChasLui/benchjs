@@ -4,7 +4,6 @@ const config: StorybookConfig = {
   stories: ["../src/**/*.mdx", "../src/**/*.stories.@(js|jsx|mjs|ts|tsx)"],
   addons: [
     "@storybook/addon-essentials",
-    "@chromatic-com/storybook",
     "@storybook/addon-interactions",
     // https://github.com/JesusTheHun/storybook-addon-remix-react-router
     "storybook-addon-remix-react-router",

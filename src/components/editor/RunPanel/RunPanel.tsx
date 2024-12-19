@@ -1,4 +1,7 @@
 import { useState } from "react";
+import { useBenchmarkStore } from "@/stores/benchmarkStore";
+import { BenchmarkService } from "@/services/benchmark/BenchmarkService";
+import { BenchmateRunner } from "@/services/benchmark/BenchmateRunner";
 import { RunTab } from "@/components/editor/RunPanel/tabs/RunTab";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
@@ -12,6 +15,7 @@ interface RunPanelProps {}
 
 export const RunPanel = ({}: RunPanelProps) => {
   const [activeTab, setActiveTab] = useState<RunPanelTab>("run");
+  const store = useBenchmarkStore();
 
   const [isRunning, setIsRunning] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -25,7 +29,18 @@ export const RunPanel = ({}: RunPanelProps) => {
     setActiveTab(tab as RunPanelTab);
   };
 
-  const handleRun = () => {
+  const handleRun = async () => {
+    console.log("handleRun called");
+    console.log("Current store state:", {
+      implementations: store.implementations,
+      setupCode: store.setupCode,
+    });
+
+    if (store.implementations.length === 0) {
+      setError("No implementations to benchmark");
+      return;
+    }
+
     setIsRunning(true);
     setProgress(0);
     setElapsedTime(0);
@@ -35,27 +50,35 @@ export const RunPanel = ({}: RunPanelProps) => {
     setError(null);
 
     const startTime = Date.now();
-    const interval = setInterval(() => {
-      const currentTime = Date.now();
-      const elapsed = currentTime - startTime;
-      setElapsedTime(elapsed);
 
-      const newIterations = Math.floor((elapsed / 1000) * 50); // Increased speed for demo
-      const completedIterations = Math.min(newIterations, benchmarkConfig.iterations);
-      setIterationsCompleted(completedIterations);
-      setProgress(Math.min((completedIterations / benchmarkConfig.iterations) * 100, 100));
+    try {
+      console.log("Creating benchmark service");
+      const service = new BenchmarkService(new BenchmateRunner());
+      console.log("Running benchmark");
+      const results = await service.runBenchmark(store.setupCode, store.implementations, {
+        // iterations: benchmarkConfig.iterations,
+      });
 
-      const currentAverage = elapsed / (completedIterations || 1);
-      setAverageTime(currentAverage);
+      // Update UI with results
+      const totalTime = Date.now() - startTime;
+      setElapsedTime(totalTime);
 
-      const memory = Math.random() * 100 + 50; // Simulated memory usage
-      setPeakMemory((prevPeakMemory) => Math.max(prevPeakMemory, memory));
-
-      if (completedIterations >= benchmarkConfig.iterations) {
-        clearInterval(interval);
-        setIsRunning(false);
+      if (results.length > 0) {
+        const firstResult = results[0];
+        setIterationsCompleted(firstResult.stats.samples);
+        setAverageTime(firstResult.stats.time.average);
+        setPeakMemory(firstResult.stats.opsPerSecond.average / 100);
       }
-    }, 100);
+
+      setProgress(100);
+      console.log("Benchmark results:", results);
+    } catch (error_) {
+      console.error("Benchmark error:", error_);
+      const error = error_ instanceof Error ? error_ : new Error(String(error_));
+      setError(error.message);
+    } finally {
+      setIsRunning(false);
+    }
   };
 
   const handlePause = () => {

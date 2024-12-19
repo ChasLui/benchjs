@@ -1,26 +1,15 @@
+import { useCallback } from "react";
 import { useBenchmarkStore } from "@/stores/benchmarkStore";
+import { useMonacoTabs } from "@/hooks/useMonacoTabs";
 import { Monaco } from "@/components/common/Monaco";
-import { MonacoTab } from "@/components/common/MonacoTab";
 import { RunPanel } from "@/components/editor/RunPanel";
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable";
 
 interface CodeViewProps {
-  activeFile?: string;
-  tabs: MonacoTab[];
-  onChangeTab: (tab: MonacoTab) => void;
-  onCloseTab: (tab: MonacoTab) => void;
-  onContentChange: (content: string | undefined) => void;
-  onSetTabs: (tabs: MonacoTab[]) => void;
+  monacoTabs: ReturnType<typeof useMonacoTabs>;
 }
 
-export const CodeView = ({
-  activeFile,
-  tabs,
-  onChangeTab,
-  onCloseTab,
-  onContentChange,
-  onSetTabs,
-}: CodeViewProps) => {
+export const CodeView = ({ monacoTabs }: CodeViewProps) => {
   const store = useBenchmarkStore();
 
   const getFileContent = (filename: string) => {
@@ -29,18 +18,33 @@ export const CodeView = ({
     return store.implementations.find((i) => i.filename === filename)?.content || "";
   };
 
+  const handleFileContentChange = useCallback(
+    (content: string | undefined) => {
+      if (!monacoTabs.activeTabName || !content) return;
+
+      if (monacoTabs.activeTabName === "setup.ts") {
+        store.setSetupCode(content);
+      } else if (monacoTabs.activeTabName === "README.md") {
+        store.setReadmeContent(content);
+      } else {
+        store.updateImplementation(monacoTabs.activeTabName, content);
+      }
+    },
+    [monacoTabs.activeTabName, store],
+  );
+
   return (
     <ResizablePanelGroup className="h-full" direction="vertical">
       <ResizablePanel defaultSize={80}>
         <Monaco
-          key={activeFile}
-          language={activeFile?.endsWith(".md") ? "markdown" : "typescript"}
-          tabs={tabs}
-          value={getFileContent(activeFile ?? "")}
-          onChange={onContentChange}
-          onChangeTab={onChangeTab}
-          onCloseTab={onCloseTab}
-          onSetTabs={onSetTabs}
+          key={monacoTabs.activeTabName}
+          language={monacoTabs.activeTabName?.endsWith(".md") ? "markdown" : "typescript"}
+          tabs={monacoTabs.tabs}
+          value={getFileContent(monacoTabs.activeTabName ?? "")}
+          onChange={handleFileContentChange}
+          onChangeTab={monacoTabs.changeTab}
+          onCloseTab={monacoTabs.closeTab}
+          onSetTabs={monacoTabs.setTabs}
         />
       </ResizablePanel>
       <ResizableHandle />

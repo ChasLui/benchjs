@@ -8,11 +8,16 @@ import {
   RotateCcwIcon,
   ZapIcon,
 } from "lucide-react";
+import { useRef } from "react";
 import { formatTime } from "@/lib/formatters";
 import { MetricCard } from "@/components/common/MetricCard";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
+import { BenchmarkService } from "@/services/benchmark/BenchmarkService";
+import { BenchmarkResult } from "@/services/benchmark/types";
+import { BenchmateRunner } from "@/services/benchmark/BenchmateRunner";
+import { useBenchmarkStore } from "@/stores/benchmarkStore";
 
 interface RunTabProps {
   isRunning: boolean;
@@ -22,10 +27,10 @@ interface RunTabProps {
   totalIterations: number;
   averageTime: number;
   peakMemory: number;
+  error: string | null;
   onRun: () => void;
   onPause: () => void;
   onReset: () => void;
-  error: string | null;
 }
 
 export const RunTab = ({
@@ -36,10 +41,10 @@ export const RunTab = ({
   totalIterations,
   averageTime,
   peakMemory,
+  error,
   onRun,
   onPause,
   onReset,
-  error,
 }: RunTabProps) => {
   return (
     <div className="p-4 space-y-6">
@@ -73,7 +78,7 @@ export const RunTab = ({
             <div className="space-y-2">
               <div className="flex justify-between text-sm">
                 <span className="text-muted-foreground">Progress</span>
-                <span className="font-medium">{progress.toFixed(0)}%</span>
+                <span className="font-medium">{progress}%</span>
               </div>
               <Progress className="h-2" value={progress} />
             </div>
@@ -82,14 +87,26 @@ export const RunTab = ({
       )}
 
       <div className="grid grid-cols-2 gap-4">
-        <MetricCard icon={ClockIcon} title="Elapsed Time" value={formatTime(elapsedTime)} />
+        <MetricCard 
+          icon={ClockIcon} 
+          title="Elapsed Time" 
+          value={formatTime(elapsedTime)} 
+        />
         <MetricCard
           icon={HashIcon}
           title="Iterations"
           value={`${iterationsCompleted} / ${totalIterations}`}
         />
-        <MetricCard icon={ActivityIcon} title="Average Time" value={`${averageTime.toFixed(2)}ms`} />
-        <MetricCard icon={ZapIcon} title="Peak Memory" value={`${peakMemory.toFixed(1)} MB`} />
+        <MetricCard 
+          icon={ActivityIcon} 
+          title="Average Time" 
+          value={`${averageTime.toFixed(2)}ms`} 
+        />
+        <MetricCard 
+          icon={ZapIcon} 
+          title="Peak Memory" 
+          value={`${peakMemory.toFixed(1)} MB`} 
+        />
       </div>
 
       <Card>

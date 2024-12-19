@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { useBenchmarkStore } from "@/stores/benchmarkStore";
 import { useMonacoTabs } from "@/hooks/useMonacoTabs";
 import { cn } from "@/lib/utils";
@@ -12,15 +12,9 @@ const MIN_SIDEBAR_WIDTH = 280;
 
 export default function EditorRoute() {
   const store = useBenchmarkStore();
+  const monacoTabs = useMonacoTabs();
+
   const [activeTab, setActiveTab] = useState<SidebarTab>("code");
-  const {
-    tabs: monacoTabs,
-    activeTabName: activeMonacoTabName,
-    changeTab: changeMonacoTab,
-    closeTab: closeMonacoTab,
-    openTab: openMonacoTab,
-    setTabs: setMonacoTabs,
-  } = useMonacoTabs();
 
   const root = useMemo<FileTreeItem>(() => {
     return {
@@ -46,7 +40,7 @@ export default function EditorRoute() {
             onCreate: () => {
               const newName = `implementation-${store.implementations.length + 1}.ts`;
               store.updateImplementation(newName, "// Write your implementation here\n");
-              openMonacoTab(newName);
+              monacoTabs.openTab(newName);
             },
           },
         },
@@ -60,31 +54,16 @@ export default function EditorRoute() {
         },
       ],
     };
-  }, [store, openMonacoTab]);
+  }, [monacoTabs, store]);
 
   const defaultSidebarSize = (MIN_SIDEBAR_WIDTH * 100) / window.innerWidth;
-
-  const handleFileContentChange = useCallback(
-    (content: string | undefined) => {
-      if (!activeMonacoTabName || !content) return;
-
-      if (activeMonacoTabName === "setup.ts") {
-        store.setSetupCode(content);
-      } else if (activeMonacoTabName === "README.md") {
-        store.setReadmeContent(content);
-      } else {
-        store.updateImplementation(activeMonacoTabName, content);
-      }
-    },
-    [activeMonacoTabName, store],
-  );
 
   return (
     <div className="flex flex-col h-screen">
       {/* top bar */}
       <TopBar />
 
-      <ResizablePanelGroup className="flex w-full h-full" direction="horizontal">
+      <ResizablePanelGroup className="flex flex-1 w-full" direction="horizontal">
         <ResizablePanel
           className={cn("flex")}
           defaultSize={defaultSidebarSize}
@@ -98,10 +77,10 @@ export default function EditorRoute() {
             <div className="flex-1 px-1 h-full text-sm bg-zinc-100">
               <div className="p-2 font-medium uppercase">Code</div>
               <FileTree
-                activeFile={activeMonacoTabName || undefined}
+                activeFile={monacoTabs.activeTabName || undefined}
                 item={root}
                 level={0}
-                onFileClick={(item) => openMonacoTab(item.name)}
+                onFileClick={(item) => monacoTabs.openTab(item.name)}
               />
             </div>
           )}
@@ -110,19 +89,7 @@ export default function EditorRoute() {
         <ResizableHandle />
 
         <ResizablePanel>
-          {/* code */}
-          {activeTab === "code" && (
-            <CodeView
-              activeFile={activeMonacoTabName}
-              tabs={monacoTabs}
-              onChangeTab={changeMonacoTab}
-              onCloseTab={closeMonacoTab}
-              onContentChange={handleFileContentChange}
-              onSetTabs={setMonacoTabs}
-            />
-          )}
-
-          {activeTab === "results" && <div className="p-4">results</div>}
+          {activeTab === "code" && <CodeView monacoTabs={monacoTabs} />}
           {activeTab === "environment" && <div className="p-4">environment</div>}
           {activeTab === "settings" && <div className="p-4">settings</div>}
         </ResizablePanel>

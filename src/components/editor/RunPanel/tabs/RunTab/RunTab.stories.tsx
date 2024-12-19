@@ -22,6 +22,5 @@ export const Default: Story = {
     onPause: () => console.log("Pause"),
     onReset: () => console.log("Reset"),
     error: null,
-    comparisonResults: null,
   },
 };
