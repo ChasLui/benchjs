@@ -1,6 +1,7 @@
 import { useBenchmarkStore } from "@/stores/benchmarkStore";
 import { Monaco } from "@/components/common/Monaco";
 import { MonacoTab } from "@/components/common/MonacoTab";
+import { RunPanel } from "@/components/editor/RunPanel";
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable";
 
 interface CodeViewProps {
@@ -43,9 +44,8 @@ export const CodeView = ({
         />
       </ResizablePanel>
       <ResizableHandle />
-      <ResizablePanel defaultSize={20}>
-        {/* run */}
-        run panel
+      <ResizablePanel defaultSize={35}>
+        <RunPanel />
       </ResizablePanel>
     </ResizablePanelGroup>
   );

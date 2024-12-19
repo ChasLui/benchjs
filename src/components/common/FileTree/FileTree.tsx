@@ -1,12 +1,5 @@
 import { useState } from "react";
-import {
-  ChevronRight,
-  FileIcon,
-  FolderClosed,
-  FolderOpen,
-  MoreVerticalIcon,
-  PlusIcon,
-} from "lucide-react";
+import { ChevronRight, FileIcon, FolderClosed, FolderOpen, MoreVerticalIcon, PlusIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -36,12 +29,7 @@ interface FileTreeProps {
   activeFile?: string;
 }
 
-export const FileTree = ({
-  item,
-  level = 0,
-  onFileClick,
-  activeFile,
-}: FileTreeProps) => {
+export const FileTree = ({ item, level = 0, onFileClick, activeFile }: FileTreeProps) => {
   const [isOpen, setIsOpen] = useState(true);
   const [isHovered, setIsHovered] = useState(false);
   const [editingName, setEditingName] = useState(false);
@@ -65,10 +53,7 @@ export const FileTree = ({
       >
         {/* icon */}
         <FileIcon
-          className={cn(
-            "mr-2 ml-1 w-4 h-4 shrink-0",
-            isActive ? "text-blue-700" : "text-blue-600",
-          )}
+          className={cn("mr-2 ml-1 w-4 h-4 shrink-0", isActive ? "text-blue-700" : "text-blue-600")}
         />
 
         {/* editing mode */}
@@ -98,10 +83,7 @@ export const FileTree = ({
           <>
             {/* name */}
             <span
-              className={cn(
-                "truncate flex-1 text-sm",
-                isActive && "text-blue-900",
-              )}
+              className={cn("truncate flex-1 text-sm", isActive && "text-blue-900")}
               onClick={() => onFileClick?.(item)}
             >
               {item.name}
@@ -112,7 +94,7 @@ export const FileTree = ({
               <div className="invisible ml-2 group-hover:visible">
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button className="w-6 h-6" size="icon" variant="ghost">
+                    <Button className="w-6 h-6" size="icon" title="More options" variant="ghost">
                       <MoreVerticalIcon className="w-4 h-4" />
                     </Button>
                   </DropdownMenuTrigger>
@@ -161,12 +143,7 @@ export const FileTree = ({
           onMouseLeave={() => setIsHovered(false)}
         >
           {/* icon */}
-          <ChevronRight
-            className={cn(
-              "h-4 w-4 shrink-0 transition-transform",
-              isOpen && "rotate-90",
-            )}
-          />
+          <ChevronRight className={cn("h-4 w-4 shrink-0 transition-transform", isOpen && "rotate-90")} />
           {isOpen ? (
             <FolderOpen className="mr-2 w-4 h-4 text-blue-600 shrink-0" />
           ) : (
@@ -182,6 +159,7 @@ export const FileTree = ({
               <Button
                 className="w-6 h-6"
                 size="icon"
+                title="Create new implementation"
                 variant="ghost"
                 onClick={(e) => {
                   e.stopPropagation();
@@ -195,9 +173,7 @@ export const FileTree = ({
 
           {/* count badge */}
           {item.count && (
-            <span className="px-1 ml-2 text-xs text-blue-800 bg-blue-100 rounded-sm">
-              {item.count}
-            </span>
+            <span className="px-1 ml-2 text-xs text-blue-800 bg-blue-100 rounded-sm">{item.count}</span>
           )}
         </div>
       )}

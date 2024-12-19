@@ -4,8 +4,8 @@ import { useMonacoTabs } from "@/hooks/useMonacoTabs";
 import { cn } from "@/lib/utils";
 import { CodeView } from "@/routes/editor/views/code/index";
 import { FileTree, FileTreeItem } from "@/components/common/FileTree";
-import { EditorTopBar } from "@/components/editor/EditorTopBar";
 import { Sidebar, SidebarTab } from "@/components/editor/Sidebar";
+import { TopBar } from "@/components/editor/TopBar";
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable";
 
 const MIN_SIDEBAR_WIDTH = 280;
@@ -82,12 +82,13 @@ export default function EditorRoute() {
   return (
     <div className="flex flex-col h-screen">
       {/* top bar */}
-      <EditorTopBar />
+      <TopBar />
 
       <ResizablePanelGroup className="flex w-full h-full" direction="horizontal">
         <ResizablePanel
-          className={cn("flex", `min-w-[${MIN_SIDEBAR_WIDTH}px]`)}
+          className={cn("flex")}
           defaultSize={defaultSidebarSize}
+          style={{ minWidth: `${MIN_SIDEBAR_WIDTH}px` }}
         >
           {/* sidebar */}
           <Sidebar activeTab={activeTab} onTabChange={setActiveTab} />

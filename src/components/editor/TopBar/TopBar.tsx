@@ -6,11 +6,11 @@ import { Link } from "react-router";
 //   DropdownMenuTrigger,
 // } from "@/components/ui/dropdown-menu";
 
-interface EditorTopBarProps {
+interface TopBarProps {
   onShare?: () => void;
 }
 
-export const EditorTopBar = ({ onShare }: EditorTopBarProps) => {
+export const TopBar = ({ onShare }: TopBarProps) => {
   return (
     <div className="flex justify-between items-center py-1 px-3 bg-gray-100 border-b">
       {/* left */}
@@ -50,10 +50,7 @@ export const EditorTopBar = ({ onShare }: EditorTopBarProps) => {
 
       {/* right */}
       <div className="flex items-center space-x-2">
-        <button
-          className="py-1 px-2 text-sm rounded hover:bg-gray-200"
-          onClick={onShare}
-        >
+        <button className="py-1 px-2 text-sm rounded hover:bg-gray-200" onClick={onShare}>
           Share
         </button>
       </div>
