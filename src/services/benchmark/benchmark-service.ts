@@ -1,9 +1,10 @@
+import { BenchmarkOptions } from "benchmate";
 import { nanoid } from "nanoid";
 import { serializeError } from "serialize-error";
 import { useBenchmarkStore } from "@/stores/benchmarkStore";
 import { Implementation } from "@/stores/persistentStore";
 import { bundleBenchmarkCode } from "../code-processor/bundle-benchmark-code";
-import { BenchmarkOptions, BenchmarkResult, WorkerToMainMessage } from "./types";
+import { BenchmarkResult, WorkerToMainMessage } from "./types";
 import BenchmarkWorker from "./worker?worker";
 
 let worker: Worker | null = null;
@@ -18,7 +19,10 @@ export const benchmarkService = {
     return new Promise(async (resolve, reject) => {
       try {
         const store = useBenchmarkStore.getState();
-        const totalIterations = typeof runnerOptions.iterations === "number" ? runnerOptions.iterations : 0;
+        const totalIterations =
+          "iterations" in runnerOptions && typeof runnerOptions.iterations === "number"
+            ? runnerOptions.iterations
+            : 0;
 
         // create runs
         const runs = implementations.map((implementation) => ({
@@ -125,6 +129,26 @@ export const benchmarkService = {
                 error: message.error,
               });
               reject(new Error(message.error));
+              break;
+            }
+            case "console": {
+              store.addConsoleLog(message.runId, {
+                level: message.level,
+                message: message.message,
+                timestamp: Date.now(),
+              });
+              break;
+            }
+            case "consoleBatch": {
+              store.bulkAddConsoleLogs(
+                message.runId,
+                message.logs.map((log) => ({
+                  level: log.level,
+                  message: log.message,
+                  timestamp: Date.now(),
+                  count: log.count,
+                })),
+              );
               break;
             }
             default: {

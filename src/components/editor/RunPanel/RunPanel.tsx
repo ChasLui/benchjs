@@ -5,6 +5,7 @@ import { useBenchmarkStore } from "@/stores/benchmarkStore";
 import { Implementation } from "@/stores/persistentStore";
 import { RunTab } from "@/components/editor/RunPanel/tabs/RunTab";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ConsoleTab } from "./tabs/ConsoleTab";
 
 type RunPanelTab = "console" | "run";
 
@@ -14,9 +15,19 @@ interface RunPanelProps {
 }
 
 export const RunPanel = ({ implementation, onRun }: RunPanelProps) => {
-  const [activeTab, setActiveTab] = useState<RunPanelTab>("run");
-
   const latestRun = useLatestRunForImplementation(implementation.id);
+  const chartData = useBenchmarkStore(
+    useShallow((state) => (latestRun ? state.chartData[latestRun.id] || [] : [])),
+  );
+  const { addChartPoint, clearChartData } = useBenchmarkStore(
+    useShallow((state) => ({
+      addChartPoint: state.addChartPoint,
+      clearChartData: state.clearChartData,
+    })),
+  );
+  const consoleLogs = useBenchmarkStore((state) => (latestRun ? state.consoleLogs[latestRun.id] : null));
+
+  const [activeTab, setActiveTab] = useState<RunPanelTab>("run");
   const [isRunning, setIsRunning] = useState(latestRun?.status === "running");
 
   const handleSetTab = (tab: string) => {
@@ -38,24 +49,13 @@ export const RunPanel = ({ implementation, onRun }: RunPanelProps) => {
     }
   }, [latestRun]);
 
-  const chartData = useBenchmarkStore(
-    useShallow((state) => (latestRun ? state.chartData[latestRun.id] || [] : [])),
-  );
-
-  const { addChartPoint, clearChartData } = useBenchmarkStore(
-    useShallow((state) => ({
-      addChartPoint: state.addChartPoint,
-      clearChartData: state.clearChartData,
-    })),
-  );
-
   return (
     <Tabs className="flex flex-col h-full" value={activeTab} onValueChange={handleSetTab}>
       <TabsList className="justify-start p-0 w-full h-auto bg-gray-50 rounded-none border-b">
         <TabsTrigger className="data-[state=active]:bg-white rounded-none border-r py-1.5" value="run">
           Run
         </TabsTrigger>
-        <TabsTrigger className="data-[state=active]:bg-white rounded-none border-r py-1.5" value="results">
+        <TabsTrigger className="data-[state=active]:bg-white rounded-none border-r py-1.5" value="console">
           Console
         </TabsTrigger>
       </TabsList>
@@ -74,7 +74,9 @@ export const RunPanel = ({ implementation, onRun }: RunPanelProps) => {
           />
         </TabsContent>
 
-        <TabsContent value="console">console</TabsContent>
+        <TabsContent className="m-0" value="console">
+          <ConsoleTab logs={consoleLogs} />
+        </TabsContent>
       </div>
     </Tabs>
   );

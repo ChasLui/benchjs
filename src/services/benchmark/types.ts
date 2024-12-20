@@ -1,3 +1,5 @@
+import { BenchmarkOptions } from "benchmate";
+
 // benchmark types
 export type BenchmarkResult = {
   name: string;
@@ -22,19 +24,6 @@ export type BenchmarkResult = {
   };
 };
 
-export type BenchmarkOptions = ({ iterations: number } | { iterations?: "auto"; time: number }) & {
-  batching?: {
-    enabled: boolean;
-    size: "auto" | number;
-  };
-  warmup?: {
-    enabled: boolean;
-    iterations: "auto" | number;
-  };
-  method?: "auto" | "hrtime" | "performance.now";
-  quiet?: boolean;
-};
-
 // worker messages
 export type MainToWorkerMessage =
   | {
@@ -52,28 +41,29 @@ export type MainToWorkerMessage =
 
 export type WorkerToMainMessage =
   | {
-      type: "error";
+      type: "console";
       runId: string;
-      error: string;
+      level: "debug" | "error" | "info" | "log" | "warn";
+      message: string;
     }
+  | {
+      type: "consoleBatch";
+      runId: string;
+      logs: {
+        level: "debug" | "error" | "info" | "log" | "warn";
+        message: string;
+        count: number;
+      }[];
+    }
+  | { type: "error"; runId: string; error: string }
   | {
       type: "progress";
       runId: string;
       progress: number;
+      elapsedTime: number;
       iterationsCompleted: number;
       totalIterations: number;
-      elapsedTime: number;
     }
-  | {
-      type: "result";
-      runId: string;
-      result: BenchmarkResult[];
-    }
-  | {
-      type: "warmupEnd";
-      runId: string;
-    }
-  | {
-      type: "warmupStart";
-      runId: string;
-    };
+  | { type: "result"; runId: string; result: BenchmarkResult[] }
+  | { type: "warmupEnd"; runId: string }
+  | { type: "warmupStart"; runId: string };

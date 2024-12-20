@@ -1,22 +1,58 @@
 declare const self: DedicatedWorkerGlobalScope;
-import { Bench } from "benchmate";
+import { Bench, BenchmarkOptions } from "benchmate";
 import { serializeError } from "serialize-error";
-import { BenchmarkOptions } from "./types";
 import { MainToWorkerMessage, WorkerToMainMessage } from "./types";
+
+const CONSOLE_FLUSH_INTERVAL_MS = 200;
 
 const DEFAULT_OPTIONS: BenchmarkOptions = {
   iterations: "auto",
   time: 3000,
-  batching: {
-    enabled: true,
-    size: "auto",
-  },
-  warmup: {
-    enabled: true,
-    iterations: "auto",
-  },
   method: "auto",
   quiet: true,
+};
+
+interface LogEntry {
+  level: "debug" | "error" | "info" | "log" | "warn";
+  message: string;
+  count?: number;
+}
+
+// console logging batching
+let currentRunId: string | null = null;
+const logsBuffer: LogEntry[] = [];
+const flushLogs = () => {
+  if (logsBuffer.length === 0 || !currentRunId) return;
+  self.postMessage({
+    type: "consoleBatch",
+    runId: currentRunId,
+    logs: [...logsBuffer],
+  });
+  logsBuffer.length = 0;
+};
+setInterval(flushLogs, CONSOLE_FLUSH_INTERVAL_MS);
+
+// patch console methods
+const patchConsole = (runId: string, prevent = false) => {
+  currentRunId = runId;
+  const methods = ["log", "warn", "error", "info", "debug"] as const;
+
+  for (const level of methods) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (console[level] as any) = function (...args: unknown[]) {
+      if (prevent) return;
+
+      const message = args.map((arg) => (typeof arg === "string" ? arg : JSON.stringify(arg))).join(" ");
+
+      const lastLog = logsBuffer[logsBuffer.length - 1];
+
+      if (lastLog && lastLog.level === level && lastLog.message === message) {
+        lastLog.count = (lastLog.count || 1) + 1;
+      } else {
+        logsBuffer.push({ level, message, count: 1 });
+      }
+    };
+  }
 };
 
 const postMessage = (message: WorkerToMainMessage) => {
@@ -29,13 +65,20 @@ const handleStartRuns = async (
 ) => {
   try {
     // setup runner
-    const benchmateOptions = {
+    const benchmateOptions: BenchmarkOptions = {
       ...DEFAULT_OPTIONS,
       ...options,
-      batching: { ...DEFAULT_OPTIONS.batching, ...options?.batching },
-      warmup: { ...DEFAULT_OPTIONS.warmup, ...options?.warmup },
+      batching: { enabled: true, size: "auto", ...options?.batching },
+      warmup: { enabled: true, iterations: "auto", ...options?.warmup },
+      setup: (task) => {
+        // patch globals
+        patchConsole(task.name);
+      },
     };
     const runner = new Bench(benchmateOptions);
+
+    // mute console
+    patchConsole("none", true);
 
     // setup event handlers
     runner.on("taskWarmupStart", ({ task: runId }) => {
@@ -80,6 +123,7 @@ const handleStartRuns = async (
         result: runResults,
       });
     }
+    flushLogs();
   } catch (error) {
     // send errors
     for (const run of runs) {

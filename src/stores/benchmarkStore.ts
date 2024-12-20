@@ -29,6 +29,13 @@ export interface ChartDataPoint {
   iterations: number;
 }
 
+export interface ConsoleLog {
+  message: string;
+  level: "debug" | "error" | "info" | "log" | "warn";
+  timestamp: number;
+  count: number;
+}
+
 export interface BenchmarkState {
   // current run
   currentRunId: string | null;
@@ -43,6 +50,11 @@ export interface BenchmarkState {
   chartData: Record<string, ChartDataPoint[]>; // { [runId]: ChartDataPoint[] }
   addChartPoint: (runId: string, point: ChartDataPoint) => void;
   clearChartData: (runId: string) => void;
+
+  // console logs
+  consoleLogs: Record<string, ConsoleLog[]>;
+  addConsoleLog: (runId: string, log: ConsoleLog) => void;
+  bulkAddConsoleLogs: (runId: string, logs: ConsoleLog[]) => void;
 }
 
 export const useBenchmarkStore = create<BenchmarkState>()(
@@ -100,6 +112,48 @@ export const useBenchmarkStore = create<BenchmarkState>()(
           [runId]: [],
         },
       })),
+
+    // console logs
+    consoleLogs: {},
+    addConsoleLog: (runId, log) => {
+      return set((state) => {
+        const currentLogs = state.consoleLogs[runId] || [];
+        const lastLog = currentLogs[currentLogs.length - 1];
+
+        // repeated message
+        if (lastLog && lastLog.message === log.message && lastLog.level === log.level) {
+          const updatedLog = {
+            ...lastLog,
+            count: lastLog.count + 1,
+            timestamp: log.timestamp,
+          };
+          return {
+            consoleLogs: {
+              ...state.consoleLogs,
+              [runId]: [...currentLogs.slice(0, -1), updatedLog],
+            },
+          };
+        }
+
+        // new message
+        return {
+          consoleLogs: {
+            ...state.consoleLogs,
+            [runId]: [...currentLogs, { ...log, count: 1 }],
+          },
+        };
+      });
+    },
+    bulkAddConsoleLogs: (runId: string, logs: ConsoleLog[]) =>
+      set((state) => {
+        const runLogs = state.consoleLogs[runId] || [];
+        return {
+          consoleLogs: {
+            ...state.consoleLogs,
+            [runId]: [...runLogs, ...logs],
+          },
+        };
+      }),
   })),
 );
 
