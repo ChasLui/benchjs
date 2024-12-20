@@ -17,6 +17,9 @@ export const benchmarkService = {
     // eslint-disable-next-line no-async-promise-executor
     return new Promise(async (resolve, reject) => {
       try {
+        const store = useBenchmarkStore.getState();
+        const totalIterations = typeof runnerOptions.iterations === "number" ? runnerOptions.iterations : 0;
+
         // create runs
         const runs = implementations.map((implementation) => ({
           id: nanoid(),
@@ -29,36 +32,32 @@ export const benchmarkService = {
           progress: 0,
           elapsedTime: 0,
           iterations: 0,
+          totalIterations,
           error: null,
           result: null,
         }));
-        useBenchmarkStore.getState().addRuns(runs);
+        store.addRuns(runs);
 
         // pre-processing
         const processedRuns = await Promise.all(
           runs.map(async (run) => {
             try {
-              const implementation = implementations.find((item) => item.id === run.implementationId);
-              if (!implementation) throw new Error("Implementation not found");
-              const processedCode = await bundleBenchmarkCode(
-                implementation.content,
-                setupCode,
-                implementation.filename,
-              );
-              useBenchmarkStore.getState().updateRun(run.id, { processedCode });
+              const processedCode = await bundleBenchmarkCode(setupCode, run.originalCode);
+              store.updateRun(run.id, { processedCode, status: "running" });
               return {
                 runId: run.id,
                 processedCode,
-                success: true as const,
+                success: true,
               };
             } catch (error) {
-              useBenchmarkStore.getState().updateRun(run.id, {
+              store.updateRun(run.id, {
                 status: "failed",
                 error: serializeError(error).message || "Failed to process code",
               });
               return {
                 runId: run.id,
-                success: false as const,
+                processedCode: "",
+                success: false,
                 error: serializeError(error).message,
               };
             }
@@ -70,7 +69,7 @@ export const benchmarkService = {
         if (hasProcessingError) {
           const remainingRuns = processedRuns.filter((r) => r.success);
           for (const run of remainingRuns) {
-            useBenchmarkStore.getState().updateRun(run.runId, {
+            store.updateRun(run.runId, {
               status: "failed",
               error: "Cancelled due to errors in other implementations",
             });
@@ -90,16 +89,17 @@ export const benchmarkService = {
 
           switch (message.type) {
             case "progress": {
-              useBenchmarkStore.getState().updateRun(run.id, {
+              store.updateRun(run.id, {
                 status: "running",
                 progress: message.progress,
                 iterations: message.iterationsCompleted,
+                totalIterations: message.totalIterations,
                 elapsedTime: message.elapsedTime,
               });
               break;
             }
             case "result": {
-              useBenchmarkStore.getState().updateRun(run.id, {
+              store.updateRun(run.id, {
                 status: "completed",
                 progress: 100,
                 result: message.result[0],
@@ -108,7 +108,7 @@ export const benchmarkService = {
               break;
             }
             case "error": {
-              useBenchmarkStore.getState().updateRun(run.id, {
+              store.updateRun(run.id, {
                 status: "failed",
                 error: message.error,
               });

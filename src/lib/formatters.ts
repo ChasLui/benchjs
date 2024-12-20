@@ -1,17 +1,17 @@
-export const formatTime = (ms: number) => {
-  if (ms < 1000) return `${ms.toFixed(0)}ms`;
-
-  const seconds = Math.floor(ms / 1000);
-  const minutes = Math.floor(seconds / 60);
-  const hours = Math.floor(minutes / 60);
-
-  if (hours > 0) {
-    return `${hours}h ${minutes % 60}m ${seconds % 60}s`;
+export const formatTime = (ms: number): string => {
+  if (ms >= 1000) {
+    return `${(ms / 1000).toFixed(2)}s`;
   }
-  if (minutes > 0) {
-    return `${minutes}m ${seconds % 60}s`;
+  
+  if (ms >= 1) {
+    return `${ms.toFixed(2)}ms`;
   }
-  return `${seconds}s`;
+  
+  if (ms >= 0.001) {
+    return `${(ms * 1000).toFixed(2)}µs`;
+  }
+  
+  return `${(ms * 1000000).toFixed(2)}ns`;
 };
 
 export const formatBytes = (bytes: number) => {

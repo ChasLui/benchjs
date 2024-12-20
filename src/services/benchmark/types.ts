@@ -57,6 +57,7 @@ export interface ProgressUpdate {
   runId: string;
   progress: number;
   iterationsCompleted: number;
+  totalIterations: number;
   elapsedTime: number;
 }
 

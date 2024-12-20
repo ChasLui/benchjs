@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useLatestRunForImplementation } from "@/stores/benchmarkStore";
+import { BenchmarkRun, useLatestRunForImplementation } from "@/stores/benchmarkStore";
 import { Implementation } from "@/stores/persistentStore";
 import { RunTab } from "@/components/editor/RunPanel/tabs/RunTab";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -30,9 +30,6 @@ export const RunPanel = ({ implementation, onRun }: RunPanelProps) => {
   const handlePause = () => {};
   const handleReset = () => {};
 
-  const progress = latestRun?.progress ?? 0;
-  const error = latestRun?.error ?? null;
-
   useEffect(() => {
     if (!latestRun || ["completed", "failed"].includes(latestRun.status)) {
       setIsRunning(false);
@@ -53,14 +50,8 @@ export const RunPanel = ({ implementation, onRun }: RunPanelProps) => {
       <div className="overflow-auto flex-1">
         <TabsContent className="m-0" value="run">
           <RunTab
-            averageTime={latestRun?.result?.stats.time.average ?? 0}
-            elapsedTime={latestRun?.elapsedTime ?? 0}
-            error={error}
             isRunning={isRunning}
-            iterationsCompleted={latestRun?.iterations ?? 0}
-            peakMemory={0}
-            progress={progress}
-            totalIterations={latestRun?.iterations ?? 0}
+            latestRun={latestRun}
             onPause={handlePause}
             onReset={handleReset}
             onRun={handleRun}

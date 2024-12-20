@@ -1,50 +1,33 @@
-import {
-  ActivityIcon,
-  AlertCircleIcon,
-  ClockIcon,
-  HashIcon,
-  Loader2Icon,
-  PauseIcon,
-  PlayIcon,
-  RotateCcwIcon,
-  ZapIcon,
-} from "lucide-react";
+import { Loader2Icon, PauseIcon, PlayIcon, RotateCcwIcon } from "lucide-react";
+import { BenchmarkRun } from "@/stores/benchmarkStore";
 import { formatTime } from "@/lib/formatters";
-import { MetricCard } from "@/components/common/MetricCard";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 
 interface RunTabProps {
   isRunning: boolean;
-  progress: number;
-  elapsedTime: number;
-  iterationsCompleted: number;
-  totalIterations: number;
-  averageTime: number;
-  peakMemory: number;
-  error: string | null;
+  latestRun?: BenchmarkRun;
   onRun?: () => void;
   onPause?: () => void;
   onReset?: () => void;
 }
 
-export const RunTab = ({
-  isRunning,
-  progress,
-  elapsedTime,
-  iterationsCompleted,
-  totalIterations,
-  averageTime,
-  peakMemory,
-  error,
-  onRun,
-  onPause,
-  onReset,
-}: RunTabProps) => {
-  const formattedPeakMemory = `${peakMemory.toFixed(1)} N/A`;
-  const formattedAverageTime = averageTime ? `${averageTime.toFixed(2)}ms` : "N/A";
-  const formattedIterations = totalIterations ? `${iterationsCompleted} / ${totalIterations}` : "N/A";
+export const RunTab = ({ isRunning, latestRun, onRun, onPause, onReset }: RunTabProps) => {
+  const progress = latestRun?.progress ?? 0;
+  const error = latestRun?.error ?? null;
+
+  const iterationsCompleted = latestRun?.iterations ?? 0;
+  const totalIterations = latestRun?.totalIterations ?? 1000;
+  const iterationsLabel = `${iterationsCompleted} / ${totalIterations}`;
+
+  const elapsedTime = latestRun?.elapsedTime ?? 0;
+  const averageTime = latestRun?.result?.stats.time.average ?? 0;
+  const formattedAverageTime = isRunning && iterationsCompleted > 0
+    ? formatTime(elapsedTime / iterationsCompleted)
+    : formatTime(averageTime);
+
+  const peakMemory = 0;
 
   return (
     <div className="p-4 space-y-4">
@@ -66,7 +49,6 @@ export const RunTab = ({
         <Card className="border-red-500">
           <CardContent className="pt-6">
             <div className="flex items-center space-x-2 text-red-500">
-              <AlertCircleIcon className="w-4 h-4" />
               <p>{error}</p>
             </div>
           </CardContent>
@@ -75,24 +57,37 @@ export const RunTab = ({
 
       {(isRunning || progress > 0) && (
         <Card>
-          <CardContent className="pt-6">
-            <div className="space-y-2">
-              <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">Progress</span>
-                <span className="font-medium">{progress.toFixed(1)}%</span>
+          <CardHeader>
+            <CardTitle className="text-sm font-medium">Benchmark Progress</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <div className="flex justify-between text-sm">
+                  <span className="text-muted-foreground">Progress</span>
+                  <span className="font-medium">{progress.toFixed(1)}%</span>
+                </div>
+                <Progress className="h-2" value={progress} />
               </div>
-              <Progress className="h-2" value={progress} />
+
+              <div className="grid grid-cols-2 gap-2 text-sm">
+                <div>
+                  Elapsed Time: <span className="font-medium">{formatTime(elapsedTime)}</span>
+                </div>
+                <div>
+                  Iterations: <span className="font-medium">{iterationsLabel}</span>
+                </div>
+                <div>
+                  Average Time: <span className="font-medium">{formattedAverageTime}</span>
+                </div>
+                <div>
+                  Peak Memory: <span className="font-medium">{peakMemory.toFixed(1)} MB</span>
+                </div>
+              </div>
             </div>
           </CardContent>
         </Card>
       )}
-
-      <div className="grid grid-cols-2 gap-4">
-        <MetricCard icon={ClockIcon} title="Elapsed Time" value={formatTime(elapsedTime)} />
-        <MetricCard icon={HashIcon} title="Iterations" value={formattedIterations} />
-        <MetricCard icon={ActivityIcon} title="Average Time" value={formattedAverageTime} />
-        <MetricCard icon={ZapIcon} title="Peak Memory" value={formattedPeakMemory} />
-      </div>
 
       <Card>
         <CardHeader>

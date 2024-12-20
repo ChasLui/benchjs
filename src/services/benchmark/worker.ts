@@ -46,6 +46,7 @@ const handleStartRuns = async (
         runId,
         progress: (iterationsCompleted / iterationsTotal) * 100,
         iterationsCompleted,
+        totalIterations: iterationsTotal,
         elapsedTime: Date.now() - startTime,
       });
     });

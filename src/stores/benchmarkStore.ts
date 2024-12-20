@@ -3,7 +3,7 @@ import { create } from "zustand";
 import { devtools } from "zustand/middleware";
 import { BenchmarkResult } from "@/services/benchmark/types";
 
-export interface ImplementationRun {
+export interface BenchmarkRun {
   id: string;
   implementationId: string;
   createdAt: number;
@@ -14,6 +14,7 @@ export interface ImplementationRun {
   progress: number;
   elapsedTime: number;
   iterations: number;
+  totalIterations: number;
   error: string | null;
   result: BenchmarkResult | null;
 }
@@ -23,9 +24,9 @@ interface BenchmarkState {
   currentRunId: string | null;
 
   // implementation runs
-  runs: Record<string, ImplementationRun[]>; // { [implementationId]: ImplementationRun }
-  addRuns: (run: ImplementationRun[]) => void;
-  updateRun: (id: string, data: Partial<Omit<ImplementationRun, "id">>) => void;
+  runs: Record<string, BenchmarkRun[]>; // { [implementationId]: BenchmarkRun }
+  addRuns: (run: BenchmarkRun[]) => void;
+  updateRun: (id: string, data: Partial<Omit<BenchmarkRun, "id">>) => void;
   removeRun: (id: string) => void;
 }
 
