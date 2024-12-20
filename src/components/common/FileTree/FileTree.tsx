@@ -48,9 +48,26 @@ export const FileTree = ({ item, level = 0, onFileClick, activeFileId }: FileTre
   const [editingName, setEditingName] = useState(false);
   const [newName, setNewName] = useState(item.name);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [renameError, setRenameError] = useState<string | null>(null);
 
   const isRoot = item.type === "root";
   const isActive = activeFileId === item.id;
+
+  const handleRename = (value: string) => {
+    const trimmedName = value.trim();
+    if (!trimmedName) {
+      setRenameError("Name cannot be empty");
+      return;
+    }
+
+    try {
+      item.actions?.onRename?.(trimmedName);
+      setEditingName(false);
+      setRenameError(null);
+    } catch (error) {
+      setRenameError(error instanceof Error ? error.message : "Failed to rename");
+    }
+  };
 
   // file
   if (item.type === "file") {
@@ -78,26 +95,36 @@ export const FileTree = ({ item, level = 0, onFileClick, activeFileId }: FileTre
 
         {/* editing mode */}
         {editingName ? (
-          <Input
-            className="py-0 w-40 h-6 text-sm"
-            value={newName}
-            autoFocus
-            onBlur={() => {
-              setEditingName(false);
-              setNewName(item.name);
-            }}
-            onChange={(e) => setNewName(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                item.actions?.onRename?.(newName);
-                setEditingName(false);
-              }
-              if (e.key === "Escape") {
-                setEditingName(false);
-                setNewName(item.name);
-              }
-            }}
-          />
+          <div className="flex-1">
+            <Input
+              className={cn(
+                "py-0 w-40 h-6 text-sm",
+                renameError && "border-red-500 focus-visible:ring-red-500",
+              )}
+              value={newName}
+              autoFocus
+              onBlur={() => {
+                if (!renameError) {
+                  setEditingName(false);
+                  setNewName(item.name);
+                }
+              }}
+              onChange={(e) => {
+                setNewName(e.target.value);
+                setRenameError(null);
+              }}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  handleRename(newName);
+                }
+                if (e.key === "Escape") {
+                  setEditingName(false);
+                  setNewName(item.name);
+                  setRenameError(null);
+                }
+              }}
+            />
+          </div>
         ) : (
           // render mode
           <div

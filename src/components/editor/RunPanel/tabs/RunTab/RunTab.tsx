@@ -192,12 +192,7 @@ export const RunTab = ({
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="time" tickFormatter={(value: number) => `${(value / 1000).toFixed(1)}s`} />
                 <YAxis tickFormatter={formatTime} width={60} yAxisId="left" />
-                <YAxis
-                  orientation="right"
-                  tickFormatter={(value: number) => formatCountShort(value)}
-                  width={60}
-                  yAxisId="right"
-                />
+                <YAxis orientation="right" tickFormatter={formatCountShort} width={60} yAxisId="right" />
                 <Tooltip
                   formatter={(value: number, name: string) => {
                     if (name === "Total Samples") return [formatCount(value), name];

@@ -34,7 +34,18 @@ export default function EditorRoute() {
             type: "file",
             actions: {
               onRename: (newName: string) => {
-                store.renameImplementation(item.id, newName);
+                const trimmedName = newName.trim();
+                const isDuplicate = store.implementations.some(
+                  (otherItem) =>
+                    otherItem.id !== item.id &&
+                    otherItem.filename.toLowerCase() === trimmedName.toLowerCase(),
+                );
+
+                if (isDuplicate) {
+                  throw new Error("An implementation with this name already exists");
+                }
+
+                store.renameImplementation(item.id, trimmedName);
               },
               onDelete: () => {
                 store.removeImplementation(item.id);
