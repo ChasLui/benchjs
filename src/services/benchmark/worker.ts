@@ -40,6 +40,20 @@ const handleStartRuns = async (
     const runner = new Bench(benchmateOptions);
 
     // setup event handlers
+    runner.on("taskWarmupStart", ({ task: runId }) => {
+      postMessage({
+        type: "warmupStart",
+        runId,
+      });
+    });
+
+    runner.on("taskWarmupEnd", ({ task: runId }) => {
+      postMessage({
+        type: "warmupEnd",
+        runId,
+      });
+    });
+
     runner.on("progress", ({ task: runId, iterationsCompleted, iterationsTotal }) => {
       postMessage({
         type: "progress",
@@ -54,7 +68,12 @@ const handleStartRuns = async (
     // add tasks
     for (const run of runs) {
       // eslint-disable-next-line @typescript-eslint/no-implied-eval, no-new-func
-      runner.add(run.runId, new Function(run.processedCode) as () => void);
+      const createBenchmarkFn = new Function(run.processedCode);
+      const benchmarkFn = createBenchmarkFn();
+      if (typeof benchmarkFn !== "function") {
+        throw new TypeError("Benchmark code must return a function");
+      }
+      runner.add(run.runId, benchmarkFn as () => void);
     }
 
     // run benchmark

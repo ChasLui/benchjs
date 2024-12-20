@@ -42,7 +42,7 @@ export const benchmarkService = {
         const processedRuns = await Promise.all(
           runs.map(async (run) => {
             try {
-              const processedCode = await bundleBenchmarkCode(setupCode, run.originalCode);
+              const processedCode = await bundleBenchmarkCode(run.originalCode, setupCode);
               store.updateRun(run.id, { processedCode, status: "running" });
               return {
                 runId: run.id,
