@@ -38,9 +38,9 @@ export const RunTab = ({
   const elapsedTime = latestRun?.result?.stats.time.total ?? latestRun?.elapsedTime ?? 0;
   const averageTime = latestRun?.result?.stats.time.average ?? 0;
   const formattedAverageTime =
-    isRunning && iterationsCompleted > 0
-      ? formatTime(elapsedTime / iterationsCompleted)
-      : formatTime(averageTime);
+    isRunning && iterationsCompleted > 0 ?
+      formatTime(elapsedTime / iterationsCompleted)
+    : formatTime(averageTime);
 
   const stats = latestRun?.result?.stats;
   const peakMemory = 0;
@@ -88,7 +88,9 @@ export const RunTab = ({
           <CardContent className="py-2 px-4">
             <div className="flex gap-2.5 items-start text-sm text-red-500">
               <TriangleAlertIcon className="w-8 h-8" />
-              <p>Error: {error}</p>
+              <div className="flex flex-col flex-1 justify-center">
+                <p>Error: {error}</p>
+              </div>
             </div>
           </CardContent>
         </Card>

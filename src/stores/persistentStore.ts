@@ -1,8 +1,7 @@
 import lz from "lz-string";
-import { nanoid } from "nanoid";
 import { create } from "zustand";
 import { createJSONStorage, devtools, persist, StateStorage } from "zustand/middleware";
-import { DEFAULT_IMPLEMENTATION, DEFAULT_SETUP_CODE, DEFAULT_SETUP_DTS, README_CONTENT } from "@/constants";
+import { DEFAULT_SETUP_CODE, DEFAULT_SETUP_DTS, README_CONTENT } from "@/constants";
 
 const { compressToEncodedURIComponent, decompressFromEncodedURIComponent } = lz;
 
@@ -27,13 +26,17 @@ export interface Implementation {
   content: string;
 }
 
-interface PersistentState {
+export interface PersistentState {
   // implementations
   implementations: Implementation[];
-  addImplementation: (data: Implementation) => void;
+  addImplementation: (implementation: Implementation) => void;
   updateImplementationCode: (id: string, content: string) => void;
   removeImplementation: (id: string) => void;
-  renameImplementation: (id: string, newName: string) => void;
+  renameImplementation: (id: string, filename: string) => void;
+
+  // active tab
+  activeTabId: string | null;
+  setActiveTabId: (id: string | null) => void;
 
   // setup code
   setupCode: string;
@@ -58,25 +61,11 @@ export const usePersistentStore = create<PersistentState>()(
     persist(
       (set) => ({
         // implementations
-        implementations: [
-          {
-            id: nanoid(),
-            filename: "example.ts",
-            content: DEFAULT_IMPLEMENTATION,
-          },
-        ],
-        addImplementation: (data: Implementation) => {
+        implementations: [],
+        addImplementation: (implementation) =>
           set((state) => ({
-            implementations: [
-              ...state.implementations,
-              {
-                id: data.id,
-                filename: data.filename,
-                content: data.content,
-              },
-            ],
-          }));
-        },
+            implementations: [...state.implementations, implementation],
+          })),
         updateImplementationCode: (id, content) => {
           set((state) => ({
             implementations: state.implementations.map((item) => {
@@ -85,20 +74,19 @@ export const usePersistentStore = create<PersistentState>()(
             }),
           }));
         },
-        renameImplementation: (id, newName) =>
-          set((state) => {
-            return {
-              implementations: state.implementations.map((item) => {
-                if (item.id === id) return { ...item, filename: newName };
-                return item;
-              }),
-            };
-          }),
-        removeImplementation: (id) => {
+        renameImplementation: (id, filename) =>
+          set((state) => ({
+            implementations: state.implementations.map((i) => (i.id === id ? { ...i, filename } : i)),
+          })),
+        removeImplementation: (id) =>
           set((state) => ({
             implementations: state.implementations.filter((i) => i.id !== id),
-          }));
-        },
+            activeTabId: state.activeTabId === id ? null : state.activeTabId,
+          })),
+
+        // active tab
+        activeTabId: null,
+        setActiveTabId: (id) => set({ activeTabId: id }),
 
         // setup
         setupCode: DEFAULT_SETUP_CODE,

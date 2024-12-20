@@ -14,8 +14,12 @@ const MIN_SIDEBAR_WIDTH = 280;
 
 export default function EditorRoute() {
   const store = usePersistentStore();
-  const monacoTabs = useMonacoTabs(store.implementations);
-
+  const monacoTabs = useMonacoTabs(store.implementations, {
+    initialActiveTabId: store.activeTabId,
+    onTabChange: (tabId: string | null) => {
+      store.setActiveTabId(tabId);
+    },
+  });
   const [activeTab, setActiveTab] = useState<SidebarTab>("code");
 
   const root = useMemo<FileTreeItem>(() => {
