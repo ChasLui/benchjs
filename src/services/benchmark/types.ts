@@ -36,41 +36,44 @@ export type BenchmarkOptions = ({ iterations: number } | { iterations?: "auto"; 
 };
 
 // worker messages
-export interface StartRunsMessage {
-  type: "startRuns";
-  runs: {
-    runId: string;
-    processedCode: string;
-  }[];
-  options?: BenchmarkOptions;
-}
+export type MainToWorkerMessage =
+  | {
+      type: "cancelRun";
+      runId: string;
+    }
+  | {
+      type: "startRuns";
+      runs: {
+        runId: string;
+        processedCode: string;
+      }[];
+      options?: BenchmarkOptions;
+    };
 
-export interface CancelRunMessage {
-  type: "cancelRun";
-  runId: string;
-}
-
-export type MainToWorkerMessage = CancelRunMessage | StartRunsMessage;
-
-export interface ProgressUpdate {
-  type: "progress";
-  runId: string;
-  progress: number;
-  iterationsCompleted: number;
-  totalIterations: number;
-  elapsedTime: number;
-}
-
-export interface ResultUpdate {
-  type: "result";
-  runId: string;
-  result: BenchmarkResult[];
-}
-
-export interface ErrorUpdate {
-  type: "error";
-  runId: string;
-  error: string;
-}
-
-export type WorkerToMainMessage = ErrorUpdate | ProgressUpdate | ResultUpdate;
+export type WorkerToMainMessage =
+  | {
+      type: "error";
+      runId: string;
+      error: string;
+    }
+  | {
+      type: "progress";
+      runId: string;
+      progress: number;
+      iterationsCompleted: number;
+      totalIterations: number;
+      elapsedTime: number;
+    }
+  | {
+      type: "result";
+      runId: string;
+      result: BenchmarkResult[];
+    }
+  | {
+      type: "warmupEnd";
+      runId: string;
+    }
+  | {
+      type: "warmupStart";
+      runId: string;
+    };

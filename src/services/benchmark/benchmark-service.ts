@@ -25,6 +25,8 @@ export const benchmarkService = {
           id: nanoid(),
           implementationId: implementation.id,
           createdAt: Date.now(),
+          warmupStartedAt: null,
+          warmupEndedAt: null,
           status: "idle" as const,
           filename: implementation.filename,
           originalCode: implementation.content,
@@ -43,7 +45,10 @@ export const benchmarkService = {
           runs.map(async (run) => {
             try {
               const processedCode = await bundleBenchmarkCode(run.originalCode, setupCode);
-              store.updateRun(run.id, { processedCode, status: "running" });
+              store.updateRun(run.id, {
+                processedCode,
+                status: "idle",
+              });
               return {
                 runId: run.id,
                 processedCode,
@@ -88,6 +93,14 @@ export const benchmarkService = {
           if (!run) return;
 
           switch (message.type) {
+            case "warmupStart": {
+              store.updateRun(run.id, { status: "warmup", warmupStartedAt: Date.now() });
+              break;
+            }
+            case "warmupEnd": {
+              store.updateRun(run.id, { status: "running", warmupEndedAt: Date.now() });
+              break;
+            }
             case "progress": {
               store.updateRun(run.id, {
                 status: "running",

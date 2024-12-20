@@ -27,7 +27,7 @@ const handleStartRuns = async (
   runs: { runId: string; processedCode: string }[],
   options: Partial<BenchmarkOptions> = {},
 ) => {
-  const startTime = Date.now();
+  let startTime = 0;
 
   try {
     // setup runner
@@ -41,20 +41,15 @@ const handleStartRuns = async (
 
     // setup event handlers
     runner.on("taskWarmupStart", ({ task: runId }) => {
-      postMessage({
-        type: "warmupStart",
-        runId,
-      });
+      postMessage({ type: "warmupStart", runId });
     });
 
     runner.on("taskWarmupEnd", ({ task: runId }) => {
-      postMessage({
-        type: "warmupEnd",
-        runId,
-      });
+      postMessage({ type: "warmupEnd", runId });
     });
 
     runner.on("progress", ({ task: runId, iterationsCompleted, iterationsTotal }) => {
+      if (startTime === 0) startTime = Date.now();
       postMessage({
         type: "progress",
         runId,

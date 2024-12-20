@@ -16,6 +16,8 @@ export const Default: Story = {
       id: "123",
       implementationId: "main.ts",
       createdAt: Date.now(),
+      warmupStartedAt: null,
+      warmupEndedAt: null,
       status: "completed",
       filename: "main.ts",
       originalCode: `

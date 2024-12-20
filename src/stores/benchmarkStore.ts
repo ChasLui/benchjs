@@ -3,11 +3,15 @@ import { create } from "zustand";
 import { devtools } from "zustand/middleware";
 import { BenchmarkResult } from "@/services/benchmark/types";
 
+export type BenchmarkStatus = "completed" | "failed" | "idle" | "running" | "warmup";
+
 export interface BenchmarkRun {
   id: string;
   implementationId: string;
   createdAt: number;
-  status: "completed" | "failed" | "idle" | "running";
+  warmupStartedAt: number | null;
+  warmupEndedAt: number | null;
+  status: BenchmarkStatus;
   filename: string;
   originalCode: string;
   processedCode: string;
