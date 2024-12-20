@@ -28,16 +28,6 @@ export const RunTab = ({
   addChartPoint,
   clearChartData,
 }: RunTabProps) => {
-  useEffect(() => {
-    if (latestRun?.status !== "running") return;
-    const timePerOp = latestRun.iterations > 0 ? latestRun.elapsedTime / latestRun.iterations : 0;
-    addChartPoint(latestRun.id, {
-      time: latestRun.elapsedTime,
-      timePerOp,
-      iterations: latestRun.iterations,
-    });
-  }, [addChartPoint, latestRun]);
-
   const progress = latestRun?.progress ?? 0;
   const error = latestRun?.error ?? null;
 
@@ -59,6 +49,17 @@ export const RunTab = ({
     if (latestRun) clearChartData(latestRun.id);
     onRun?.();
   }, [clearChartData, latestRun, onRun]);
+
+  useEffect(() => {
+    if (latestRun?.status !== "running") return;
+    if (latestRun.iterations === 0) return;
+    const timePerOp = latestRun.iterations > 0 ? latestRun.elapsedTime / latestRun.iterations : 0;
+    addChartPoint(latestRun.id, {
+      time: latestRun.elapsedTime,
+      timePerOp,
+      iterations: latestRun.iterations,
+    });
+  }, [addChartPoint, latestRun]);
 
   return (
     <div className="p-4 pb-6 space-y-4">

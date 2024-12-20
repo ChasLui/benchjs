@@ -90,7 +90,7 @@ export const useBenchmarkStore = create<BenchmarkState>()(
       set((state) => ({
         chartData: {
           ...state.chartData,
-          [runId]: [...(state.chartData[runId] || []), point].slice(-50),
+          [runId]: [...(state.chartData[runId] || []), point],
         },
       })),
     clearChartData: (runId) =>

@@ -57,8 +57,8 @@ importers:
         specifier: ^7.0.2
         version: 7.0.2(react-router@7.0.2(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(typescript@5.7.2)
       benchmate:
-        specifier: ^1.9.0
-        version: 1.9.0
+        specifier: ^1.10.0
+        version: 1.10.0
       class-variance-authority:
         specifier: ^0.7.1
         version: 0.7.1
@@ -1656,8 +1656,8 @@ packages:
     resolution: {integrity: sha512-NF+epuEdnUYVlGuhaxbbq+dvJttwLnGY+YixlXlME5KpQ5W3CnXA5cVTneY3SPbPDRkcjMbifrwmFYcClgOZeg==}
     engines: {node: '>= 0.8'}
 
-  benchmate@1.9.0:
-    resolution: {integrity: sha512-2dxPSeXyunoOWsaPjfIiwnJkXxv4YEXXlqTJF/Q4+t60Mfe3CuNeVeEnKLm9OjzEdQIiviouYURKhJRQb0kHWA==}
+  benchmate@1.10.0:
+    resolution: {integrity: sha512-oggF9ogXaoqGl51ZA6i1iGMiTV92VC2HMciRbU+VXpA95n7kVU98jOHfhadEOmT0r0+d2ZASgif+3k7xXHgrUQ==}
 
   better-opn@3.0.2:
     resolution: {integrity: sha512-aVNobHnJqLiUelTaHat9DZ1qM2w0C0Eym4LPI/3JxOnSokGVdsl1T1kN7TFvsEAD8G47A6VKQ0TVHqbBnYMJlQ==}
@@ -4955,7 +4955,7 @@ snapshots:
     dependencies:
       safe-buffer: 5.1.2
 
-  benchmate@1.9.0:
+  benchmate@1.10.0:
     dependencies:
       simple-statistics: 7.8.7
 

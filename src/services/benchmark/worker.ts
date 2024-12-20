@@ -27,8 +27,6 @@ const handleStartRuns = async (
   runs: { runId: string; processedCode: string }[],
   options: Partial<BenchmarkOptions> = {},
 ) => {
-  let startTime = 0;
-
   try {
     // setup runner
     const benchmateOptions = {
@@ -48,15 +46,14 @@ const handleStartRuns = async (
       postMessage({ type: "warmupEnd", runId });
     });
 
-    runner.on("progress", ({ task: runId, iterationsCompleted, iterationsTotal }) => {
-      if (startTime === 0) startTime = Date.now();
+    runner.on("progress", ({ task: runId, iterationsCompleted, iterationsTotal, elapsedTime }) => {
       postMessage({
         type: "progress",
         runId,
         progress: (iterationsCompleted / iterationsTotal) * 100,
         iterationsCompleted,
         totalIterations: iterationsTotal,
-        elapsedTime: Date.now() - startTime,
+        elapsedTime,
       });
     });
 
