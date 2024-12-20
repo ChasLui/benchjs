@@ -1,9 +1,17 @@
 import { Loader2Icon, PauseIcon, PlayIcon, RotateCcwIcon } from "lucide-react";
+import { CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { BenchmarkRun } from "@/stores/benchmarkStore";
-import { formatTime } from "@/lib/formatters";
+import { formatCount, formatTime } from "@/lib/formatters";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
+
+interface ChartDataPoint {
+  time: number;
+  duration: number;
+  memory: number;
+  cpu: number;
+}
 
 interface RunTabProps {
   isRunning: boolean;
@@ -19,20 +27,30 @@ export const RunTab = ({ isRunning, latestRun, onRun, onPause, onReset }: RunTab
 
   const iterationsCompleted = latestRun?.iterations ?? 0;
   const totalIterations = latestRun?.totalIterations ?? 1000;
-  const iterationsLabel = `${iterationsCompleted} / ${totalIterations}`;
+  const iterationsLabel = `${formatCount(iterationsCompleted)} / ${formatCount(totalIterations)}`;
 
   const elapsedTime = latestRun?.elapsedTime ?? 0;
   const averageTime = latestRun?.result?.stats.time.average ?? 0;
-  const formattedAverageTime = isRunning && iterationsCompleted > 0
-    ? formatTime(elapsedTime / iterationsCompleted)
-    : formatTime(averageTime);
+  const formattedAverageTime =
+    isRunning && iterationsCompleted > 0
+      ? formatTime(elapsedTime / iterationsCompleted)
+      : formatTime(averageTime);
 
+  const stats = latestRun?.result?.stats;
   const peakMemory = 0;
+
+  // mock data for the chart
+  const chartData: ChartDataPoint[] = Array.from({ length: 20 }, (_, i) => ({
+    time: i * 100,
+    duration: Math.random() * 10,
+    memory: Math.random() * 100,
+    cpu: Math.random() * 100,
+  }));
 
   return (
     <div className="p-4 space-y-4">
       <div className="flex items-center space-x-2">
-        <Button className="px-2.5" disabled={isRunning} onClick={onRun}>
+        <Button className="px-2" disabled={isRunning} onClick={onRun}>
           {isRunning && <Loader2Icon className="w-4 h-4 animate-spin" />}
           {!isRunning && <PlayIcon className="w-4 h-4" />}
           {isRunning ? "Running..." : "Run Benchmark"}
@@ -89,12 +107,115 @@ export const RunTab = ({ isRunning, latestRun, onRun, onPause, onReset }: RunTab
         </Card>
       )}
 
+      {stats && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-sm font-medium">Detailed Statistics</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-3 gap-4">
+              <div>
+                <p className="text-sm text-muted-foreground">Samples</p>
+                <p className="text-lg font-semibold">{formatCount(stats.samples)}</p>
+              </div>
+              <div>
+                <p className="text-sm text-muted-foreground">Batches</p>
+                <p className="text-lg font-semibold">{formatCount(stats.batches)}</p>
+              </div>
+              <div>
+                <p className="text-sm text-muted-foreground">Total Time</p>
+                <p className="text-lg font-semibold">{formatTime(stats.time.total)}</p>
+              </div>
+              <div>
+                <p className="text-sm text-muted-foreground">Min Time</p>
+                <p className="text-lg font-semibold">{formatTime(stats.time.min)}</p>
+              </div>
+              <div>
+                <p className="text-sm text-muted-foreground">Max Time</p>
+                <p className="text-lg font-semibold">{formatTime(stats.time.max)}</p>
+              </div>
+              <div>
+                <p className="text-sm text-muted-foreground">Average Time</p>
+                <p className="text-lg font-semibold">{formatTime(stats.time.average)}</p>
+              </div>
+            </div>
+            <div className="pt-4 mt-4 border-t">
+              <h4 className="mb-2 font-medium">Operations per Second</h4>
+              <div className="grid grid-cols-3 gap-4">
+                <div>
+                  <p className="text-sm text-muted-foreground">Average</p>
+                  <p className="text-lg font-semibold">
+                    {formatCount(Math.round(stats.opsPerSecond.average))}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-sm text-muted-foreground">Min</p>
+                  <p className="text-lg font-semibold">{formatCount(Math.round(stats.opsPerSecond.min))}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-muted-foreground">Max</p>
+                  <p className="text-lg font-semibold">{formatCount(Math.round(stats.opsPerSecond.max))}</p>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       <Card>
         <CardHeader>
           <CardTitle className="text-sm font-medium">Real-time Performance</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="h-[200px]">chart</div>
+          <div className="h-[200px]">
+            <ResponsiveContainer height="100%" width="100%">
+              <LineChart data={chartData}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="time" tickFormatter={(value: number) => `${(value / 1000).toFixed(1)}s`} />
+                <YAxis yAxisId="left" />
+                <YAxis orientation="right" yAxisId="right" />
+                <Tooltip
+                  formatter={(value: number, name: string) => {
+                    const items: string[] = [];
+                    if (name === "memory") {
+                      items.push(`Memory ${value.toFixed(2)}MB`);
+                    } else if (name === "cpu") {
+                      items.push(`CPU ${value.toFixed(2)}%`);
+                    } else {
+                      items.push(`Iterations ${(Number(value) / 1000).toFixed(1)}s`);
+                    }
+                    return items;
+                  }}
+                  labelFormatter={(value: number) => `Time: ${(Number(value) / 1000).toFixed(1)}s`}
+                />
+                <Legend />
+                <Line
+                  dataKey="duration"
+                  dot={false}
+                  name="Iteration Duration"
+                  stroke="#2563eb"
+                  type="monotone"
+                  yAxisId="left"
+                />
+                <Line
+                  dataKey="memory"
+                  dot={false}
+                  name="Memory Usage"
+                  stroke="#16a34a"
+                  type="monotone"
+                  yAxisId="right"
+                />
+                <Line
+                  dataKey="cpu"
+                  dot={false}
+                  name="CPU Usage"
+                  stroke="#dc2626"
+                  type="monotone"
+                  yAxisId="right"
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
         </CardContent>
       </Card>
     </div>
