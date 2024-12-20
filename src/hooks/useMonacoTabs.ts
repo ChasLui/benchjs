@@ -1,7 +1,8 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import { Implementation } from "@/stores/persistentStore";
 import { MonacoTab } from "@/components/common/MonacoTab";
 
-export const useMonacoTabs = () => {
+export const useMonacoTabs = (implementations: Implementation[]) => {
   const [tabs, setTabs] = useState<MonacoTab[]>(() => [{ id: "README.md", name: "README.md", active: true }]);
 
   const changeTab = useCallback((tab: MonacoTab | string) => {
@@ -63,6 +64,19 @@ export const useMonacoTabs = () => {
   );
 
   const activeTabId = tabs.find((item) => item.active)?.id ?? null;
+
+  useEffect(() => {
+    const implementationNameMap = implementations.reduce((acc, item) => {
+      acc[item.id] = item.filename;
+      return acc;
+    }, {} as Record<string, string>);
+    setTabs((prev) =>
+      prev.map((item) => ({
+        ...item,
+        name: implementationNameMap[item.id] ?? item.name,
+      })),
+    );
+  }, [implementations]);
 
   return {
     tabs,

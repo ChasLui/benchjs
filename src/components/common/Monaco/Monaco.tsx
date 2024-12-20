@@ -4,7 +4,6 @@ import { restrictToHorizontalAxis } from "@dnd-kit/modifiers";
 import { horizontalListSortingStrategy, SortableContext } from "@dnd-kit/sortable";
 import Editor, { loader, Monaco as MonacoEditor } from "@monaco-editor/react";
 import type { editor } from "monaco-editor";
-import { usePersistentStore } from "@/stores/persistentStore";
 import { cn } from "@/lib/utils";
 import { MonacoTab } from "@/components/common/MonacoTab";
 
@@ -21,7 +20,7 @@ ${dts
   .replace(/export interface/g, "interface")
   .replace(/export type/g, "type")
   .split("\n")
-  .map((line) => `    ${  line}`)
+  .map((line) => `  ${line}`)
   .join("\n")}
 }
 
@@ -54,7 +53,6 @@ export const Monaco = ({
   onDTSChange,
   ...props
 }: MonacoProps) => {
-  const editorRef = useRef<editor.IStandaloneCodeEditor>(undefined);
   const activeFile = tabs?.find((f) => f.active);
 
   const onDTSChangeRef = useRef<((value: string) => void) | null>(null);
@@ -174,7 +172,6 @@ export const Monaco = ({
       ...props.options,
     });
 
-    editorRef.current = editor;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

@@ -14,7 +14,7 @@ const MIN_SIDEBAR_WIDTH = 280;
 
 export default function EditorRoute() {
   const store = usePersistentStore();
-  const monacoTabs = useMonacoTabs();
+  const monacoTabs = useMonacoTabs(store.implementations);
 
   const [activeTab, setActiveTab] = useState<SidebarTab>("code");
 
