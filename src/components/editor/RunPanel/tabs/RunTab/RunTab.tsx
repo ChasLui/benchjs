@@ -1,17 +1,11 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect } from "react";
 import { Loader2Icon, PauseIcon, PlayIcon, RotateCcwIcon, TriangleAlertIcon } from "lucide-react";
 import { CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
-import { BenchmarkRun } from "@/stores/benchmarkStore";
+import type { BenchmarkRun, ChartDataPoint } from "@/stores/benchmarkStore";
 import { formatCount, formatTime } from "@/lib/formatters";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-
-interface ChartDataPoint {
-  time: number;
-  timePerOp: number;
-  iterations: number;
-}
 
 interface RunTabProps {
   isRunning: boolean;
@@ -19,12 +13,30 @@ interface RunTabProps {
   onRun?: () => void;
   onPause?: () => void;
   onReset?: () => void;
+  chartData: ChartDataPoint[];
+  addChartPoint: (runId: string, point: ChartDataPoint) => void;
+  clearChartData: (runId: string) => void;
 }
 
-export const RunTab = ({ isRunning, latestRun, onRun, onPause, onReset }: RunTabProps) => {
-  const [chartData, setChartData] = useState<ChartDataPoint[]>([]);
-
-  const isWarmingUp = latestRun?.status === "warmup";
+export const RunTab = ({
+  isRunning,
+  latestRun,
+  onRun,
+  onPause,
+  onReset,
+  chartData,
+  addChartPoint,
+  clearChartData,
+}: RunTabProps) => {
+  useEffect(() => {
+    if (latestRun?.status !== "running") return;
+    const timePerOp = latestRun.iterations > 0 ? latestRun.elapsedTime / latestRun.iterations : 0;
+    addChartPoint(latestRun.id, {
+      time: latestRun.elapsedTime,
+      timePerOp,
+      iterations: latestRun.iterations,
+    });
+  }, [addChartPoint, latestRun]);
 
   const progress = latestRun?.progress ?? 0;
   const error = latestRun?.error ?? null;
@@ -43,46 +55,16 @@ export const RunTab = ({ isRunning, latestRun, onRun, onPause, onReset }: RunTab
   const stats = latestRun?.result?.stats;
   const peakMemory = 0;
 
-  // update chart data
-  useEffect(() => {
-    if (!latestRun) return;
-
-    // reset on new run
-    if (latestRun.status === "warmup") {
-      setChartData([]);
-      return;
-    }
-
-    // only track during actual benchmark after warmup
-    const warmupEndedAt = latestRun.warmupEndedAt;
-    if (latestRun.status === "running" && warmupEndedAt) {
-      const timePerOp = latestRun.iterations > 0 ? latestRun.elapsedTime / latestRun.iterations : 0;
-
-      const newPoint: ChartDataPoint = {
-        time: latestRun.elapsedTime,
-        timePerOp,
-        iterations: latestRun.iterations,
-      };
-
-      setChartData((prev) => {
-        const newData = [...prev, newPoint];
-        return newData.slice(-50);
-      });
-    }
-  }, [latestRun]);
-
-  // reset chart
-  useEffect(() => {
-    if (isRunning) {
-      setChartData([]);
-    }
-  }, [isRunning]);
+  const handleRun = useCallback(() => {
+    if (latestRun) clearChartData(latestRun.id);
+    onRun?.();
+  }, [clearChartData, latestRun, onRun]);
 
   return (
     <div className="p-4 pb-6 space-y-4">
       {/* actions */}
       <div className="flex items-center space-x-2">
-        <Button className="px-2" disabled={isRunning} onClick={onRun}>
+        <Button className="px-2" disabled={isRunning} onClick={handleRun}>
           {isRunning && <Loader2Icon className="w-4 h-4 animate-spin" />}
           {!isRunning && <PlayIcon className="w-4 h-4" />}
 

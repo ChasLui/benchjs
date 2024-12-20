@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
-import { BenchmarkRun, useLatestRunForImplementation } from "@/stores/benchmarkStore";
+import { useShallow } from "zustand/shallow";
+import { useLatestRunForImplementation } from "@/stores/benchmarkStore";
+import { useBenchmarkStore } from "@/stores/benchmarkStore";
 import { Implementation } from "@/stores/persistentStore";
 import { RunTab } from "@/components/editor/RunPanel/tabs/RunTab";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -36,6 +38,17 @@ export const RunPanel = ({ implementation, onRun }: RunPanelProps) => {
     }
   }, [latestRun]);
 
+  const chartData = useBenchmarkStore(
+    useShallow((state) => (latestRun ? state.chartData[latestRun.id] || [] : [])),
+  );
+
+  const { addChartPoint, clearChartData } = useBenchmarkStore(
+    useShallow((state) => ({
+      addChartPoint: state.addChartPoint,
+      clearChartData: state.clearChartData,
+    })),
+  );
+
   return (
     <Tabs className="flex flex-col h-full" value={activeTab} onValueChange={handleSetTab}>
       <TabsList className="justify-start p-0 w-full h-auto bg-gray-50 rounded-none border-b">
@@ -50,6 +63,9 @@ export const RunPanel = ({ implementation, onRun }: RunPanelProps) => {
       <div className="overflow-auto flex-1">
         <TabsContent className="m-0" value="run">
           <RunTab
+            addChartPoint={addChartPoint}
+            chartData={chartData}
+            clearChartData={clearChartData}
             isRunning={isRunning}
             latestRun={latestRun}
             onPause={handlePause}

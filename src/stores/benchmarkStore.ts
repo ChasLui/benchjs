@@ -23,7 +23,13 @@ export interface BenchmarkRun {
   result: BenchmarkResult | null;
 }
 
-interface BenchmarkState {
+export interface ChartDataPoint {
+  time: number;
+  timePerOp: number;
+  iterations: number;
+}
+
+export interface BenchmarkState {
   // current run
   currentRunId: string | null;
 
@@ -32,6 +38,11 @@ interface BenchmarkState {
   addRuns: (run: BenchmarkRun[]) => void;
   updateRun: (id: string, data: Partial<Omit<BenchmarkRun, "id">>) => void;
   removeRun: (id: string) => void;
+
+  // chart data
+  chartData: Record<string, ChartDataPoint[]>; // { [runId]: ChartDataPoint[] }
+  addChartPoint: (runId: string, point: ChartDataPoint) => void;
+  clearChartData: (runId: string) => void;
 }
 
 export const useBenchmarkStore = create<BenchmarkState>()(
@@ -71,6 +82,23 @@ export const useBenchmarkStore = create<BenchmarkState>()(
     removeRun: (id) =>
       set((state) => ({
         runs: Object.fromEntries(Object.entries(state.runs).filter(([key]) => key !== id)),
+      })),
+
+    // chart data
+    chartData: {},
+    addChartPoint: (runId, point) =>
+      set((state) => ({
+        chartData: {
+          ...state.chartData,
+          [runId]: [...(state.chartData[runId] || []), point].slice(-50),
+        },
+      })),
+    clearChartData: (runId) =>
+      set((state) => ({
+        chartData: {
+          ...state.chartData,
+          [runId]: [],
+        },
       })),
   })),
 );

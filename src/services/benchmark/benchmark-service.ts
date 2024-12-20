@@ -103,11 +103,10 @@ export const benchmarkService = {
             }
             case "progress": {
               store.updateRun(run.id, {
-                status: "running",
                 progress: message.progress,
+                elapsedTime: message.elapsedTime,
                 iterations: message.iterationsCompleted,
                 totalIterations: message.totalIterations,
-                elapsedTime: message.elapsedTime,
               });
               break;
             }

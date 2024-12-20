@@ -1,61 +1,44 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { RunTab } from "./RunTab";
 
-const meta: Meta<typeof RunTab> = {
-  title: "Editor/RunPanel/Tabs/RunTab",
+const meta = {
   component: RunTab,
-};
-export default meta;
+} satisfies Meta<typeof RunTab>;
 
+export default meta;
 type Story = StoryObj<typeof RunTab>;
 
 export const Default: Story = {
   args: {
     isRunning: false,
+    chartData: [],
+    addChartPoint: () => {},
+    clearChartData: () => {},
+  },
+};
+
+export const Running: Story = {
+  args: {
+    isRunning: true,
     latestRun: {
-      id: "123",
-      implementationId: "main.ts",
+      id: "1",
+      implementationId: "1",
       createdAt: Date.now(),
       warmupStartedAt: null,
       warmupEndedAt: null,
-      status: "completed",
-      filename: "main.ts",
-      originalCode: `
-        // Write your implementation here
-      `,
-      processedCode: `
-        // Write your implementation here
-      `,
-      progress: 100,
+      status: "running",
+      filename: "test.js",
+      originalCode: "",
+      processedCode: "",
+      progress: 50,
       elapsedTime: 1000,
-      iterations: 1000,
+      iterations: 500,
       totalIterations: 1000,
       error: null,
-      result: {
-        name: "main.ts",
-        stats: {
-          samples: 1000,
-          batches: 1000,
-          time: {
-            total: 1000,
-            min: 1000,
-            max: 1000,
-            average: 1000,
-            percentile50: 1000,
-            percentile90: 1000,
-            percentile95: 1000,
-          },
-          opsPerSecond: {
-            average: 1000,
-            max: 1000,
-            min: 1000,
-            margin: 1000,
-          },
-        },
-      },
+      result: null,
     },
-    onRun: () => console.log("Run"),
-    onPause: () => console.log("Pause"),
-    onReset: () => console.log("Reset"),
+    chartData: [],
+    addChartPoint: () => {},
+    clearChartData: () => {},
   },
 };
