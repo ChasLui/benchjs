@@ -16,3 +16,9 @@ export const formatBytes = (bytes: number) => {
 export const formatCount = (num: number): string => {
   return new Intl.NumberFormat("en-US").format(num);
 };
+
+export const formatCountShort = (value: number): string => {
+  if (value >= 1_000_000) return `${(value / 1_000_000).toFixed(1)}M`;
+  if (value >= 1000) return `${(value / 1000).toFixed(1)}k`;
+  return value.toString();
+};

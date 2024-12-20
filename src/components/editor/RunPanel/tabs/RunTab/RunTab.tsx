@@ -2,7 +2,7 @@ import { useCallback, useEffect } from "react";
 import { Loader2Icon, PauseIcon, PlayIcon, RotateCcwIcon, TriangleAlertIcon } from "lucide-react";
 import { CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import type { BenchmarkRun, ChartDataPoint } from "@/stores/benchmarkStore";
-import { formatCount, formatTime } from "@/lib/formatters";
+import { formatCount, formatCountShort, formatTime } from "@/lib/formatters";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
@@ -192,10 +192,15 @@ export const RunTab = ({
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="time" tickFormatter={(value: number) => `${(value / 1000).toFixed(1)}s`} />
                 <YAxis tickFormatter={formatTime} width={60} yAxisId="left" />
-                <YAxis orientation="right" tickFormatter={formatTime} width={60} yAxisId="right" />
+                <YAxis
+                  orientation="right"
+                  tickFormatter={(value: number) => formatCountShort(value)}
+                  width={60}
+                  yAxisId="right"
+                />
                 <Tooltip
                   formatter={(value: number, name: string) => {
-                    if (name === "Total Iterations") return [formatCount(value), name];
+                    if (name === "Total Samples") return [formatCount(value), name];
                     return [formatTime(value), name];
                   }}
                   labelFormatter={(value) => `Time: ${(value / 1000).toFixed(1)}s`}
@@ -214,7 +219,7 @@ export const RunTab = ({
                   dataKey="iterations"
                   dot={false}
                   isAnimationActive={false}
-                  name="Total Iterations"
+                  name="Total Samples"
                   stroke="#16a34a"
                   type="monotone"
                   yAxisId="right"
