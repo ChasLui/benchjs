@@ -1,32 +1,12 @@
-import { Bench } from "benchmate";
 import { nanoid } from "nanoid";
 import { serializeError } from "serialize-error";
-import { ImplementationRun, useBenchmarkStore } from "@/stores/benchmarkStore";
+import { useBenchmarkStore } from "@/stores/benchmarkStore";
 import { Implementation } from "@/stores/persistentStore";
 import { bundleBenchmarkCode } from "../code-processor/bundle-benchmark-code";
-import { BenchmarkOptions, BenchmarkResult } from "./types";
+import { BenchmarkOptions, BenchmarkResult, WorkerToMainMessage } from "./types";
+import BenchmarkWorker from "./worker?worker";
 
-type ProcessedTask = { success: true; id: string; code: string };
-type UnprocessedTask = { success: false; id: string; error?: string };
-
-const DEFAULT_OPTIONS: BenchmarkOptions = {
-  iterations: "auto",
-  time: 1000,
-  batching: {
-    enabled: true,
-    size: "auto",
-  },
-  warmup: {
-    enabled: true,
-    iterations: "auto",
-  },
-  method: "auto",
-  quiet: false,
-};
-
-const tasksAreProcessed = (tasks: (ProcessedTask | UnprocessedTask)[]): tasks is ProcessedTask[] => {
-  return tasks.every((task) => task.success);
-};
+let worker: Worker | null = null;
 
 export const benchmarkService = {
   async runBenchmark(
@@ -34,163 +14,123 @@ export const benchmarkService = {
     implementations: Implementation[],
     runnerOptions: Partial<BenchmarkOptions> = {},
   ): Promise<BenchmarkResult[]> {
-    console.log("Starting benchmark with:", {
-      setupCode: setupCode.length,
-      implementations: implementations.map((i) => i.filename),
+    // eslint-disable-next-line no-async-promise-executor
+    return new Promise(async (resolve, reject) => {
+      try {
+        // create runs
+        const runs = implementations.map((implementation) => ({
+          id: nanoid(),
+          implementationId: implementation.id,
+          createdAt: Date.now(),
+          status: "idle" as const,
+          filename: implementation.filename,
+          originalCode: implementation.content,
+          processedCode: "",
+          progress: 0,
+          elapsedTime: 0,
+          iterations: 0,
+          error: null,
+          result: null,
+        }));
+        useBenchmarkStore.getState().addRuns(runs);
+
+        // pre-processing
+        const processedRuns = await Promise.all(
+          runs.map(async (run) => {
+            try {
+              const implementation = implementations.find((item) => item.id === run.implementationId);
+              if (!implementation) throw new Error("Implementation not found");
+              const processedCode = await bundleBenchmarkCode(implementation.content, setupCode);
+              useBenchmarkStore.getState().updateRun(run.id, { processedCode });
+              return {
+                runId: run.id,
+                processedCode,
+                success: true as const,
+              };
+            } catch (error) {
+              useBenchmarkStore.getState().updateRun(run.id, {
+                status: "failed",
+                error: serializeError(error).message || "Failed to process code",
+              });
+              return {
+                runId: run.id,
+                success: false as const,
+                error: serializeError(error).message,
+              };
+            }
+          }),
+        );
+
+        // bail if any pre-processing failed
+        const hasProcessingError = processedRuns.some((r) => !r.success);
+        if (hasProcessingError) {
+          const remainingRuns = processedRuns.filter((r) => r.success);
+          for (const run of remainingRuns) {
+            useBenchmarkStore.getState().updateRun(run.runId, {
+              status: "failed",
+              error: "Cancelled due to errors in other implementations",
+            });
+          }
+          reject(new Error("Failed to process one or more implementations"));
+          return;
+        }
+
+        // setup worker
+        if (worker) worker.terminate();
+        worker = new BenchmarkWorker();
+
+        worker.addEventListener("message", (event: MessageEvent<WorkerToMainMessage>) => {
+          const message = event.data;
+          const run = runs.find((r) => r.id === message.runId);
+          if (!run) return;
+
+          switch (message.type) {
+            case "progress": {
+              useBenchmarkStore.getState().updateRun(run.id, {
+                status: "running",
+                progress: message.progress,
+                iterations: message.iterationsCompleted,
+                elapsedTime: message.elapsedTime,
+              });
+              break;
+            }
+            case "result": {
+              useBenchmarkStore.getState().updateRun(run.id, {
+                status: "completed",
+                progress: 100,
+                result: message.result[0],
+              });
+              resolve(message.result);
+              break;
+            }
+            case "error": {
+              useBenchmarkStore.getState().updateRun(run.id, {
+                status: "failed",
+                error: message.error,
+              });
+              reject(new Error(message.error));
+              break;
+            }
+            default: {
+              console.error("Unknown message type:", message);
+              break;
+            }
+          }
+        });
+
+        // start benchmark
+        worker.postMessage({
+          type: "startRuns",
+          runs: processedRuns.map((run) => ({
+            runId: run.runId,
+            processedCode: run.processedCode,
+          })),
+          options: runnerOptions,
+        });
+      } catch (error) {
+        // eslint-disable-next-line @typescript-eslint/prefer-promise-reject-errors
+        reject(error);
+      }
     });
-
-    const runs: ImplementationRun[] = implementations.map((implementation) => ({
-      id: nanoid(),
-      implementationId: implementation.id,
-      createdAt: Date.now(),
-      status: "idle",
-      filename: implementation.filename,
-      originalCode: implementation.content,
-      processedCode: "",
-      progress: 0,
-      elapsedTime: 0,
-      iterations: 0,
-      error: null,
-      result: null,
-    }));
-    useBenchmarkStore.getState().addRuns(runs);
-
-    // pre-process implementations
-    const tasks = await Promise.all(
-      runs.map(async (run, index) => {
-        try {
-          const processedCode = await bundleBenchmarkCode(run.originalCode, setupCode);
-          return {
-            index,
-            id: run.id,
-            success: true as const,
-            code: processedCode,
-          };
-        } catch (error) {
-          console.error("Error processing implementation:", error);
-          return {
-            index,
-            id: run.id,
-            success: false as const,
-            error: serializeError(error).message,
-          };
-        }
-      }),
-    );
-
-    // stop if there are any pre-processing errors
-    const hasPreProcessingErrors = !tasksAreProcessed(tasks);
-    if (hasPreProcessingErrors) {
-      for (const task of tasks) {
-        if (task.success) {
-          useBenchmarkStore.getState().updateRun(runs[task.index].id, {
-            status: "failed",
-            error: "Cancelled due to errors in other implementations",
-          });
-        } else {
-          useBenchmarkStore.getState().updateRun(runs[task.index].id, {
-            status: "failed",
-            error: task.error,
-          });
-        }
-      }
-      return [];
-    }
-
-    // setup benchmark
-    const benchmateOptions = {
-      ...DEFAULT_OPTIONS,
-      ...runnerOptions,
-      batching: { ...DEFAULT_OPTIONS.batching, ...runnerOptions?.batching },
-      warmup: { ...DEFAULT_OPTIONS.warmup, ...runnerOptions?.warmup },
-      quiet: true,
-    };
-    const runner = new Bench(benchmateOptions);
-    console.log("Setting up benchmark with options:", benchmateOptions);
-
-    // handle events
-    const handleBenchmarkStart = () => {
-      console.log("[benchmate] benchmarkStart");
-    };
-    const handleTaskStart = ({ task: id }: { task: string }) => {
-      console.log(`[benchmate] taskStart: ${id}`);
-      useBenchmarkStore.getState().updateRun(id, {
-        status: "running",
-        progress: 0,
-      });
-    };
-    const handleTaskWarmupStart = ({ task: id, iterations }: { task: string; iterations: number }) => {
-      console.log(`[benchmate] taskWarmupStart: ${id}`, { iterations });
-    };
-    const onProgress = ({
-      task: id,
-      iterationsCompleted,
-      iterationsTotal,
-    }: {
-      task: string;
-      iterationsCompleted: number;
-      iterationsTotal: number;
-    }) => {
-      console.log(`[benchmate] progress: ${id}`, {
-        iterationsCompleted,
-        iterationsTotal,
-      });
-      useBenchmarkStore.getState().updateRun(id, {
-        progress: (iterationsCompleted / iterationsTotal) * 100,
-        iterations: iterationsTotal,
-      });
-    };
-    const handleTaskComplete = (result: BenchmarkResult) => {
-      const id = result.name;
-      useBenchmarkStore.getState().updateRun(id, {
-        status: "completed",
-        progress: 100,
-        result,
-        elapsedTime: result.stats.time.total,
-      });
-    };
-    const unsubscribe = () => {
-      runner.off("benchmarkStart", handleBenchmarkStart);
-      runner.off("taskStart", handleTaskStart);
-      runner.off("taskWarmupStart", handleTaskWarmupStart);
-      runner.off("progress", onProgress);
-      runner.off("taskComplete", handleTaskComplete);
-    };
-    runner.on("benchmarkStart", handleBenchmarkStart);
-    runner.on("taskStart", handleTaskStart);
-    runner.on("taskWarmupStart", handleTaskWarmupStart);
-    runner.on("progress", onProgress);
-    runner.on("taskComplete", handleTaskComplete);
-
-    try {
-      // add tasks
-      for (const task of tasks) {
-        console.log(`Adding task: ${task.id}`);
-        runner.add(task.id, new Function(task.code) as () => void);
-      }
-
-      // run the benchmark
-      console.log("Starting benchmark run");
-      const results = await runner.run();
-      console.log("Benchmark complete:", results);
-
-      unsubscribe();
-      return results;
-    } catch (error) {
-      unsubscribe();
-      console.error("Error running benchmark:", error);
-
-      // update all running tasks to failed state
-      for (const run of runs) {
-        if (run.status === "running") {
-          useBenchmarkStore.getState().updateRun(run.id, {
-            status: "failed",
-            error: serializeError(error).message,
-          });
-        }
-      }
-
-      throw error;
-    }
   },
 };

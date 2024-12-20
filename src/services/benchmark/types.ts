@@ -1,3 +1,4 @@
+// benchmark types
 export type BenchmarkResult = {
   name: string;
   stats: {
@@ -34,7 +35,41 @@ export type BenchmarkOptions = ({ iterations: number } | { iterations?: "auto"; 
   quiet?: boolean;
 };
 
-export interface BenchmarkTask {
-  id: string;
-  code: string;
+// worker messages
+export interface StartRunsMessage {
+  type: "startRuns";
+  runs: {
+    runId: string;
+    processedCode: string;
+  }[];
+  options?: BenchmarkOptions;
 }
+
+export interface CancelRunMessage {
+  type: "cancelRun";
+  runId: string;
+}
+
+export type MainToWorkerMessage = CancelRunMessage | StartRunsMessage;
+
+export interface ProgressUpdate {
+  type: "progress";
+  runId: string;
+  progress: number;
+  iterationsCompleted: number;
+  elapsedTime: number;
+}
+
+export interface ResultUpdate {
+  type: "result";
+  runId: string;
+  result: BenchmarkResult[];
+}
+
+export interface ErrorUpdate {
+  type: "error";
+  runId: string;
+  error: string;
+}
+
+export type WorkerToMainMessage = ErrorUpdate | ProgressUpdate | ResultUpdate;
