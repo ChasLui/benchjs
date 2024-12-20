@@ -4,7 +4,11 @@ import { XIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
-export type MonacoTab = { name: string; active: boolean };
+export type MonacoTab = {
+  id: string;
+  name: string;
+  active: boolean;
+};
 
 interface TabProps {
   tab: MonacoTab;
@@ -13,14 +17,7 @@ interface TabProps {
 }
 
 export const MonacoTab = ({ tab, onClose, onClick }: TabProps) => {
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: tab.name,
     transition: {
       duration: 150,
@@ -53,10 +50,7 @@ export const MonacoTab = ({ tab, onClose, onClick }: TabProps) => {
       <div className="flex gap-2 items-center py-2 px-3 h-[34px]">
         <span className="text-sm truncate text-zinc-700">{tab.name}</span>
         <Button
-          className={cn(
-            "p-0 w-4 h-4 opacity-0 group-hover:opacity-100 ml-auto",
-            tab.active && "opacity-100",
-          )}
+          className={cn("p-0 w-4 h-4 opacity-0 group-hover:opacity-100 ml-auto", tab.active && "opacity-100")}
           size="sm"
           variant="ghost"
           onClick={(e) => {

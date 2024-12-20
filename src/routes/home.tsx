@@ -22,9 +22,7 @@ export default function HomePage() {
           <h1 className="text-4xl font-bold">Welcome to BenchJS</h1>
 
           <div className="flex flex-col gap-1 items-center">
-            <p>
-              BenchJS is a web app that helps you benchmark JavaScript code.
-            </p>
+            <p>BenchJS is a web app that helps you benchmark JavaScript code.</p>
             <p>It supports TypeScript and multiple benchmarking libraries.</p>
             <p>There is no backend and everything runs in the browser.</p>
           </div>

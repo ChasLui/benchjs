@@ -1,9 +1,4 @@
-export interface BenchmarkTask {
-  name: string;
-  code: string;
-}
-
-export interface BenchmarkResult {
+export type BenchmarkResult = {
   name: string;
   stats: {
     samples: number;
@@ -24,7 +19,7 @@ export interface BenchmarkResult {
       margin: number;
     };
   };
-}
+};
 
 export type BenchmarkOptions = ({ iterations: number } | { iterations?: "auto"; time: number }) & {
   batching?: {
@@ -39,26 +34,7 @@ export type BenchmarkOptions = ({ iterations: number } | { iterations?: "auto"; 
   quiet?: boolean;
 };
 
-export interface BenchmarkRunner {
-  run: (tasks: BenchmarkTask[], options?: Partial<BenchmarkOptions>) => Promise<BenchmarkResult[]>;
-}
-
-export class BenchmarkError extends Error {
-  readonly code: "EXECUTION_ERROR" | "INVALID_CODE" | "MISSING_EXPORT";
-  readonly details?: unknown;
-
-  constructor(
-    code: "EXECUTION_ERROR" | "INVALID_CODE" | "MISSING_EXPORT",
-    message: string,
-    details?: unknown,
-  ) {
-    super(message);
-    this.name = "BenchmarkError";
-    this.code = code;
-    this.details = details;
-
-    if (Error.captureStackTrace) {
-      Error.captureStackTrace(this, BenchmarkError);
-    }
-  }
+export interface BenchmarkTask {
+  id: string;
+  code: string;
 }

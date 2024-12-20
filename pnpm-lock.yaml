@@ -57,8 +57,8 @@ importers:
         specifier: ^7.0.2
         version: 7.0.2(react-router@7.0.2(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(typescript@5.7.2)
       benchmate:
-        specifier: ^1.7.1
-        version: 1.7.1
+        specifier: ^1.9.0
+        version: 1.9.0
       class-variance-authority:
         specifier: ^0.7.1
         version: 0.7.1
@@ -71,9 +71,15 @@ importers:
       lucide-react:
         specifier: ^0.468.0
         version: 0.468.0(react@19.0.0)
+      lz-string:
+        specifier: ^1.5.0
+        version: 1.5.0
       monaco-editor:
         specifier: ^0.52.2
         version: 0.52.2
+      nanoid:
+        specifier: ^5.0.9
+        version: 5.0.9
       prettier:
         specifier: ^3.4.2
         version: 3.4.2
@@ -92,6 +98,9 @@ importers:
       react-router:
         specifier: ^7.0.2
         version: 7.0.2(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
+      serialize-error:
+        specifier: ^11.0.3
+        version: 11.0.3
       tailwind-merge:
         specifier: ^2.5.5
         version: 2.5.5
@@ -1617,8 +1626,8 @@ packages:
     resolution: {integrity: sha512-NF+epuEdnUYVlGuhaxbbq+dvJttwLnGY+YixlXlME5KpQ5W3CnXA5cVTneY3SPbPDRkcjMbifrwmFYcClgOZeg==}
     engines: {node: '>= 0.8'}
 
-  benchmate@1.7.1:
-    resolution: {integrity: sha512-JQEprxJv3PsHAn24Y9DGwmkCxWNlpAhYvxDhfquJ7YDMoMlRgC2VxtGn47XqL4nkvgbjSXbKtzXZdiKtGe/FfQ==}
+  benchmate@1.9.0:
+    resolution: {integrity: sha512-2dxPSeXyunoOWsaPjfIiwnJkXxv4YEXXlqTJF/Q4+t60Mfe3CuNeVeEnKLm9OjzEdQIiviouYURKhJRQb0kHWA==}
 
   better-opn@3.0.2:
     resolution: {integrity: sha512-aVNobHnJqLiUelTaHat9DZ1qM2w0C0Eym4LPI/3JxOnSokGVdsl1T1kN7TFvsEAD8G47A6VKQ0TVHqbBnYMJlQ==}
@@ -2361,6 +2370,11 @@ packages:
     engines: {node: ^10 || ^12 || ^13.7 || ^14 || >=15.0.1}
     hasBin: true
 
+  nanoid@5.0.9:
+    resolution: {integrity: sha512-Aooyr6MXU6HpvvWXKoVoXwKMs/KyVakWwg7xQfv5/S/RIgJMy0Ifa45H9qqYy7pTCszrHzP21Uk4PZq2HpEM8Q==}
+    engines: {node: ^18 || >=20}
+    hasBin: true
+
   negotiator@0.6.3:
     resolution: {integrity: sha512-+EUsqGPLsM+j/zdChZjsnX51g4XrHFOIXwfnCVPGlQk/k5giakcKsuxCObBRu6DSm9opw/O6slWbJdghQM4bBg==}
     engines: {node: '>= 0.6'}
@@ -2778,6 +2792,10 @@ packages:
   send@0.19.0:
     resolution: {integrity: sha512-dW41u5VfLXu8SJh5bwRmyYUbAoSB3c9uQh6L8h/KtsFREPWpbX1lrljJo186Jc4nmci/sGUZ9a0a0J2zgfq2hw==}
     engines: {node: '>= 0.8.0'}
+
+  serialize-error@11.0.3:
+    resolution: {integrity: sha512-2G2y++21dhj2R7iHAdd0FIzjGwuKZld+7Pl/bTU6YIkrC2ZMbVUjm+luj6A6V34Rv9XfKJDKpTWu9W4Gse1D9g==}
+    engines: {node: '>=14.16'}
 
   serve-static@1.16.2:
     resolution: {integrity: sha512-VqpjJZKadQB/PEbEwvFdO43Ax5dFBZ2UECszz8bQ7pi7wt//PWe1P6MN7eCnjsatYtBT6EuiClbjSWP2WrIoTw==}
@@ -4788,7 +4806,7 @@ snapshots:
     dependencies:
       safe-buffer: 5.1.2
 
-  benchmate@1.7.1:
+  benchmate@1.9.0:
     dependencies:
       simple-statistics: 7.8.7
 
@@ -5537,6 +5555,8 @@ snapshots:
 
   nanoid@3.3.8: {}
 
+  nanoid@5.0.9: {}
+
   negotiator@0.6.3: {}
 
   negotiator@0.6.4: {}
@@ -5947,6 +5967,10 @@ snapshots:
       statuses: 2.0.1
     transitivePeerDependencies:
       - supports-color
+
+  serialize-error@11.0.3:
+    dependencies:
+      type-fest: 2.19.0
 
   serve-static@1.16.2:
     dependencies:

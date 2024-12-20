@@ -2,70 +2,71 @@ import { useCallback, useState } from "react";
 import { MonacoTab } from "@/components/common/MonacoTab";
 
 export const useMonacoTabs = () => {
-  const [tabs, setTabs] = useState<MonacoTab[]>(() => [
-    {
-      name: "README.md",
-      active: true,
-    },
-  ]);
+  const [tabs, setTabs] = useState<MonacoTab[]>(() => [{ id: "README.md", name: "README.md", active: true }]);
 
-  const changeTab = useCallback((file: { name: string; active: boolean }) => {
-    if (!file.name) return;
+  const changeTab = useCallback((tab: MonacoTab | string) => {
     setTabs((prev) =>
       prev.map((item) => ({
         ...item,
-        active: item.name === file.name,
+        active: typeof tab === "string" ? item.id === tab : item.id === tab.id,
       })),
     );
   }, []);
 
-  const closeTab = useCallback((file: { name: string; active: boolean }) => {
-    if (!file.name) return;
-
-    let nextActiveFile = "";
-
-    setTabs((prev) => {
-      const filtered = prev.filter((item) => item.name !== file.name);
-      if (filtered.length === 0) {
-        nextActiveFile = "README.md";
-        return [
-          {
-            name: "README.md",
-            active: true,
-          },
-        ];
+  const closeTab = useCallback(
+    (tab: MonacoTab) => {
+      let nextActiveTabId: string | null = null;
+      let hasNoOpenTabs = false;
+      setTabs((prev) => {
+        const filtered = prev.filter((item) => item.id !== tab.id);
+        if (filtered.length === 0) {
+          hasNoOpenTabs = true;
+        } else if (tab.active) {
+          filtered[filtered.length - 1].active = true;
+          nextActiveTabId = filtered[filtered.length - 1].id;
+        }
+        return filtered;
+      });
+      if (hasNoOpenTabs) {
+        const newTab = { id: "README.md", name: "README.md", active: true };
+        setTabs((prev) => [...prev.map((item) => ({ ...item, active: false })), newTab]);
+        changeTab(newTab);
+      } else if (nextActiveTabId) {
+        changeTab(nextActiveTabId);
       }
-      if (file.active && filtered.length > 0) {
-        filtered[filtered.length - 1].active = true;
-        nextActiveFile = filtered[filtered.length - 1].name;
+    },
+    [changeTab],
+  );
+
+  const openTab = useCallback(
+    (tab: MonacoTab | string) => {
+      if (typeof tab === "string") {
+        setTabs((prev) => prev.map((item) => ({ ...item, active: item.id === tab })));
+        return;
       }
-      return filtered;
-    });
-  }, []);
 
-  const openTab = useCallback((filename: string) => {
-    if (!filename) return;
-
-    setTabs((prev) => {
-      const isOpen = prev.some((item) => item.name === filename);
-      if (isOpen) {
-        return prev.map((item) => ({
-          ...item,
-          active: item.name === filename,
-        }));
+      const hasTab = tabs.some((item) => item.id === tab.id);
+      if (hasTab) {
+        setTabs((prev) => {
+          return prev.map((item) => ({
+            ...item,
+            active: typeof tab === "string" ? item.id === tab : item.id === tab.id,
+          }));
+        });
+      } else {
+        const newTab = { id: tab.id, name: tab.name, active: true };
+        setTabs((prev) => [...prev.map((item) => ({ ...item, active: false })), newTab]);
+        changeTab(newTab);
       }
-      return [
-        ...prev.map((item) => ({ ...item, active: false })),
-        { name: filename, active: true },
-      ];
-    });
-  }, []);
+    },
+    [changeTab, tabs],
+  );
 
-  const activeTabName = tabs.find((item) => item.active)?.name;
+  const activeTabId = tabs.find((item) => item.active)?.id ?? null;
 
   return {
     tabs,
-    activeTabName,
+    activeTabId,
     changeTab,
     closeTab,
     openTab,

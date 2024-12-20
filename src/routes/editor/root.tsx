@@ -1,6 +1,8 @@
 import { useMemo, useState } from "react";
-import { useBenchmarkStore } from "@/stores/benchmarkStore";
+import { nanoid } from "nanoid";
+import { usePersistentStore } from "@/stores/persistentStore";
 import { useMonacoTabs } from "@/hooks/useMonacoTabs";
+import { DEFAULT_IMPLEMENTATION } from "@/constants";
 import { cn } from "@/lib/utils";
 import { CodeView } from "@/routes/editor/views/code/index";
 import { FileTree, FileTreeItem } from "@/components/common/FileTree";
@@ -11,44 +13,55 @@ import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/componen
 const MIN_SIDEBAR_WIDTH = 280;
 
 export default function EditorRoute() {
-  const store = useBenchmarkStore();
+  const store = usePersistentStore();
   const monacoTabs = useMonacoTabs();
 
   const [activeTab, setActiveTab] = useState<SidebarTab>("code");
 
   const root = useMemo<FileTreeItem>(() => {
     return {
+      id: "root",
       name: "root",
       type: "root",
       children: [
         {
+          id: "implementations",
           name: "implementations",
           type: "folder",
           children: store.implementations.map((item) => ({
+            id: item.id,
             name: item.filename,
             type: "file",
             actions: {
               onRename: (newName: string) => {
-                store.renameImplementation(item.filename, newName);
+                store.renameImplementation(item.id, newName);
               },
               onDelete: () => {
-                store.removeImplementation(item.filename);
+                store.removeImplementation(item.id);
               },
             },
           })),
           actions: {
             onCreate: () => {
-              const newName = `implementation-${store.implementations.length + 1}.ts`;
-              store.updateImplementation(newName, "// Write your implementation here\n");
-              monacoTabs.openTab(newName);
+              const filename = `implementation-${store.implementations.length + 1}.ts`;
+              const id = nanoid();
+              console.log("create", id, filename);
+              store.addImplementation({
+                id,
+                filename,
+                content: DEFAULT_IMPLEMENTATION,
+              });
+              monacoTabs.openTab({ id, name: filename, active: true });
             },
           },
         },
         {
+          id: "setup.ts",
           name: "setup.ts",
           type: "file",
         },
         {
+          id: "README.md",
           name: "README.md",
           type: "file",
         },
@@ -77,10 +90,16 @@ export default function EditorRoute() {
             <div className="flex-1 px-1 h-full text-sm bg-zinc-100">
               <div className="p-2 font-medium uppercase">Code</div>
               <FileTree
-                activeFile={monacoTabs.activeTabName || undefined}
+                activeFileId={monacoTabs.activeTabId || undefined}
                 item={root}
                 level={0}
-                onFileClick={(item) => monacoTabs.openTab(item.name)}
+                onFileClick={(item) => {
+                  return monacoTabs.openTab({
+                    id: item.id,
+                    name: item.name,
+                    active: true,
+                  });
+                }}
               />
             </div>
           )}

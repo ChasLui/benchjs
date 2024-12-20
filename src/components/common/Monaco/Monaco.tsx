@@ -140,7 +140,7 @@ export const Monaco = ({ className, tabs, onChangeTab, onCloseTab, onSetTabs, ..
             <SortableContext items={tabs.map((f) => f.name)} strategy={horizontalListSortingStrategy}>
               <div className="flex overflow-x-auto overflow-y-hidden custom-scrollbar">
                 {tabs.map((file) => (
-                  <MonacoTab key={file.name} tab={file} onClick={onChangeTab} onClose={onCloseTab} />
+                  <MonacoTab key={file.id} tab={file} onClick={onChangeTab} onClose={onCloseTab} />
                 ))}
               </div>
             </SortableContext>

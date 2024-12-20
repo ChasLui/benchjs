@@ -12,6 +12,7 @@ type Story = StoryObj<typeof MonacoTab>;
 export const Default: Story = {
   args: {
     tab: {
+      id: "main.ts",
       name: "main.ts",
       active: false,
     },
@@ -21,6 +22,7 @@ export const Default: Story = {
 export const Active: Story = {
   args: {
     tab: {
+      id: "main.ts",
       name: "main.ts",
       active: true,
     },

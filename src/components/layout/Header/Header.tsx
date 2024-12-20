@@ -26,11 +26,7 @@ export const Header = ({ postLogoElement }: HeaderProps) => {
             Playground
           </Button>
         </Link>
-        <Link
-          className="text-sm"
-          target="_blank"
-          to="https://github.com/3rd/benchjs"
-        >
+        <Link className="text-sm" target="_blank" to="https://github.com/3rd/benchjs">
           <Button type="button" variant="link">
             GitHub
           </Button>

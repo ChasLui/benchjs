@@ -22,10 +22,12 @@ export const WithTabs: Story = {
   args: {
     tabs: [
       {
+        id: "main.ts",
         name: "main.ts",
         active: true,
       },
       {
+        id: "setup.ts",
         name: "setup.ts",
         active: false,
       },
