@@ -6,7 +6,7 @@ import { MainToWorkerMessage, WorkerToMainMessage } from "./types";
 
 const DEFAULT_OPTIONS: BenchmarkOptions = {
   iterations: "auto",
-  time: 1000,
+  time: 3000,
   batching: {
     enabled: true,
     size: "auto",

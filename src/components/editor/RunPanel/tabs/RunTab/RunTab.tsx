@@ -76,7 +76,7 @@ export const RunTab = ({ isRunning, latestRun, onRun, onPause, onReset }: RunTab
       {(isRunning || progress > 0) && (
         <Card>
           <CardHeader>
-            <CardTitle className="text-sm font-medium">Benchmark Progress</CardTitle>
+            <CardTitle className="font-medium">Benchmark Progress</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
@@ -93,7 +93,7 @@ export const RunTab = ({ isRunning, latestRun, onRun, onPause, onReset }: RunTab
                   Elapsed Time: <span className="font-medium">{formatTime(elapsedTime)}</span>
                 </div>
                 <div>
-                  Iterations: <span className="font-medium">{iterationsLabel}</span>
+                  Samples: <span className="font-medium">{iterationsLabel}</span>
                 </div>
                 <div>
                   Average Time: <span className="font-medium">{formattedAverageTime}</span>
@@ -110,7 +110,7 @@ export const RunTab = ({ isRunning, latestRun, onRun, onPause, onReset }: RunTab
       {stats && (
         <Card>
           <CardHeader>
-            <CardTitle className="text-sm font-medium">Detailed Statistics</CardTitle>
+            <CardTitle className="font-medium">Statistics</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-3 gap-4">
@@ -127,6 +127,10 @@ export const RunTab = ({ isRunning, latestRun, onRun, onPause, onReset }: RunTab
                 <p className="text-lg font-semibold">{formatTime(stats.time.total)}</p>
               </div>
               <div>
+                <p className="text-sm text-muted-foreground">Average Time</p>
+                <p className="text-lg font-semibold">{formatTime(stats.time.average)}</p>
+              </div>
+              <div>
                 <p className="text-sm text-muted-foreground">Min Time</p>
                 <p className="text-lg font-semibold">{formatTime(stats.time.min)}</p>
               </div>
@@ -134,26 +138,22 @@ export const RunTab = ({ isRunning, latestRun, onRun, onPause, onReset }: RunTab
                 <p className="text-sm text-muted-foreground">Max Time</p>
                 <p className="text-lg font-semibold">{formatTime(stats.time.max)}</p>
               </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Average Time</p>
-                <p className="text-lg font-semibold">{formatTime(stats.time.average)}</p>
-              </div>
             </div>
             <div className="pt-4 mt-4 border-t">
               <h4 className="mb-2 font-medium">Operations per Second</h4>
               <div className="grid grid-cols-3 gap-4">
                 <div>
-                  <p className="text-sm text-muted-foreground">Average</p>
+                  <p className="text-sm text-muted-foreground">Average ops/sec</p>
                   <p className="text-lg font-semibold">
                     {formatCount(Math.round(stats.opsPerSecond.average))}
                   </p>
                 </div>
                 <div>
-                  <p className="text-sm text-muted-foreground">Min</p>
+                  <p className="text-sm text-muted-foreground">Min ops/sec</p>
                   <p className="text-lg font-semibold">{formatCount(Math.round(stats.opsPerSecond.min))}</p>
                 </div>
                 <div>
-                  <p className="text-sm text-muted-foreground">Max</p>
+                  <p className="text-sm text-muted-foreground">Max ops/sec</p>
                   <p className="text-lg font-semibold">{formatCount(Math.round(stats.opsPerSecond.max))}</p>
                 </div>
               </div>
