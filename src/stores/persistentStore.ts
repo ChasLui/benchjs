@@ -2,7 +2,7 @@ import lz from "lz-string";
 import { nanoid } from "nanoid";
 import { create } from "zustand";
 import { createJSONStorage, devtools, persist, StateStorage } from "zustand/middleware";
-import { DEFAULT_IMPLEMENTATION, DEFAULT_SETUP_CODE, README_CONTENT } from "@/constants";
+import { DEFAULT_IMPLEMENTATION, DEFAULT_SETUP_CODE, DEFAULT_SETUP_DTS, README_CONTENT } from "@/constants";
 
 const { compressToEncodedURIComponent, decompressFromEncodedURIComponent } = lz;
 
@@ -38,6 +38,10 @@ interface PersistentState {
   // setup code
   setupCode: string;
   setSetupCode: (code: string) => void;
+
+  // setup dts
+  setupDTS: string;
+  setSetupDTS: (code: string) => void;
 
   // readme
   readmeContent: string;
@@ -99,6 +103,10 @@ export const usePersistentStore = create<PersistentState>()(
         // setup
         setupCode: DEFAULT_SETUP_CODE,
         setSetupCode: (code) => set({ setupCode: code }),
+
+        // setup dts
+        setupDTS: DEFAULT_SETUP_DTS,
+        setSetupDTS: (code) => set({ setupDTS: code }),
 
         // readme
         readmeContent: README_CONTENT,

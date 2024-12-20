@@ -28,7 +28,7 @@ describe("babel", () => {
       }
     `;
 
-    const result = await transform(code, [
+    const result = await transform(code, "main.ts", [
       {
         name: "custom-plugin",
         visitor: {

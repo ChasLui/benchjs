@@ -4,6 +4,7 @@ import { restrictToHorizontalAxis } from "@dnd-kit/modifiers";
 import { horizontalListSortingStrategy, SortableContext } from "@dnd-kit/sortable";
 import Editor, { loader, Monaco as MonacoEditor } from "@monaco-editor/react";
 import type { editor } from "monaco-editor";
+import { usePersistentStore } from "@/stores/persistentStore";
 import { cn } from "@/lib/utils";
 import { MonacoTab } from "@/components/common/MonacoTab";
 
@@ -13,6 +14,20 @@ const zodFiles = import.meta.glob("../../../../node_modules/zod/**/*.d.ts", {
   import: "default",
 }) as Record<string, string>;
 
+const transformToGlobalDeclarations = (dts: string) => {
+  return `declare global {
+${dts
+  .replace(/export declare/g, "declare")
+  .replace(/export interface/g, "interface")
+  .replace(/export type/g, "type")
+  .split("\n")
+  .map((line) => `    ${  line}`)
+  .join("\n")}
+}
+
+export {};`;
+};
+
 export interface MonacoProps {
   height?: string;
   defaultValue?: string;
@@ -21,15 +36,29 @@ export interface MonacoProps {
   options?: editor.IStandaloneEditorConstructionOptions;
   className?: string;
   tabs?: MonacoTab[];
+  extraLibs?: { content: string; filename?: string }[];
   onChange?: (value: string | undefined) => void;
+  onDTSChange?: (value: string) => void;
   onChangeTab?: (tab: MonacoTab) => void;
   onCloseTab?: (tab: MonacoTab) => void;
   onSetTabs?: (tabs: MonacoTab[]) => void;
 }
 
-export const Monaco = ({ className, tabs, onChangeTab, onCloseTab, onSetTabs, ...props }: MonacoProps) => {
+export const Monaco = ({
+  className,
+  tabs,
+  extraLibs,
+  onChangeTab,
+  onCloseTab,
+  onSetTabs,
+  onDTSChange,
+  ...props
+}: MonacoProps) => {
   const editorRef = useRef<editor.IStandaloneCodeEditor>(undefined);
   const activeFile = tabs?.find((f) => f.active);
+
+  const onDTSChangeRef = useRef<((value: string) => void) | null>(null);
+  onDTSChangeRef.current = onDTSChange ?? null;
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -66,6 +95,7 @@ export const Monaco = ({ className, tabs, onChangeTab, onCloseTab, onSetTabs, ..
       moduleResolution: monaco.languages.typescript.ModuleResolutionKind.NodeJs,
       target: monaco.languages.typescript.ScriptTarget.ESNext,
       allowNonTsExtensions: true,
+      declaration: true,
     });
 
     for (const file of Object.keys(zodFiles)) {
@@ -93,12 +123,29 @@ export const Monaco = ({ className, tabs, onChangeTab, onCloseTab, onSetTabs, ..
       declare const x: number;
       `,
     );
+
+    // custom libs
+    for (const lib of extraLibs ?? []) {
+      monaco.languages.typescript.typescriptDefaults.addExtraLib(lib.content, lib.filename);
+    }
   };
 
   const handleMount = useCallback((editor: editor.IStandaloneCodeEditor, monaco: MonacoEditor) => {
-    editor.onDidChangeModelContent(() => {
+    editor.onDidChangeModelContent(async () => {
       const value = editor.getValue();
       props.onChange?.(value);
+
+      if (onDTSChangeRef.current) {
+        (async () => {
+          const model = editor.getModel();
+          if (!model) return;
+          const tsWorker = await monaco.languages.typescript.getTypeScriptWorker();
+          const worker = await tsWorker(model.uri);
+          const outputs = await worker.getEmitOutput(model.uri.toString());
+          const dts = outputs.outputFiles.find((file) => file.name.endsWith(".d.ts"))?.text;
+          onDTSChangeRef.current?.(dts ? transformToGlobalDeclarations(dts) : "");
+        })();
+      }
     });
 
     monaco.editor.defineTheme("custom", {

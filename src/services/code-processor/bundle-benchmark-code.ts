@@ -30,8 +30,9 @@ const runFunctionProcessorPlugin: PluginItem = {
         const init = declaration.declarations[0].init;
         if (t.isArrowFunctionExpression(init)) {
           // export const run = () => {...}
-          const functionBody =
-            t.isBlockStatement(init.body) ? init.body : t.blockStatement([t.returnStatement(init.body)]);
+          const functionBody = t.isBlockStatement(init.body)
+            ? init.body
+            : t.blockStatement([t.returnStatement(init.body)]);
           const funcExpr = t.functionExpression(
             t.identifier("run"),
             init.params,
@@ -63,8 +64,9 @@ const runFunctionProcessorPlugin: PluginItem = {
         t.isArrowFunctionExpression(decl) ||
         t.isFunctionExpression(decl)
       ) {
-        const functionBody =
-          t.isBlockStatement(decl.body) ? decl.body : t.blockStatement([t.returnStatement(decl.body)]);
+        const functionBody = t.isBlockStatement(decl.body)
+          ? decl.body
+          : t.blockStatement([t.returnStatement(decl.body)]);
 
         const funcExpr = t.functionExpression(
           t.identifier("run"),
@@ -102,6 +104,6 @@ export const stripExportsPlugin: PluginItem = {
   },
 };
 
-export const bundleBenchmarkCode = (code: string, setupCode: string) => {
-  return transform(`${setupCode}\n\n${code}`, [runFunctionProcessorPlugin, stripExportsPlugin]);
+export const bundleBenchmarkCode = (code: string, setupCode: string, filename?: string) => {
+  return transform(`${setupCode}\n\n${code}`, filename, [runFunctionProcessorPlugin, stripExportsPlugin]);
 };

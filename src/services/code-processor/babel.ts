@@ -2,9 +2,9 @@ import * as babel from "@babel/standalone";
 import type { PluginItem } from "@babel/core";
 import { format } from "@/services/code-processor/prettier";
 
-export const transform = async (code: string, plugins: PluginItem[] = []) => {
+export const transform = async (code: string, filename?: string, plugins: PluginItem[] = []) => {
   const result = babel.transform(code, {
-    filename: "main.tsx",
+    filename: filename || "main.tsx",
     babelrc: false,
     plugins: [
       //

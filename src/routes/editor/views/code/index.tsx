@@ -23,6 +23,15 @@ export const CodeView = ({ monacoTabs }: CodeViewProps) => {
     return store.implementations.find((item) => item.id === id)?.content || "";
   };
 
+  const extraLibs = useMemo(() => {
+    if (!currentImplementation) return [];
+    return [
+      {
+        content: store.setupDTS,
+      },
+    ];
+  }, [currentImplementation, store.setupDTS]);
+
   const handleFileContentChange = useCallback(
     (content: string | undefined) => {
       if (!monacoTabs.activeTabId || !content) return;
@@ -38,6 +47,13 @@ export const CodeView = ({ monacoTabs }: CodeViewProps) => {
     [monacoTabs.activeTabId, store],
   );
 
+  const handleSetupDTSChange = useCallback(
+    (value: string) => {
+      store.setSetupDTS(value);
+    },
+    [store],
+  );
+
   const handleRun = useCallback(() => {
     if (!currentImplementation) return;
     benchmarkService.runBenchmark(store.setupCode, [currentImplementation]);
@@ -48,12 +64,14 @@ export const CodeView = ({ monacoTabs }: CodeViewProps) => {
       <ResizablePanel defaultSize={80}>
         <Monaco
           key={monacoTabs.activeTabId}
+          extraLibs={extraLibs}
           language={monacoTabs.activeTabId?.endsWith(".md") ? "markdown" : "typescript"}
           tabs={monacoTabs.tabs}
           value={getFileContent(monacoTabs.activeTabId ?? "")}
           onChange={handleFileContentChange}
           onChangeTab={monacoTabs.changeTab}
           onCloseTab={monacoTabs.closeTab}
+          onDTSChange={monacoTabs.activeTabId === "setup.ts" ? handleSetupDTSChange : undefined}
           onSetTabs={monacoTabs.setTabs}
         />
       </ResizablePanel>

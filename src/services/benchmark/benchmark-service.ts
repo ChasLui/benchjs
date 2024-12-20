@@ -40,7 +40,11 @@ export const benchmarkService = {
             try {
               const implementation = implementations.find((item) => item.id === run.implementationId);
               if (!implementation) throw new Error("Implementation not found");
-              const processedCode = await bundleBenchmarkCode(implementation.content, setupCode);
+              const processedCode = await bundleBenchmarkCode(
+                implementation.content,
+                setupCode,
+                implementation.filename,
+              );
               useBenchmarkStore.getState().updateRun(run.id, { processedCode });
               return {
                 runId: run.id,

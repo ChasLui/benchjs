@@ -41,6 +41,14 @@ export const data = generateTestData(1000);
 export const sum = (a: number, b: number) => a + b;
 `.trim();
 
+export const DEFAULT_SETUP_DTS = `
+declare global {
+  declare const data: number[];
+  declare const sum: (a: number, b: number) => number;
+}
+export {};
+`.trim();
+
 export const DEFAULT_IMPLEMENTATION = `
 // You have access to everything you exported in setup.ts
 // All you need to do is export a function named "run"
