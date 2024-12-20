@@ -3,6 +3,7 @@ import {
   AlertCircleIcon,
   ClockIcon,
   HashIcon,
+  Loader2Icon,
   PauseIcon,
   PlayIcon,
   RotateCcwIcon,
@@ -46,10 +47,11 @@ export const RunTab = ({
   const formattedIterations = totalIterations ? `${iterationsCompleted} / ${totalIterations}` : "N/A";
 
   return (
-    <div className="p-4 space-y-6">
+    <div className="p-4 space-y-4">
       <div className="flex items-center space-x-2">
         <Button className="px-2.5" disabled={isRunning} onClick={onRun}>
-          <PlayIcon className="mr-2 w-4 h-4" />
+          {isRunning && <Loader2Icon className="w-4 h-4 animate-spin" />}
+          {!isRunning && <PlayIcon className="w-4 h-4" />}
           {isRunning ? "Running..." : "Run Benchmark"}
         </Button>
         <Button disabled={!isRunning} variant="outline" onClick={onPause}>

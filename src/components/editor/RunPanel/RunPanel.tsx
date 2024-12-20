@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useLatestRunForImplementation } from "@/stores/benchmarkStore";
 import { Implementation } from "@/stores/persistentStore";
 import { RunTab } from "@/components/editor/RunPanel/tabs/RunTab";
@@ -13,19 +13,31 @@ interface RunPanelProps {
 
 export const RunPanel = ({ implementation, onRun }: RunPanelProps) => {
   const [activeTab, setActiveTab] = useState<RunPanelTab>("run");
+
   const latestRun = useLatestRunForImplementation(implementation.id);
+  const [isRunning, setIsRunning] = useState(latestRun?.status === "running");
 
   const handleSetTab = (tab: string) => {
     setActiveTab(tab as RunPanelTab);
+  };
+
+  const handleRun = async () => {
+    setIsRunning(true);
+    onRun?.();
   };
 
   // remove
   const handlePause = () => {};
   const handleReset = () => {};
 
-  const isRunning = latestRun?.status === "running";
   const progress = latestRun?.progress ?? 0;
   const error = latestRun?.error ?? null;
+
+  useEffect(() => {
+    if (!latestRun || ["completed", "failed"].includes(latestRun.status)) {
+      setIsRunning(false);
+    }
+  }, [latestRun]);
 
   return (
     <Tabs className="flex flex-col h-full" value={activeTab} onValueChange={handleSetTab}>
@@ -51,7 +63,7 @@ export const RunPanel = ({ implementation, onRun }: RunPanelProps) => {
             totalIterations={latestRun?.iterations ?? 0}
             onPause={handlePause}
             onReset={handleReset}
-            onRun={onRun}
+            onRun={handleRun}
           />
         </TabsContent>
 
