@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { useLatestRunForImplementation } from "@/stores/benchmarkStore";
-import { Implementation, usePersistentStore } from "@/stores/persistentStore";
-import { benchmarkService } from "@/services/benchmark/benchmark-service";
+import { Implementation } from "@/stores/persistentStore";
 import { RunTab } from "@/components/editor/RunPanel/tabs/RunTab";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
@@ -9,20 +8,17 @@ type RunPanelTab = "console" | "run";
 
 interface RunPanelProps {
   implementation: Implementation;
+  onRun?: () => void;
 }
 
-export const RunPanel = ({ implementation }: RunPanelProps) => {
+export const RunPanel = ({ implementation, onRun }: RunPanelProps) => {
   const [activeTab, setActiveTab] = useState<RunPanelTab>("run");
-  const persistentStore = usePersistentStore();
   const latestRun = useLatestRunForImplementation(implementation.id);
 
   const handleSetTab = (tab: string) => {
     setActiveTab(tab as RunPanelTab);
   };
 
-  const handleRun = async () => {
-    benchmarkService.runBenchmark(persistentStore.setupCode, [implementation]);
-  };
   // remove
   const handlePause = () => {};
   const handleReset = () => {};
@@ -55,7 +51,7 @@ export const RunPanel = ({ implementation }: RunPanelProps) => {
             totalIterations={latestRun?.iterations ?? 0}
             onPause={handlePause}
             onReset={handleReset}
-            onRun={handleRun}
+            onRun={onRun}
           />
         </TabsContent>
 

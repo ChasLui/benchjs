@@ -1,6 +1,7 @@
 import { useCallback, useMemo } from "react";
 import { usePersistentStore } from "@/stores/persistentStore";
 import { useMonacoTabs } from "@/hooks/useMonacoTabs";
+import { benchmarkService } from "@/services/benchmark/benchmark-service";
 import { Monaco } from "@/components/common/Monaco";
 import { RunPanel } from "@/components/editor/RunPanel";
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable";
@@ -37,8 +38,13 @@ export const CodeView = ({ monacoTabs }: CodeViewProps) => {
     [monacoTabs.activeTabId, store],
   );
 
+  const handleRun = useCallback(() => {
+    if (!currentImplementation) return;
+    benchmarkService.runBenchmark(store.setupCode, [currentImplementation]);
+  }, [currentImplementation, store]);
+
   return (
-    <ResizablePanelGroup className="h-full" direction="vertical">
+    <ResizablePanelGroup autoSaveId="code" className="h-full" direction="vertical">
       <ResizablePanel defaultSize={80}>
         <Monaco
           key={monacoTabs.activeTabId}
@@ -55,7 +61,7 @@ export const CodeView = ({ monacoTabs }: CodeViewProps) => {
         <>
           <ResizableHandle />
           <ResizablePanel defaultSize={35}>
-            <RunPanel implementation={currentImplementation} />
+            <RunPanel implementation={currentImplementation} onRun={handleRun} />
           </ResizablePanel>
         </>
       )}

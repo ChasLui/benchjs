@@ -23,9 +23,9 @@ interface RunTabProps {
   averageTime: number;
   peakMemory: number;
   error: string | null;
-  onRun: () => void;
-  onPause: () => void;
-  onReset: () => void;
+  onRun?: () => void;
+  onPause?: () => void;
+  onReset?: () => void;
 }
 
 export const RunTab = ({
