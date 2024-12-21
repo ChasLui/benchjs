@@ -99,10 +99,22 @@ export const benchmarkService = {
           switch (message.type) {
             case "warmupStart": {
               store.updateRun(run.id, { status: "warmup", warmupStartedAt: Date.now() });
+              store.addConsoleLog(run.id, {
+                level: "info",
+                message: "[benchmate] Warmup started",
+                timestamp: Date.now(),
+                count: 1,
+              });
               break;
             }
             case "warmupEnd": {
               store.updateRun(run.id, { status: "running", warmupEndedAt: Date.now() });
+              store.addConsoleLog(run.id, {
+                level: "info",
+                message: "[benchmate] Warmup ended",
+                timestamp: Date.now(),
+                count: 1,
+              });
               break;
             }
             case "progress": {
@@ -112,6 +124,15 @@ export const benchmarkService = {
                 iterations: message.iterationsCompleted,
                 totalIterations: message.totalIterations,
               });
+
+              // record chart data on every progress event
+              if (message.iterationsCompleted > 0) {
+                store.addChartPoint(run.id, {
+                  time: message.elapsedTime,
+                  timePerOp: message.elapsedTime / message.iterationsCompleted,
+                  iterations: message.iterationsCompleted,
+                });
+              }
               break;
             }
             case "result": {
@@ -119,6 +140,12 @@ export const benchmarkService = {
                 status: "completed",
                 progress: 100,
                 result: message.result[0],
+              });
+              store.addConsoleLog(run.id, {
+                level: "info",
+                message: "[benchmate] Benchmark completed successfully",
+                timestamp: Date.now(),
+                count: 1,
               });
               resolve(message.result);
               break;
@@ -128,15 +155,13 @@ export const benchmarkService = {
                 status: "failed",
                 error: message.error,
               });
-              reject(new Error(message.error));
-              break;
-            }
-            case "console": {
-              store.addConsoleLog(message.runId, {
-                level: message.level,
-                message: message.message,
+              store.addConsoleLog(run.id, {
+                level: "error",
+                message: `[benchmate] ${message.error}`,
                 timestamp: Date.now(),
+                count: 1,
               });
+              reject(new Error(message.error));
               break;
             }
             case "consoleBatch": {
@@ -144,11 +169,47 @@ export const benchmarkService = {
                 message.runId,
                 message.logs.map((log) => ({
                   level: log.level,
-                  message: log.message,
+                  message: `[worker] ${log.message}`,
                   timestamp: Date.now(),
                   count: log.count,
                 })),
               );
+              break;
+            }
+            case "taskStart": {
+              store.addConsoleLog(run.id, {
+                message: `[benchmate] Task started: ${message.runId}`,
+                level: "info",
+                timestamp: Date.now(),
+                count: 1,
+              });
+              break;
+            }
+            case "setup": {
+              store.addConsoleLog(run.id, {
+                message: "[benchmate] Task setup completed",
+                level: "info",
+                timestamp: Date.now(),
+                count: 1,
+              });
+              break;
+            }
+            case "teardown": {
+              store.addConsoleLog(run.id, {
+                message: "[benchmate] Teardown",
+                level: "info",
+                timestamp: Date.now(),
+                count: 1,
+              });
+              break;
+            }
+            case "taskComplete": {
+              store.addConsoleLog(run.id, {
+                message: `[benchmate] Task completed: ${message.runId}`,
+                level: "info",
+                timestamp: Date.now(),
+                count: 1,
+              });
               break;
             }
             default: {

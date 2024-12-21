@@ -54,7 +54,7 @@ export interface BenchmarkState {
   // console logs
   consoleLogs: Record<string, ConsoleLog[]>;
   addConsoleLog: (runId: string, log: ConsoleLog) => void;
-  bulkAddConsoleLogs: (runId: string, logs: ConsoleLog[]) => void;
+  bulkAddConsoleLogs: (runId: string, newLogs: ConsoleLog[]) => void;
 }
 
 export const useBenchmarkStore = create<BenchmarkState>()(
@@ -124,7 +124,7 @@ export const useBenchmarkStore = create<BenchmarkState>()(
         if (lastLog && lastLog.message === log.message && lastLog.level === log.level) {
           const updatedLog = {
             ...lastLog,
-            count: lastLog.count + 1,
+            count: lastLog.count + log.count,
             timestamp: log.timestamp,
           };
           return {
@@ -139,18 +139,30 @@ export const useBenchmarkStore = create<BenchmarkState>()(
         return {
           consoleLogs: {
             ...state.consoleLogs,
-            [runId]: [...currentLogs, { ...log, count: 1 }],
+            [runId]: [...currentLogs, { ...log, count: log.count }],
           },
         };
       });
     },
-    bulkAddConsoleLogs: (runId: string, logs: ConsoleLog[]) =>
+    bulkAddConsoleLogs: (runId: string, newLogs: ConsoleLog[]) =>
       set((state) => {
-        const runLogs = state.consoleLogs[runId] || [];
+        const currentLogs = state.consoleLogs[runId] || [];
+        const updatedLogs = [...currentLogs];
+
+        for (const log of newLogs) {
+          const lastLog = updatedLogs[updatedLogs.length - 1];
+          if (lastLog && lastLog.level === log.level && lastLog.message === log.message) {
+            lastLog.count += log.count;
+            lastLog.timestamp = log.timestamp;
+          } else {
+            updatedLogs.push({ ...log, count: log.count });
+          }
+        }
+
         return {
           consoleLogs: {
             ...state.consoleLogs,
-            [runId]: [...runLogs, ...logs],
+            [runId]: updatedLogs,
           },
         };
       }),

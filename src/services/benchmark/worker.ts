@@ -3,7 +3,7 @@ import { Bench, BenchmarkOptions } from "benchmate";
 import { serializeError } from "serialize-error";
 import { MainToWorkerMessage, WorkerToMainMessage } from "./types";
 
-const CONSOLE_FLUSH_INTERVAL_MS = 200;
+const CONSOLE_FLUSH_INTERVAL_MS = 500;
 
 const DEFAULT_OPTIONS: BenchmarkOptions = {
   iterations: "auto",
@@ -15,22 +15,27 @@ const DEFAULT_OPTIONS: BenchmarkOptions = {
 interface LogEntry {
   level: "debug" | "error" | "info" | "log" | "warn";
   message: string;
-  count?: number;
+  count: number;
 }
 
 // console logging batching
 let currentRunId: string | null = null;
+let lastFlushTimestamp = 0;
 const logsBuffer: LogEntry[] = [];
-const flushLogs = () => {
+const flushLogs = (force = false) => {
   if (logsBuffer.length === 0 || !currentRunId) return;
+  const now = Date.now();
+  if (!force && now - lastFlushTimestamp < CONSOLE_FLUSH_INTERVAL_MS) return;
+
   self.postMessage({
     type: "consoleBatch",
     runId: currentRunId,
     logs: [...logsBuffer],
   });
+
   logsBuffer.length = 0;
+  lastFlushTimestamp = now;
 };
-setInterval(flushLogs, CONSOLE_FLUSH_INTERVAL_MS);
 
 // patch console methods
 const patchConsole = (runId: string, prevent = false) => {
@@ -45,12 +50,12 @@ const patchConsole = (runId: string, prevent = false) => {
       const message = args.map((arg) => (typeof arg === "string" ? arg : JSON.stringify(arg))).join(" ");
 
       const lastLog = logsBuffer[logsBuffer.length - 1];
-
       if (lastLog && lastLog.level === level && lastLog.message === message) {
-        lastLog.count = (lastLog.count || 1) + 1;
+        lastLog.count = lastLog.count + 1;
       } else {
         logsBuffer.push({ level, message, count: 1 });
       }
+      flushLogs();
     };
   }
 };
@@ -100,6 +105,24 @@ const handleStartRuns = async (
       });
     });
 
+    runner.on("taskStart", ({ task: runId }) => {
+      postMessage({ type: "taskStart", runId });
+    });
+
+    runner.on("setup", ({ task: runId }) => {
+      postMessage({ type: "setup", runId });
+    });
+
+    runner.on("teardown", ({ task: runId }) => {
+      postMessage({ type: "teardown", runId });
+    });
+
+    runner.on("taskComplete", (result) => {
+      // final console flush for task
+      flushLogs(true);
+      postMessage({ type: "taskComplete", runId: result.name });
+    });
+
     // add tasks
     for (const run of runs) {
       // eslint-disable-next-line @typescript-eslint/no-implied-eval, no-new-func
@@ -113,6 +136,8 @@ const handleStartRuns = async (
 
     // run benchmark
     const results = await runner.run();
+    // final console flush
+    flushLogs(true);
 
     // send results
     for (const run of runs) {
@@ -123,7 +148,6 @@ const handleStartRuns = async (
         result: runResults,
       });
     }
-    flushLogs();
   } catch (error) {
     // send errors
     for (const run of runs) {

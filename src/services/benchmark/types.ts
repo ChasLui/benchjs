@@ -39,18 +39,14 @@ export type MainToWorkerMessage =
       options?: BenchmarkOptions;
     };
 
+export type ConsoleLevel = "debug" | "error" | "info" | "log" | "warn";
+
 export type WorkerToMainMessage =
-  | {
-      type: "console";
-      runId: string;
-      level: "debug" | "error" | "info" | "log" | "warn";
-      message: string;
-    }
   | {
       type: "consoleBatch";
       runId: string;
       logs: {
-        level: "debug" | "error" | "info" | "log" | "warn";
+        level: ConsoleLevel;
         message: string;
         count: number;
       }[];
@@ -59,11 +55,15 @@ export type WorkerToMainMessage =
   | {
       type: "progress";
       runId: string;
-      progress: number;
       elapsedTime: number;
       iterationsCompleted: number;
+      progress: number;
       totalIterations: number;
     }
   | { type: "result"; runId: string; result: BenchmarkResult[] }
+  | { type: "setup"; runId: string }
+  | { type: "taskComplete"; runId: string }
+  | { type: "taskStart"; runId: string }
+  | { type: "teardown"; runId: string }
   | { type: "warmupEnd"; runId: string }
   | { type: "warmupStart"; runId: string };
