@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { Route } from ".react-router/types/src/routes/editor/+types/root";
 import { nanoid } from "nanoid";
 import { usePersistentStore } from "@/stores/persistentStore";
 import { useMonacoTabs } from "@/hooks/useMonacoTabs";
@@ -11,6 +12,15 @@ import { TopBar } from "@/components/editor/TopBar";
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable";
 
 const MIN_SIDEBAR_WIDTH = 280;
+
+// eslint-disable-next-line no-empty-pattern
+export function meta({}: Route.MetaArgs) {
+  return [
+    //
+    { title: "Playground - BenchJS" },
+    { name: "description", content: "BenchJS - lean JavaScript benchmarking" },
+  ];
+}
 
 export default function EditorRoute() {
   const store = usePersistentStore();
