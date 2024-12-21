@@ -1,7 +1,7 @@
 import lz from "lz-string";
 import { create } from "zustand";
 import { createJSONStorage, devtools, persist, StateStorage } from "zustand/middleware";
-import { DEFAULT_SETUP_CODE, DEFAULT_SETUP_DTS, README_CONTENT } from "@/constants";
+import { DEFAULT_IMPLEMENTATION, DEFAULT_SETUP_CODE, DEFAULT_SETUP_DTS, README_CONTENT } from "@/constants";
 
 const { compressToEncodedURIComponent, decompressFromEncodedURIComponent } = lz;
 
@@ -61,7 +61,13 @@ export const usePersistentStore = create<PersistentState>()(
     persist(
       (set) => ({
         // implementations
-        implementations: [],
+        implementations: [
+          {
+            id: "example",
+            filename: "example.ts",
+            content: DEFAULT_IMPLEMENTATION,
+          },
+        ],
         addImplementation: (implementation) =>
           set((state) => ({
             implementations: [...state.implementations, implementation],

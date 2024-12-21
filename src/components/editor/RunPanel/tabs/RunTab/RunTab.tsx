@@ -22,14 +22,14 @@ export const RunTab = ({ isRunning, latestRun, onRun, onStop, chartData, clearCh
 
   const iterationsCompleted = latestRun?.iterations ?? 0;
   const totalIterations = latestRun?.totalIterations ?? 1000;
-  const iterationsLabel = `${formatCount(iterationsCompleted)}/${formatCount(totalIterations)}`;
+  const iterationsLabel = `${formatCount(iterationsCompleted)} / ${formatCount(totalIterations)}`;
 
   const elapsedTime = latestRun?.result?.stats.time.total ?? latestRun?.elapsedTime ?? 0;
   const averageTime = latestRun?.result?.stats.time.average ?? 0;
   const formattedAverageTime =
-    isRunning && iterationsCompleted > 0
-      ? formatTime(elapsedTime / iterationsCompleted)
-      : formatTime(averageTime);
+    isRunning && iterationsCompleted > 0 ?
+      formatTime(elapsedTime / iterationsCompleted)
+    : formatTime(averageTime);
 
   const stats = latestRun?.result?.stats;
   const peakMemory = 0;
@@ -86,16 +86,16 @@ export const RunTab = ({ isRunning, latestRun, onRun, onStop, chartData, clearCh
           </div>
           <div className="grid grid-cols-2 gap-2 text-sm">
             <div>
-              Elapsed Time: <span className="font-mono font-medium">{formatTime(elapsedTime)}</span>
+              Elapsed Time: <span className="font-medium">{formatTime(elapsedTime)}</span>
             </div>
             <div>
-              Samples: <span className="font-mono font-medium">{iterationsLabel}</span>
+              Samples: <span className="font-medium">{iterationsLabel}</span>
             </div>
             <div>
-              Average Time: <span className="font-mono font-medium">{formattedAverageTime}</span>
+              Average Time: <span className="font-medium">{formattedAverageTime}</span>
             </div>
             <div>
-              Peak Memory: <span className="font-mono font-medium">{peakMemory.toFixed(1)} MB</span>
+              Peak Memory: <span className="font-medium">{peakMemory.toFixed(1)} MB</span>
             </div>
           </div>
         </div>
@@ -107,27 +107,27 @@ export const RunTab = ({ isRunning, latestRun, onRun, onStop, chartData, clearCh
           <div className="grid grid-cols-3 gap-4">
             <div>
               <p className="text-sm text-muted-foreground">Samples</p>
-              <p className="font-mono font-semibold">{formatCount(stats.samples)}</p>
+              <p className="text-lg font-semibold">{formatCount(stats.samples)}</p>
             </div>
             <div>
               <p className="text-sm text-muted-foreground">Batches</p>
-              <p className="font-mono font-semibold">{formatCount(stats.batches)}</p>
+              <p className="text-lg font-semibold">{formatCount(stats.batches)}</p>
             </div>
             <div>
               <p className="text-sm text-muted-foreground">Total Time</p>
-              <p className="font-mono font-semibold">{formatTime(stats.time.total)}</p>
+              <p className="text-lg font-semibold">{formatTime(stats.time.total)}</p>
             </div>
             <div>
               <p className="text-sm text-muted-foreground">Average Time</p>
-              <p className="font-mono font-semibold">{formatTime(stats.time.average)}</p>
+              <p className="text-lg font-semibold">{formatTime(stats.time.average)}</p>
             </div>
             <div>
               <p className="text-sm text-muted-foreground">Min Time</p>
-              <p className="font-mono font-semibold">{formatTime(stats.time.min)}</p>
+              <p className="text-lg font-semibold">{formatTime(stats.time.min)}</p>
             </div>
             <div>
               <p className="text-sm text-muted-foreground">Max Time</p>
-              <p className="font-mono font-semibold">{formatTime(stats.time.max)}</p>
+              <p className="text-lg font-semibold">{formatTime(stats.time.max)}</p>
             </div>
           </div>
           <div className="pt-4 mt-4 border-t">
@@ -135,15 +135,15 @@ export const RunTab = ({ isRunning, latestRun, onRun, onStop, chartData, clearCh
             <div className="grid grid-cols-3 gap-4">
               <div>
                 <p className="text-sm text-muted-foreground">50th Percentile</p>
-                <p className="font-mono font-semibold">{formatTime(10)}</p>
+                <p className="text-lg font-semibold">{formatTime(10)}</p>
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">90th Percentile</p>
-                <p className="font-mono font-semibold">{formatTime(13)}</p>
+                <p className="text-lg font-semibold">{formatTime(13)}</p>
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">95th Percentile</p>
-                <p className="font-mono font-semibold">{formatTime(14)}</p>
+                <p className="text-lg font-semibold">{formatTime(14)}</p>
               </div>
             </div>
           </div>
@@ -152,21 +152,15 @@ export const RunTab = ({ isRunning, latestRun, onRun, onStop, chartData, clearCh
             <div className="grid grid-cols-3 gap-4">
               <div>
                 <p className="text-sm text-muted-foreground">Average ops/sec</p>
-                <p className="font-mono text-lg font-semibold">
-                  {formatCount(Math.round(stats.opsPerSecond.average))}
-                </p>
+                <p className="text-lg font-semibold">{formatCount(Math.round(stats.opsPerSecond.average))}</p>
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Min ops/sec</p>
-                <p className="font-mono text-lg font-semibold">
-                  {formatCount(Math.round(stats.opsPerSecond.min))}
-                </p>
+                <p className="text-lg font-semibold">{formatCount(Math.round(stats.opsPerSecond.min))}</p>
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Max ops/sec</p>
-                <p className="font-mono text-lg font-semibold">
-                  {formatCount(Math.round(stats.opsPerSecond.max))}
-                </p>
+                <p className="text-lg font-semibold">{formatCount(Math.round(stats.opsPerSecond.max))}</p>
               </div>
             </div>
           </div>
