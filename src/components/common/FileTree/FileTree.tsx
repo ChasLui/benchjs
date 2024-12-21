@@ -94,93 +94,96 @@ export const FileTree = ({ item, level = 0, onFileClick, activeFileId }: FileTre
         />
 
         {/* editing mode */}
-        {editingName ? (
-          <div className="flex-1">
-            <Input
-              className={cn(
-                "py-0 w-40 h-6 text-sm",
-                renameError && "border-red-500 focus-visible:ring-red-500",
-              )}
-              value={newName}
-              autoFocus
-              onBlur={() => {
-                if (!renameError) {
-                  setEditingName(false);
-                  setNewName(item.name);
-                }
-              }}
-              onChange={(e) => {
-                setNewName(e.target.value);
-                setRenameError(null);
-              }}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  handleRename(newName);
-                }
-                if (e.key === "Escape") {
-                  setEditingName(false);
-                  setNewName(item.name);
+        {
+          editingName ?
+            <div className="flex-1">
+              <Input
+                className={cn(
+                  "py-0 w-40 h-6 text-sm",
+                  renameError && "border-red-500 focus-visible:ring-red-500",
+                )}
+                value={newName}
+                autoFocus
+                onBlur={() => {
+                  if (!renameError) {
+                    setEditingName(false);
+                    setNewName(item.name);
+                  }
+                }}
+                onChange={(e) => {
+                  setNewName(e.target.value);
                   setRenameError(null);
-                }
-              }}
-            />
-          </div>
-        ) : (
-          // render mode
-          <div
-            className="flex justify-between items-center w-full"
-            role="button"
-            onClick={() => onFileClick?.(item)}
-          >
-            {/* name */}
-            <span className={cn("truncate flex-1 text-sm text-left", isActive && "text-blue-900")}>
-              {item.name}
-            </span>
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    handleRename(newName);
+                  }
+                  if (e.key === "Escape") {
+                    setEditingName(false);
+                    setNewName(item.name);
+                    setRenameError(null);
+                  }
+                }}
+              />
+            </div>
+            // render mode
+          : <div
+              className="flex justify-between items-center w-full"
+              role="button"
+              onClick={() => onFileClick?.(item)}
+            >
+              {/* name */}
+              <span className={cn("truncate flex-1 text-sm text-left", isActive && "text-blue-900")}>
+                {item.name}
+              </span>
 
-            {/* menu */}
-            {(item.actions?.onRename ?? item.actions?.onDelete) && (
-              <DropdownMenu open={isMenuOpen} onOpenChange={setIsMenuOpen}>
-                <DropdownMenuTrigger asChild onClick={stopPropagation}>
-                  <div className="invisible ml-2 group-hover:visible">
-                    <Button
-                      className="w-6 h-6"
-                      size="icon"
-                      title="More options"
-                      variant="ghost"
-                      onClick={stopPropagation}
-                    >
-                      <MoreVerticalIcon className="w-4 h-4" />
-                    </Button>
-                  </div>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  {item.actions?.onRename && (
-                    <DropdownMenuItem
-                      onClick={() => {
-                        setEditingName(true);
-                        setNewName(item.name);
-                        setIsMenuOpen(false);
-                      }}
-                    >
-                      Rename
-                    </DropdownMenuItem>
-                  )}
-                  {item.actions?.onDelete && (
-                    <DropdownMenuItem
-                      className="text-red-600 dark:text-red-400 focus:text-red-600 dark:focus:text-red-400"
-                      onClick={() => {
-                        item.actions?.onDelete?.();
-                        setIsMenuOpen(false);
-                      }}
-                    >
-                      Delete
-                    </DropdownMenuItem>
-                  )}
-                </DropdownMenuContent>
-              </DropdownMenu>
-            )}
-          </div>
-        )}
+              {/* menu */}
+              {(item.actions?.onRename ?? item.actions?.onDelete) && (
+                <DropdownMenu open={isMenuOpen} onOpenChange={setIsMenuOpen}>
+                  <DropdownMenuTrigger asChild onClick={stopPropagation}>
+                    <div className="invisible ml-2 group-hover:visible">
+                      <Button
+                        className="w-6 h-6"
+                        size="icon"
+                        title="More options"
+                        variant="ghost"
+                        onClick={stopPropagation}
+                      >
+                        <MoreVerticalIcon className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    {item.actions?.onRename && (
+                      <DropdownMenuItem
+                        onClick={(event) => {
+                          stopPropagation(event);
+                          setEditingName(true);
+                          setNewName(item.name);
+                          setIsMenuOpen(false);
+                        }}
+                      >
+                        Rename
+                      </DropdownMenuItem>
+                    )}
+                    {item.actions?.onDelete && (
+                      <DropdownMenuItem
+                        className="text-red-600 dark:text-red-400 focus:text-red-600 dark:focus:text-red-400"
+                        onClick={(event) => {
+                          stopPropagation(event);
+                          item.actions?.onDelete?.();
+                          setIsMenuOpen(false);
+                        }}
+                      >
+                        Delete
+                      </DropdownMenuItem>
+                    )}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              )}
+            </div>
+
+        }
       </div>
     );
   }
@@ -202,11 +205,9 @@ export const FileTree = ({ item, level = 0, onFileClick, activeFileId }: FileTre
         >
           {/* icon */}
           <ChevronRight className={cn("h-4 w-4 shrink-0 transition-transform", isOpen && "rotate-90")} />
-          {isOpen ? (
+          {isOpen ?
             <FolderOpen className="mr-2 w-4 h-4 text-blue-600 shrink-0" />
-          ) : (
-            <FolderClosed className="mr-2 w-4 h-4 text-blue-600 shrink-0" />
-          )}
+          : <FolderClosed className="mr-2 w-4 h-4 text-blue-600 shrink-0" />}
 
           {/* name */}
           <span className="flex-1 text-sm truncate">{item.name}</span>

@@ -8,6 +8,8 @@ interface UseMonacoTabsOptions {
   onTabClose?: (tabId: string) => void;
 }
 
+const defaultTabsIds = new Set(["README.md", "setup.ts"]);
+
 export const useMonacoTabs = (implementations: Implementation[], options?: UseMonacoTabsOptions) => {
   const [tabs, setTabs] = useState<MonacoTab[]>(() => {
     const initialTabs = [{ id: "README.md", name: "README.md", active: true }];
@@ -87,8 +89,6 @@ export const useMonacoTabs = (implementations: Implementation[], options?: UseMo
     [changeTab, tabs],
   );
 
-  const activeTabId = tabs.find((item) => item.active)?.id ?? null;
-
   useEffect(() => {
     const implementationNameMap = implementations.reduce(
       (acc, item) => {
@@ -97,13 +97,31 @@ export const useMonacoTabs = (implementations: Implementation[], options?: UseMo
       },
       {} as Record<string, string>,
     );
-    setTabs((prev) =>
-      prev.map((item) => ({
-        ...item,
-        name: implementationNameMap[item.id] ?? item.name,
-      })),
-    );
+
+    setTabs((prev) => {
+      // sync names
+      const newTabs = prev
+        .filter((tab) => defaultTabsIds.has(tab.id) || implementationNameMap[tab.id] !== undefined)
+        .map((item) => ({
+          ...item,
+          name: implementationNameMap[item.id] ?? item.name,
+        }));
+
+      // active tab fallback
+      if (!newTabs.some((tab) => tab.active)) {
+        const readmeTabIndex = newTabs.findIndex((tab) => tab.id === "README.md");
+        if (readmeTabIndex !== -1) {
+          newTabs[readmeTabIndex] = { ...newTabs[readmeTabIndex], active: true };
+        } else if (newTabs.length > 0) {
+          newTabs[newTabs.length - 1] = { ...newTabs[newTabs.length - 1], active: true };
+        }
+      }
+
+      return newTabs;
+    });
   }, [implementations]);
+
+  const activeTabId = tabs.find((item) => item.active)?.id ?? null;
 
   return {
     tabs,
