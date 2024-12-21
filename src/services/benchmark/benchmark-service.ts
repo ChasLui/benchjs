@@ -3,6 +3,7 @@ import { nanoid } from "nanoid";
 import { serializeError } from "serialize-error";
 import { useBenchmarkStore } from "@/stores/benchmarkStore";
 import { Implementation } from "@/stores/persistentStore";
+import { features } from "@/config";
 import { bundleBenchmarkCode } from "../code-processor/bundle-benchmark-code";
 import { BenchmarkResult, WorkerToMainMessage } from "./types";
 import BenchmarkWorker from "./worker?worker";
@@ -23,6 +24,22 @@ const stopBenchmark = (runId: string): void => {
   });
 };
 
+const getMemoryUsage = async () => {
+  if (
+    typeof performance !== "undefined" &&
+    "measureUserAgentSpecificMemory" in performance &&
+    self.crossOriginIsolated
+  ) {
+    try {
+      const memResult = await performance.measureUserAgentSpecificMemory();
+      return memResult.bytes;
+    } catch (error) {
+      console.error("Failed to measure memory:", error);
+    }
+  }
+  return 0;
+};
+
 export const benchmarkService = {
   async runBenchmark(
     setupCode: string,
@@ -34,9 +51,9 @@ export const benchmarkService = {
       try {
         const store = useBenchmarkStore.getState();
         const totalIterations =
-          "iterations" in runnerOptions && typeof runnerOptions.iterations === "number"
-            ? runnerOptions.iterations
-            : 0;
+          "iterations" in runnerOptions && typeof runnerOptions.iterations === "number" ?
+            runnerOptions.iterations
+          : 0;
 
         // create runs
         const runs = implementations.map((implementation) => ({
@@ -158,7 +175,16 @@ export const benchmarkService = {
                 timestamp: Date.now(),
                 count: 1,
               });
-              resolve(message.result);
+              // TODO: change for multiple results
+              if (features.memory.enabled) {
+                (async () => {
+                  const memoryUsage = await getMemoryUsage();
+                  store.updateRun(message.runId, {
+                    memoryUsage,
+                  });
+                  resolve(message.result);
+                })();
+              }
               break;
             }
             case "error": {
@@ -232,7 +258,7 @@ export const benchmarkService = {
 
         // start benchmark
         worker.postMessage({
-          type: "startRuns",
+          type: "start",
           runs: processedRuns.map((run) => ({
             runId: run.runId,
             processedCode: run.processedCode,

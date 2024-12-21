@@ -163,13 +163,10 @@ const handleStartRuns = async (
 self.addEventListener("message", async (event: MessageEvent<MainToWorkerMessage>) => {
   const message = event.data;
 
+  // eslint-disable-next-line sonarjs/no-small-switch
   switch (message.type) {
-    case "startRuns": {
+    case "start": {
       await handleStartRuns(message.runs, message.options);
-      break;
-    }
-    case "cancelRun": {
-      // TODO: implement
       break;
     }
     default: {

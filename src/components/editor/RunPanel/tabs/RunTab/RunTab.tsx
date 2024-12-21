@@ -2,6 +2,7 @@ import { useCallback } from "react";
 import { Loader2Icon, PlayIcon, SquareIcon, TriangleAlertIcon } from "lucide-react";
 import { CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import type { BenchmarkRun, ChartDataPoint } from "@/stores/benchmarkStore";
+import { features } from "@/config";
 import { formatBytes, formatCount, formatCountShort, formatTime } from "@/lib/formatters";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -32,7 +33,7 @@ export const RunTab = ({ isRunning, latestRun, onRun, onStop, chartData, clearCh
     : formatTime(averageTime);
 
   const stats = latestRun?.result?.stats;
-  const peakMemory = 0;
+  const memoryUsage = latestRun?.memoryUsage ?? 0;
 
   const handleRun = useCallback(() => {
     if (latestRun) clearChartData(latestRun.id);
@@ -94,9 +95,19 @@ export const RunTab = ({ isRunning, latestRun, onRun, onStop, chartData, clearCh
             <div>
               Average Time: <span className="font-medium">{formattedAverageTime}</span>
             </div>
-            <div>
-              Peak Memory: <span className="font-medium">{peakMemory.toFixed(1)} MB</span>
-            </div>
+            {features.memory.enabled && (
+              <div>
+                Used Memory: <span className="font-medium">{formatBytes(memoryUsage)}</span>
+              </div>
+            )}
+            {!features.memory.enabled && (
+              <div>
+                Average Ops/sec:{" "}
+                <span className="font-medium">
+                  {stats ? formatCount(Math.round(stats.opsPerSecond.average)) : "-"}
+                </span>
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -201,17 +212,6 @@ export const RunTab = ({ isRunning, latestRun, onRun, onStop, chartData, clearCh
                 stroke="#16a34a"
                 type="monotone"
                 yAxisId="right"
-              />
-              <YAxis orientation="right" tickFormatter={formatBytes} width={80} yAxisId="memory" />
-              <Line
-                dataKey="memoryUsed"
-                dot={false}
-                isAnimationActive={false}
-                name="Memory Used"
-                stroke="#d97706"
-                type="monotone"
-                yAxisId="memory"
-                connectNulls
               />
             </LineChart>
           </ResponsiveContainer>

@@ -21,23 +21,19 @@ export type BenchmarkResult = {
       min: number;
       margin: number;
     };
+    memory?: number;
   };
 };
 
 // worker messages
-export type MainToWorkerMessage =
-  | {
-      type: "cancelRun";
-      runId: string;
-    }
-  | {
-      type: "startRuns";
-      runs: {
-        runId: string;
-        processedCode: string;
-      }[];
-      options?: BenchmarkOptions;
-    };
+export type MainToWorkerMessage = {
+  type: "start";
+  runs: {
+    runId: string;
+    processedCode: string;
+  }[];
+  options?: BenchmarkOptions;
+};
 
 export type ConsoleLevel = "debug" | "error" | "info" | "log" | "warn";
 

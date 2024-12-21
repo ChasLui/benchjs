@@ -21,6 +21,7 @@ export interface BenchmarkRun {
   totalIterations: number;
   error: string | null;
   result: BenchmarkResult | null;
+  memoryUsage?: number;
 }
 
 export interface ChartDataPoint {
