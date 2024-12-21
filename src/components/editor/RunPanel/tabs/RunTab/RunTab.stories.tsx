@@ -40,7 +40,6 @@ export const Running: Story = {
       processedCode: "function test() {}",
     },
     chartData: mockChartData,
-    addChartPoint: () => {},
     clearChartData: () => {},
   },
 };
@@ -87,7 +86,6 @@ export const Completed: Story = {
       },
     },
     chartData: mockChartData,
-    addChartPoint: () => {},
     clearChartData: () => {},
   },
 };
@@ -113,7 +111,6 @@ export const Error: Story = {
       result: null,
     },
     chartData: mockChartData,
-    addChartPoint: () => {},
     clearChartData: () => {},
   },
 };

@@ -20,7 +20,7 @@ export const RunPanel = ({ implementation, onRun, onStop }: RunPanelProps) => {
   const chartData = useBenchmarkStore(
     useShallow((state) => (latestRun ? state.chartData[latestRun.id] || [] : [])),
   );
-  const { addChartPoint, clearChartData } = useBenchmarkStore(
+  const { clearChartData } = useBenchmarkStore(
     useShallow((state) => ({
       addChartPoint: state.addChartPoint,
       clearChartData: state.clearChartData,
@@ -60,7 +60,6 @@ export const RunPanel = ({ implementation, onRun, onStop }: RunPanelProps) => {
       <div className="overflow-auto flex-1">
         <TabsContent className="m-0" value="run">
           <RunTab
-            addChartPoint={addChartPoint}
             chartData={chartData}
             clearChartData={clearChartData}
             isRunning={isRunning}

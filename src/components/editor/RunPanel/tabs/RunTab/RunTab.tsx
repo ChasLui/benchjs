@@ -1,8 +1,8 @@
-import { useCallback, useEffect } from "react";
+import { useCallback } from "react";
 import { Loader2Icon, PlayIcon, SquareIcon, TriangleAlertIcon } from "lucide-react";
 import { CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import type { BenchmarkRun, ChartDataPoint } from "@/stores/benchmarkStore";
-import { formatCount, formatCountShort, formatTime } from "@/lib/formatters";
+import { formatBytes, formatCount, formatCountShort, formatTime } from "@/lib/formatters";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
@@ -13,19 +13,10 @@ interface RunTabProps {
   onRun?: () => void;
   onStop?: () => void;
   chartData: ChartDataPoint[];
-  addChartPoint: (runId: string, point: ChartDataPoint) => void;
   clearChartData: (runId: string) => void;
 }
 
-export const RunTab = ({
-  isRunning,
-  latestRun,
-  onRun,
-  onStop,
-  chartData,
-  addChartPoint,
-  clearChartData,
-}: RunTabProps) => {
+export const RunTab = ({ isRunning, latestRun, onRun, onStop, chartData, clearChartData }: RunTabProps) => {
   const progress = latestRun?.progress ?? 0;
   const error = latestRun?.error ?? null;
 
@@ -47,17 +38,6 @@ export const RunTab = ({
     if (latestRun) clearChartData(latestRun.id);
     onRun?.();
   }, [clearChartData, latestRun, onRun]);
-
-  useEffect(() => {
-    if (latestRun?.status !== "running") return;
-    if (latestRun.iterations === 0) return;
-    const timePerOp = latestRun.iterations > 0 ? latestRun.elapsedTime / latestRun.iterations : 0;
-    addChartPoint(latestRun.id, {
-      time: latestRun.elapsedTime,
-      timePerOp,
-      iterations: latestRun.iterations,
-    });
-  }, [addChartPoint, latestRun]);
 
   return (
     <div className="p-4 pb-6 space-y-4 max-w-[1024px]">
@@ -227,6 +207,17 @@ export const RunTab = ({
                 stroke="#16a34a"
                 type="monotone"
                 yAxisId="right"
+              />
+              <YAxis orientation="right" tickFormatter={formatBytes} width={80} yAxisId="memory" />
+              <Line
+                dataKey="memoryUsed"
+                dot={false}
+                isAnimationActive={false}
+                name="Memory Used"
+                stroke="#d97706"
+                type="monotone"
+                yAxisId="memory"
+                connectNulls
               />
             </LineChart>
           </ResponsiveContainer>
