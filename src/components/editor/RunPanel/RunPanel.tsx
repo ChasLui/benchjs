@@ -12,9 +12,10 @@ type RunPanelTab = "console" | "run";
 interface RunPanelProps {
   implementation: Implementation;
   onRun?: () => void;
+  onStop?: () => void;
 }
 
-export const RunPanel = ({ implementation, onRun }: RunPanelProps) => {
+export const RunPanel = ({ implementation, onRun, onStop }: RunPanelProps) => {
   const latestRun = useLatestRunForImplementation(implementation.id);
   const chartData = useBenchmarkStore(
     useShallow((state) => (latestRun ? state.chartData[latestRun.id] || [] : [])),
@@ -39,12 +40,8 @@ export const RunPanel = ({ implementation, onRun }: RunPanelProps) => {
     onRun?.();
   };
 
-  // remove
-  const handlePause = () => {};
-  const handleReset = () => {};
-
   useEffect(() => {
-    if (!latestRun || ["completed", "failed"].includes(latestRun.status)) {
+    if (!latestRun || ["cancelled", "completed", "failed"].includes(latestRun.status)) {
       setIsRunning(false);
     }
   }, [latestRun]);
@@ -68,9 +65,8 @@ export const RunPanel = ({ implementation, onRun }: RunPanelProps) => {
             clearChartData={clearChartData}
             isRunning={isRunning}
             latestRun={latestRun}
-            onPause={handlePause}
-            onReset={handleReset}
             onRun={handleRun}
+            onStop={onStop}
           />
         </TabsContent>
 

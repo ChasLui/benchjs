@@ -1,5 +1,5 @@
 import { useCallback, useEffect } from "react";
-import { Loader2Icon, PauseIcon, PlayIcon, RotateCcwIcon, TriangleAlertIcon } from "lucide-react";
+import { Loader2Icon, PlayIcon, SquareIcon, TriangleAlertIcon } from "lucide-react";
 import { CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import type { BenchmarkRun, ChartDataPoint } from "@/stores/benchmarkStore";
 import { formatCount, formatCountShort, formatTime } from "@/lib/formatters";
@@ -11,8 +11,7 @@ interface RunTabProps {
   isRunning: boolean;
   latestRun?: BenchmarkRun;
   onRun?: () => void;
-  onPause?: () => void;
-  onReset?: () => void;
+  onStop?: () => void;
   chartData: ChartDataPoint[];
   addChartPoint: (runId: string, point: ChartDataPoint) => void;
   clearChartData: (runId: string) => void;
@@ -22,8 +21,7 @@ export const RunTab = ({
   isRunning,
   latestRun,
   onRun,
-  onPause,
-  onReset,
+  onStop,
   chartData,
   addChartPoint,
   clearChartData,
@@ -65,7 +63,7 @@ export const RunTab = ({
     <div className="p-4 pb-6 space-y-4 max-w-[1024px]">
       {/* actions */}
       <div className="flex items-center space-x-2">
-        <Button className="px-2" disabled={isRunning} onClick={handleRun}>
+        <Button className="px-2.5" disabled={isRunning} onClick={handleRun}>
           {isRunning && <Loader2Icon className="w-4 h-4 animate-spin" />}
           {!isRunning && <PlayIcon className="w-4 h-4" />}
 
@@ -74,12 +72,12 @@ export const RunTab = ({
           {isRunning && latestRun?.status === "warmup" && "Warming up..."}
           {isRunning && latestRun?.status === "running" && "Running..."}
         </Button>
-        <Button disabled={!isRunning} variant="outline" onClick={onPause}>
-          <PauseIcon className="w-4 h-4" />
-        </Button>
-        <Button disabled={isRunning} variant="outline" onClick={onReset}>
-          <RotateCcwIcon className="w-4 h-4" />
-        </Button>
+        {isRunning && (
+          <Button className="px-2.5" variant="outline" onClick={onStop}>
+            <SquareIcon className="w-4 h-4" />
+            Stop
+          </Button>
+        )}
       </div>
 
       {/* error */}

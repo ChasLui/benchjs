@@ -9,6 +9,20 @@ import BenchmarkWorker from "./worker?worker";
 
 let worker: Worker | null = null;
 
+const stopBenchmark = (runId: string): void => {
+  const store = useBenchmarkStore.getState();
+  if (worker) {
+    worker.terminate();
+    worker = null;
+  }
+
+  store.updateRun(runId, {
+    status: "cancelled",
+    progress: 0,
+    error: null,
+  });
+};
+
 export const benchmarkService = {
   async runBenchmark(
     setupCode: string,
@@ -234,4 +248,5 @@ export const benchmarkService = {
       }
     });
   },
+  stopBenchmark,
 };

@@ -1,4 +1,5 @@
 import { useCallback, useMemo } from "react";
+import { useLatestRunForImplementation } from "@/stores/benchmarkStore";
 import { usePersistentStore } from "@/stores/persistentStore";
 import { useMonacoTabs } from "@/hooks/useMonacoTabs";
 import { benchmarkService } from "@/services/benchmark/benchmark-service";
@@ -16,6 +17,8 @@ export const CodeView = ({ monacoTabs }: CodeViewProps) => {
   const currentImplementation = useMemo(() => {
     return store.implementations.find((item) => item.id === monacoTabs.activeTabId);
   }, [monacoTabs.activeTabId, store]);
+
+  const latestRun = useLatestRunForImplementation(currentImplementation?.id ?? "");
 
   const getFileContent = (id: string) => {
     if (id === "README.md") return store.readmeContent;
@@ -59,6 +62,11 @@ export const CodeView = ({ monacoTabs }: CodeViewProps) => {
     benchmarkService.runBenchmark(store.setupCode, [currentImplementation]);
   }, [currentImplementation, store]);
 
+  const handleStop = useCallback(() => {
+    if (!latestRun) return;
+    benchmarkService.stopBenchmark(latestRun.id);
+  }, [latestRun]);
+
   return (
     <ResizablePanelGroup autoSaveId="code" className="h-full" direction="vertical">
       <ResizablePanel defaultSize={80}>
@@ -79,7 +87,7 @@ export const CodeView = ({ monacoTabs }: CodeViewProps) => {
         <>
           <ResizableHandle />
           <ResizablePanel defaultSize={35}>
-            <RunPanel implementation={currentImplementation} onRun={handleRun} />
+            <RunPanel implementation={currentImplementation} onRun={handleRun} onStop={handleStop} />
           </ResizablePanel>
         </>
       )}
