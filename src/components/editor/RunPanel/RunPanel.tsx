@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Loader2Icon } from "lucide-react";
 import { useShallow } from "zustand/shallow";
 import { useLatestRunForImplementation } from "@/stores/benchmarkStore";
 import { useBenchmarkStore } from "@/stores/benchmarkStore";
@@ -55,6 +56,12 @@ export const RunPanel = ({ implementation, onRun, onStop }: RunPanelProps) => {
         <TabsTrigger className="data-[state=active]:bg-white rounded-none border-r py-1.5" value="console">
           Console
         </TabsTrigger>
+        {isRunning && (
+          <div className="flex gap-1 items-center px-2 ml-auto">
+            <Loader2Icon className="w-4 h-4 animate-spin" />
+            <span className="text-xs text-muted-foreground">Running...</span>
+          </div>
+        )}
       </TabsList>
 
       <div className="overflow-auto flex-1">
