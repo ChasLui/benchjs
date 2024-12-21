@@ -78,7 +78,10 @@ export const CodeView = ({ monacoTabs }: CodeViewProps) => {
           value={getFileContent(monacoTabs.activeTabId ?? "")}
           onChange={handleFileContentChange}
           onChangeTab={monacoTabs.changeTab}
+          onCloseOtherTabs={monacoTabs.closeOtherTabs}
           onCloseTab={monacoTabs.closeTab}
+          onCloseTabsToLeft={monacoTabs.closeTabsToLeft}
+          onCloseTabsToRight={monacoTabs.closeTabsToRight}
           onDTSChange={monacoTabs.activeTabId === "setup.ts" ? handleSetupDTSChange : undefined}
           onSetTabs={monacoTabs.setTabs}
         />

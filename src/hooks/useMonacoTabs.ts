@@ -65,6 +65,38 @@ export const useMonacoTabs = (implementations: Implementation[], options?: UseMo
     [changeTab, options],
   );
 
+  const closeOtherTabs = useCallback((targetTab: MonacoTab) => {
+    setTabs((prev) => {
+      const keptTab = prev.find((tab) => tab.id === targetTab.id);
+      if (!keptTab) return prev;
+      return [{ ...keptTab, active: true }];
+    });
+  }, []);
+
+  const closeTabsToLeft = useCallback((targetTab: MonacoTab) => {
+    setTabs((prev) => {
+      const targetIndex = prev.findIndex((tab) => tab.id === targetTab.id);
+      if (targetIndex <= 0) return prev;
+
+      return prev.slice(targetIndex).map((tab) => ({
+        ...tab,
+        active: tab.id === targetTab.id,
+      }));
+    });
+  }, []);
+
+  const closeTabsToRight = useCallback((targetTab: MonacoTab) => {
+    setTabs((prev) => {
+      const targetIndex = prev.findIndex((tab) => tab.id === targetTab.id);
+      if (targetIndex === -1) return prev;
+
+      return prev.slice(0, targetIndex + 1).map((tab) => ({
+        ...tab,
+        active: tab.id === targetTab.id,
+      }));
+    });
+  }, []);
+
   const openTab = useCallback(
     (tab: MonacoTab | string) => {
       if (typeof tab === "string") {
@@ -128,6 +160,9 @@ export const useMonacoTabs = (implementations: Implementation[], options?: UseMo
     activeTabId,
     changeTab,
     closeTab,
+    closeOtherTabs,
+    closeTabsToLeft,
+    closeTabsToRight,
     openTab,
     setTabs,
   };

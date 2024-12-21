@@ -40,6 +40,9 @@ export interface MonacoProps {
   onDTSChange?: (value: string) => void;
   onChangeTab?: (tab: MonacoTab) => void;
   onCloseTab?: (tab: MonacoTab) => void;
+  onCloseOtherTabs?: (tab: MonacoTab) => void;
+  onCloseTabsToLeft?: (tab: MonacoTab) => void;
+  onCloseTabsToRight?: (tab: MonacoTab) => void;
   onSetTabs?: (tabs: MonacoTab[]) => void;
 }
 
@@ -49,6 +52,9 @@ export const Monaco = ({
   extraLibs,
   onChangeTab,
   onCloseTab,
+  onCloseOtherTabs,
+  onCloseTabsToLeft,
+  onCloseTabsToRight,
   onSetTabs,
   onDTSChange,
   ...props
@@ -184,7 +190,16 @@ export const Monaco = ({
             <SortableContext items={tabs.map((f) => f.name)} strategy={horizontalListSortingStrategy}>
               <div className="flex overflow-x-auto overflow-y-hidden custom-scrollbar">
                 {tabs.map((file) => (
-                  <MonacoTab key={file.id} tab={file} onClick={onChangeTab} onClose={onCloseTab} />
+                  <MonacoTab
+                    key={file.id}
+                    tab={file}
+                    tabs={tabs}
+                    onClick={onChangeTab}
+                    onClose={onCloseTab}
+                    onCloseLeft={onCloseTabsToLeft}
+                    onCloseOthers={onCloseOtherTabs}
+                    onCloseRight={onCloseTabsToRight}
+                  />
                 ))}
               </div>
             </SortableContext>

@@ -3,6 +3,7 @@ import { CSS } from "@dnd-kit/utilities";
 import { XIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { TabContextMenu } from "./TabContextMenu";
 
 export type MonacoTab = {
   id: string;
@@ -12,11 +13,23 @@ export type MonacoTab = {
 
 interface TabProps {
   tab: MonacoTab;
+  tabs: MonacoTab[];
   onClose?: (file: MonacoTab) => void;
+  onCloseOthers?: (file: MonacoTab) => void;
+  onCloseLeft?: (file: MonacoTab) => void;
+  onCloseRight?: (file: MonacoTab) => void;
   onClick?: (file: MonacoTab) => void;
 }
 
-export const MonacoTab = ({ tab, onClose, onClick }: TabProps) => {
+export const MonacoTab = ({
+  tab,
+  tabs,
+  onClose,
+  onCloseOthers,
+  onCloseLeft,
+  onCloseRight,
+  onClick,
+}: TabProps) => {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: tab.name,
     transition: {
@@ -33,34 +46,51 @@ export const MonacoTab = ({ tab, onClose, onClick }: TabProps) => {
     position: isDragging ? ("relative" as const) : undefined,
   };
 
-  return (
-    <div
-      ref={setNodeRef}
-      className={cn(
-        "group relative border-r border-zinc-200 cursor-pointer min-w-[120px]",
-        tab.active ? "bg-white" : "bg-zinc-50 hover:bg-zinc-100",
-        tab.active &&
-          "before:absolute before:top-0 before:left-0 before:right-0 before:h-[2px] before:bg-blue-600",
-      )}
-      style={style}
-      {...attributes}
-      {...listeners}
-      onClick={() => onClick?.(tab)}
-    >
-      <div className="flex gap-2 items-center py-2 px-3 h-[34px]">
-        <span className="text-sm truncate text-zinc-700">{tab.name}</span>
-        <Button
-          className={cn("p-0 w-4 h-4 opacity-0 group-hover:opacity-100 ml-auto", tab.active && "opacity-100")}
-          size="sm"
-          variant="ghost"
-          onClick={(e) => {
-            e.stopPropagation();
-            onClose?.(tab);
-          }}
-        >
-          <XIcon className="w-3 h-3" />
-        </Button>
-      </div>
+  const handleClick = () => {
+    onClick?.(tab);
+  };
+
+  const tabContent = (
+    <div className="flex gap-2 items-center py-2 px-3 h-[34px]">
+      <span className="text-sm truncate text-zinc-700">{tab.name}</span>
+      <Button
+        className={cn("p-0 w-4 h-4 opacity-0 group-hover:opacity-100 ml-auto", tab.active && "opacity-100")}
+        size="sm"
+        variant="ghost"
+        onClick={(e) => {
+          e.stopPropagation();
+          onClose?.(tab);
+        }}
+      >
+        <XIcon className="w-3 h-3" />
+      </Button>
     </div>
+  );
+
+  return (
+    <TabContextMenu
+      tab={tab}
+      tabs={tabs}
+      onClose={onClose ?? (() => {})}
+      onCloseLeft={onCloseLeft ?? (() => {})}
+      onCloseOthers={onCloseOthers ?? (() => {})}
+      onCloseRight={onCloseRight ?? (() => {})}
+    >
+      <div
+        ref={setNodeRef}
+        className={cn(
+          "group relative border-r border-zinc-200 cursor-pointer min-w-[120px]",
+          tab.active ? "bg-white" : "bg-zinc-50 hover:bg-zinc-100",
+          tab.active &&
+            "before:absolute before:top-0 before:left-0 before:right-0 before:h-[2px] before:bg-blue-600",
+        )}
+        style={style}
+        onClick={handleClick}
+        {...attributes}
+        {...listeners}
+      >
+        {tabContent}
+      </div>
+    </TabContextMenu>
   );
 };
