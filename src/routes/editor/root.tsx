@@ -58,9 +58,13 @@ export default function EditorRoute() {
           })),
           actions: {
             onCreate: () => {
-              const filename = `implementation-${store.implementations.length + 1}.ts`;
               const id = nanoid();
-              console.log("create", id, filename);
+              const existingFilenames = new Set(store.implementations.map((i) => i.filename));
+              let filename = `implementation-${store.implementations.length + 1}.ts`;
+              let i = store.implementations.length + 1;
+              while (existingFilenames.has(filename)) {
+                filename = `implementation-${i++}.ts`;
+              }
               store.addImplementation({
                 id,
                 filename,
