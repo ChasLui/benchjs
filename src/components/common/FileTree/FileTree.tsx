@@ -104,7 +104,6 @@ export const FileTree = ({ item, level = 0, onFileClick, activeFileId }: FileTre
                 )}
                 value={newName}
                 autoFocus
-                onFocus={(e) => e.target.select()}
                 onBlur={() => {
                   if (!renameError) {
                     setEditingName(false);
@@ -115,6 +114,7 @@ export const FileTree = ({ item, level = 0, onFileClick, activeFileId }: FileTre
                   setNewName(e.target.value);
                   setRenameError(null);
                 }}
+                onFocus={(e) => e.target.select()}
                 onKeyDown={(e) => {
                   if (e.key === "Enter") {
                     handleRename(newName);

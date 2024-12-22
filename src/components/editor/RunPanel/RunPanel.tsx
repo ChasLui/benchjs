@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Loader2Icon } from "lucide-react";
+import { FlameIcon, Loader2Icon, SquareChevronRightIcon } from "lucide-react";
 import { useShallow } from "zustand/shallow";
 import { useLatestRunForImplementation } from "@/stores/benchmarkStore";
 import { useBenchmarkStore } from "@/stores/benchmarkStore";
@@ -50,11 +50,19 @@ export const RunPanel = ({ implementation, onRun, onStop }: RunPanelProps) => {
   return (
     <Tabs className="flex flex-col h-full" value={activeTab} onValueChange={handleSetTab}>
       <TabsList className="justify-start p-0 w-full h-auto bg-gray-50 rounded-none border-b">
-        <TabsTrigger className="data-[state=active]:bg-white rounded-none border-r py-1.5" value="run">
-          Run
+        <TabsTrigger
+          className="data-[state=active]:bg-white px-4 rounded-none border-r py-1.5 flex items-center gap-1"
+          value="run"
+        >
+          <FlameIcon className="w-4 h-4" />
+          <span>Run</span>
         </TabsTrigger>
-        <TabsTrigger className="data-[state=active]:bg-white rounded-none border-r py-1.5" value="console">
-          Console
+        <TabsTrigger
+          className="data-[state=active]:bg-white px-4 rounded-none border-r py-1.5 flex items-center gap-1"
+          value="console"
+        >
+          <SquareChevronRightIcon className="w-4 h-4" />
+          <span>Console</span>
         </TabsTrigger>
         {isRunning && (
           <div className="flex gap-1 items-center px-2 ml-auto">

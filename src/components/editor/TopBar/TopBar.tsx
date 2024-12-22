@@ -1,10 +1,6 @@
+import { Share2 } from "lucide-react";
 import { Link } from "react-router";
-// import {
-//   DropdownMenu,
-//   DropdownMenuContent,
-//   DropdownMenuItem,
-//   DropdownMenuTrigger,
-// } from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
 
 interface TopBarProps {
   onShare?: () => void;
@@ -22,37 +18,13 @@ export const TopBar = ({ onShare }: TopBarProps) => {
             <span className="p-0.5 bg-yellow-400 text-zinc-800">JS</span>
           </h1>
         </Link>
-
-        {/* menu */}
-        {/*   <div className="flex items-center space-x-2"> */}
-        {/*     <DropdownMenu> */}
-        {/*       <DropdownMenuTrigger asChild> */}
-        {/*         <button className="py-1 px-2 text-sm rounded hover:bg-gray-200">File</button> */}
-        {/*       </DropdownMenuTrigger> */}
-        {/*       <DropdownMenuContent> */}
-        {/*         <DropdownMenuItem>Share</DropdownMenuItem> */}
-        {/*         <DropdownMenuItem>Export</DropdownMenuItem> */}
-        {/*       </DropdownMenuContent> */}
-        {/*     </DropdownMenu> */}
-        {/**/}
-        {/*     <DropdownMenu> */}
-        {/*       <DropdownMenuTrigger asChild> */}
-        {/*         <button className="py-1 px-2 text-sm rounded hover:bg-gray-200">About</button> */}
-        {/*       </DropdownMenuTrigger> */}
-        {/*       <DropdownMenuContent> */}
-        {/*         <DropdownMenuItem>Help</DropdownMenuItem> */}
-        {/*         <DropdownMenuItem>Check for updates</DropdownMenuItem> */}
-        {/*       </DropdownMenuContent> */}
-        {/*     </DropdownMenu> */}
-        {/*   </div> */}
-        {/* </div> */}
       </div>
-
       {/* right */}
-      <div className="flex items-center space-x-2">
-        <button className="py-1 px-2 text-sm rounded hover:bg-gray-200" onClick={onShare}>
+      <div className="flex gap-2 items-center">
+        <Button className="gap-2" variant="outline" onClick={onShare}>
+          <Share2 className="w-4 h-4" />
           Share
-        </button>
+        </Button>
       </div>
 
       {/* github */}

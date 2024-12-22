@@ -42,8 +42,9 @@ export const ConsoleTab = ({ logs }: ConsoleTabProps) => {
         {displayLogs.length === 0 && (
           <div className="text-sm italic text-muted-foreground">No console output yet.</div>
         )}
-        {displayLogs.map((log) => (
-          <div key={log.timestamp} className="flex gap-2 items-start">
+        {displayLogs.map((log, index) => (
+          // eslint-disable-next-line react/no-array-index-key
+          <div key={index} className="flex gap-2 items-start">
             <span className="whitespace-nowrap text-muted-foreground">
               {format(log.timestamp, "HH:mm:ss.SSS")}
             </span>

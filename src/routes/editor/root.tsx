@@ -1,17 +1,25 @@
 import { useMemo, useState } from "react";
 import { Route } from ".react-router/types/src/routes/editor/+types/root";
 import { nanoid } from "nanoid";
-import { usePersistentStore } from "@/stores/persistentStore";
+import { BenchmarkRun, useBenchmarkStore } from "@/stores/benchmarkStore";
+import { Implementation, usePersistentStore } from "@/stores/persistentStore";
 import { useMonacoTabs } from "@/hooks/useMonacoTabs";
 import { DEFAULT_IMPLEMENTATION } from "@/constants";
 import { cn } from "@/lib/utils";
 import { CodeView } from "@/routes/editor/views/code/index";
 import { FileTree, FileTreeItem } from "@/components/common/FileTree";
+import { ShareDialog } from "@/components/editor/ShareDialog";
 import { Sidebar, SidebarTab } from "@/components/editor/Sidebar";
 import { TopBar } from "@/components/editor/TopBar";
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable";
 
 const MIN_SIDEBAR_WIDTH = 280;
+
+type ShareDialogPayload = {
+  implementations: Implementation[];
+  runs: Record<string, BenchmarkRun[]>;
+  shareUrl: string;
+};
 
 // eslint-disable-next-line no-empty-pattern
 export function meta({}: Route.MetaArgs) {
@@ -31,6 +39,8 @@ export default function EditorRoute() {
     },
   });
   const [activeTab, setActiveTab] = useState<SidebarTab>("code");
+
+  const [shareData, setShareData] = useState<ShareDialogPayload | null>(null);
 
   const root = useMemo<FileTreeItem>(() => {
     return {
@@ -100,10 +110,19 @@ export default function EditorRoute() {
 
   const defaultSidebarSize = (MIN_SIDEBAR_WIDTH * 100) / window.innerWidth;
 
+  const handleShare = () => {
+    const shareUrl = `${window.location.origin}${window.location.pathname}${window.location.hash}`;
+    setShareData({
+      implementations: usePersistentStore.getState().implementations,
+      runs: useBenchmarkStore.getState().runs,
+      shareUrl,
+    });
+  };
+
   return (
     <div className="flex flex-col h-screen">
       {/* top bar */}
-      <TopBar />
+      <TopBar onShare={handleShare} />
 
       <ResizablePanelGroup className="flex flex-1 w-full" direction="horizontal">
         <ResizablePanel
@@ -142,6 +161,14 @@ export default function EditorRoute() {
           {activeTab === "settings" && <div className="p-4">settings</div>}
         </ResizablePanel>
       </ResizablePanelGroup>
+
+      <ShareDialog
+        implementations={shareData?.implementations ?? []}
+        open={Boolean(shareData)}
+        runs={shareData?.runs ?? {}}
+        shareUrl={shareData?.shareUrl ?? ""}
+        onOpenChange={(open) => setShareData(open ? shareData : null)}
+      />
     </div>
   );
 }
