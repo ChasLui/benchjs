@@ -82,7 +82,14 @@ export const ComparisonTable = ({
               <TableCell>{item.filename}</TableCell>
               <TableCell>{run?.status ?? "N/A"}</TableCell>
               <TableCell>{run?.elapsedTime?.toFixed(2) || "-"}</TableCell>
-              <TableCell>{run?.result?.stats.opsPerSecond.average.toFixed(2) || "-"}</TableCell>
+              <TableCell>
+                {/* eslint-disable-next-line no-nested-ternary */}
+                {run?.status === "completed" && run.result?.stats.opsPerSecond.average ?
+                  run.result.stats.opsPerSecond.average.toFixed(2)
+                : (run?.status === "running" && run.elapsedTime > 0 && run.completedIterations > 0 ?
+                  ((run.completedIterations / run.elapsedTime) * 1000).toFixed(2)
+                : "-")}
+              </TableCell>
               <TableCell className="text-right">
                 {run?.status === "running" || run?.status === "warmup" ?
                   <div className="flex gap-2 justify-end items-center">
@@ -105,4 +112,3 @@ export const ComparisonTable = ({
     </Table>
   );
 };
-
