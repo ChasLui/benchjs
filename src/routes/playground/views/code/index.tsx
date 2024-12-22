@@ -64,6 +64,34 @@ export const CodeView = ({ monacoTabs }: CodeViewProps) => {
               onDelete: () => {
                 store.removeImplementation(item.id);
               },
+              onDuplicate: () => {
+                const id = nanoid();
+                const existingFilenames = new Set(store.implementations.map((i) => i.filename));
+
+                // handle file extension
+                let baseName = item.filename;
+                let extension = "";
+                const lastDotIndex = item.filename.lastIndexOf(".");
+                if (lastDotIndex !== -1) {
+                  baseName = item.filename.slice(0, lastDotIndex);
+                  extension = item.filename.slice(lastDotIndex);
+                }
+
+                // find next available variant
+                let counter = 2;
+                let newName = `${baseName}-${counter}${extension}`;
+                while (existingFilenames.has(newName)) {
+                  counter++;
+                  newName = `${baseName}-${counter}${extension}`;
+                }
+
+                store.addImplementation({
+                  id,
+                  filename: newName,
+                  content: item.content,
+                });
+                monacoTabs.openTab({ id, name: newName, active: true });
+              },
             },
           })),
           actions: {

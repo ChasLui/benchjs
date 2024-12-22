@@ -20,6 +20,7 @@ export interface FileTreeItem {
     onRename?: (newName: string) => void;
     onCreate?: () => void;
     onDelete?: () => void;
+    onDuplicate?: () => void;
   };
 }
 
@@ -155,6 +156,17 @@ export const FileTree = ({ item, level = 0, onFileClick, activeFileId }: FileTre
                     </div>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
+                    {item.actions?.onDuplicate && (
+                      <DropdownMenuItem
+                        onClick={(event) => {
+                          stopPropagation(event);
+                          item.actions?.onDuplicate?.();
+                          setIsMenuOpen(false);
+                        }}
+                      >
+                        Duplicate
+                      </DropdownMenuItem>
+                    )}
                     {item.actions?.onRename && (
                       <DropdownMenuItem
                         onClick={(event) => {
