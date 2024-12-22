@@ -16,6 +16,10 @@ export const Default: Story = {
       name: "main.ts",
       active: false,
     },
+    tabs: [
+      { id: "main.ts", name: "main.ts", active: false },
+      { id: "setup.ts", name: "setup.ts", active: false },
+    ],
   },
 };
 
@@ -26,5 +30,9 @@ export const Active: Story = {
       name: "main.ts",
       active: true,
     },
+    tabs: [
+      { id: "main.ts", name: "main.ts", active: false },
+      { id: "setup.ts", name: "setup.ts", active: false },
+    ],
   },
 };

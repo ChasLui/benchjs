@@ -17,7 +17,7 @@ export interface BenchmarkRun {
   processedCode: string;
   progress: number;
   elapsedTime: number;
-  iterations: number;
+  completedIterations: number;
   totalIterations: number;
   error: string | null;
   result: BenchmarkResult | null;

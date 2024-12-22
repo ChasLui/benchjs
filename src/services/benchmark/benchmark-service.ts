@@ -68,7 +68,7 @@ export const benchmarkService = {
           processedCode: "",
           progress: 0,
           elapsedTime: 0,
-          iterations: 0,
+          completedIterations: 0,
           totalIterations,
           error: null,
           result: null,
@@ -149,7 +149,7 @@ export const benchmarkService = {
               store.updateRun(message.runId, {
                 progress: message.progress,
                 elapsedTime: message.elapsedTime,
-                iterations: message.iterationsCompleted,
+                completedIterations: message.iterationsCompleted,
                 totalIterations: message.totalIterations,
               });
 

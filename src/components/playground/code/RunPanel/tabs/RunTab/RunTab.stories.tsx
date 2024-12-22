@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { RunTab } from "./RunTab";
 
 const meta = {
-  title: "Playground/RunPanel/tabs/RunTab",
+  title: "Playground/Code/RunPanel/tabs/RunTab",
   component: RunTab,
 } satisfies Meta<typeof RunTab>;
 
@@ -30,7 +30,7 @@ export const Running: Story = {
       warmupEndedAt: now + 200,
       status: "running",
       progress: 45.5,
-      iterations: 455,
+      completedIterations: 455,
       totalIterations: 1000,
       elapsedTime: 4550,
       error: null,
@@ -55,7 +55,7 @@ export const Completed: Story = {
       warmupEndedAt: now + 200,
       status: "completed",
       progress: 100,
-      iterations: 1000,
+      completedIterations: 1000,
       totalIterations: 1000,
       elapsedTime: 10_000,
       error: null,
@@ -101,7 +101,7 @@ export const Error: Story = {
       warmupEndedAt: now + 200,
       status: "failed",
       progress: 45.5,
-      iterations: 455,
+      completedIterations: 455,
       totalIterations: 1000,
       elapsedTime: 4550,
       error: "Failed to execute benchmark: Stack overflow",

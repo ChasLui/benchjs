@@ -23,7 +23,7 @@ const createBenchmarkRun = (id: string, implId: string, filename: string, ops: n
   runEndedAt: Date.now(),
   elapsedTime: 1000,
   error: null,
-  iterations: 1000,
+  completedIterations: 1000,
   totalIterations: 1000,
   result: {
     name: filename,

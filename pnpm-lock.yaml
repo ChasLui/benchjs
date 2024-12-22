@@ -68,6 +68,9 @@ importers:
       '@radix-ui/react-tabs':
         specifier: ^1.1.2
         version: 1.1.2(@types/react-dom@19.0.2(@types/react@19.0.2))(@types/react@19.0.2)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
+      '@radix-ui/react-tooltip':
+        specifier: ^1.1.6
+        version: 1.1.6(@types/react-dom@19.0.2(@types/react@19.0.2))(@types/react@19.0.2)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       '@react-router/node':
         specifier: ^7.1.0
         version: 7.1.0(react-router@7.1.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(typescript@5.7.2)
@@ -89,6 +92,9 @@ importers:
       es-toolkit:
         specifier: ^1.30.1
         version: 1.30.1
+      framer-motion:
+        specifier: ^11.15.0
+        version: 11.15.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       html-to-image:
         specifier: ^1.11.11
         version: 1.11.11
@@ -208,8 +214,8 @@ importers:
         specifier: ^8.4.7
         version: 8.4.7(prettier@3.4.2)
       storybook-addon-remix-react-router:
-        specifier: ^3.0.2
-        version: 3.0.2(@storybook/blocks@8.4.7(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(storybook@8.4.7(prettier@3.4.2)))(@storybook/channels@8.4.7(storybook@8.4.7(prettier@3.4.2)))(@storybook/components@8.4.7(storybook@8.4.7(prettier@3.4.2)))(@storybook/core-events@8.4.7(storybook@8.4.7(prettier@3.4.2)))(@storybook/manager-api@8.4.7(storybook@8.4.7(prettier@3.4.2)))(@storybook/preview-api@8.4.7(storybook@8.4.7(prettier@3.4.2)))(@storybook/theming@8.4.7(storybook@8.4.7(prettier@3.4.2)))(react-dom@19.0.0(react@19.0.0))(react-router-dom@7.0.2(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react@19.0.0)
+        specifier: 3.0.3--canary.85.7d8672d.0
+        version: 3.0.3--canary.85.7d8672d.0(@storybook/blocks@8.4.7(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(storybook@8.4.7(prettier@3.4.2)))(@storybook/channels@8.4.7(storybook@8.4.7(prettier@3.4.2)))(@storybook/components@8.4.7(storybook@8.4.7(prettier@3.4.2)))(@storybook/core-events@8.4.7(storybook@8.4.7(prettier@3.4.2)))(@storybook/manager-api@8.4.7(storybook@8.4.7(prettier@3.4.2)))(@storybook/preview-api@8.4.7(storybook@8.4.7(prettier@3.4.2)))(@storybook/theming@8.4.7(storybook@8.4.7(prettier@3.4.2)))(react-dom@19.0.0(react@19.0.0))(react-router@7.1.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react@19.0.0)
       tailwindcss:
         specifier: ^3.4.17
         version: 3.4.17
@@ -907,6 +913,15 @@ packages:
       '@types/react': '>=16'
       react: '>=16'
 
+  '@mjackson/form-data-parser@0.4.0':
+    resolution: {integrity: sha512-zDQ0sFfXqn2bJaZ/ypXfGUe0lUjCzXybBHYEoyWaO2w1dZ0nOM9nRER8tVVv3a8ZIgO/zF6p2I5ieWJAUOzt3w==}
+
+  '@mjackson/headers@0.5.1':
+    resolution: {integrity: sha512-sJpFgecPT/zJvwk3GRNVWNs8EkwaJoUNU2D0VMlp+gDJs6cuSTm1q/aCZi3ZtuV6CgDEQ4l2ZjUG3A9JrQlbNA==}
+
+  '@mjackson/multipart-parser@0.6.3':
+    resolution: {integrity: sha512-aQhySnM6OpAYMMG+m7LEygYye99hB1md/Cy1AFE0yD5hfNW+X4JDu7oNVY9Gc6IW8PZ45D1rjFLDIUdnkXmwrA==}
+
   '@mjackson/node-fetch-server@0.2.0':
     resolution: {integrity: sha512-EMlH1e30yzmTpGLQjlFmaDAjyOeZhng1/XCd7DExR8PNAnG/G1tyruZxEoUe11ClnwGhGrtsdnyyUx1frSzjng==}
 
@@ -1262,6 +1277,19 @@ packages:
 
   '@radix-ui/react-tabs@1.1.2':
     resolution: {integrity: sha512-9u/tQJMcC2aGq7KXpGivMm1mgq7oRJKXphDwdypPd/j21j/2znamPU8WkXgnhUaTrSFNIt8XhOyCAupg8/GbwQ==}
+    peerDependencies:
+      '@types/react': '*'
+      '@types/react-dom': '*'
+      react: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
+      react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
+      '@types/react-dom':
+        optional: true
+
+  '@radix-ui/react-tooltip@1.1.6':
+    resolution: {integrity: sha512-TLB5D8QLExS1uDn7+wH/bjEmRurNMTzNrtq7IjaS4kjion9NtzsTGkvR5+i7yc9q01Pi2KMM2cN3f8UG4IvvXA==}
     peerDependencies:
       '@types/react': '*'
       '@types/react-dom': '*'
@@ -2351,6 +2379,20 @@ packages:
   fraction.js@4.3.7:
     resolution: {integrity: sha512-ZsDfxO51wGAXREY55a7la9LScWpwv9RxIrYABrlvOFBlH/ShPnrtsXeuUIfXKKOVicNxQ+o8JTbJvjS4M89yew==}
 
+  framer-motion@11.15.0:
+    resolution: {integrity: sha512-MLk8IvZntxOMg7lDBLw2qgTHHv664bYoYmnFTmE0Gm/FW67aOJk0WM3ctMcG+Xhcv+vh5uyyXwxvxhSeJzSe+w==}
+    peerDependencies:
+      '@emotion/is-prop-valid': '*'
+      react: ^18.0.0 || ^19.0.0
+      react-dom: ^18.0.0 || ^19.0.0
+    peerDependenciesMeta:
+      '@emotion/is-prop-valid':
+        optional: true
+      react:
+        optional: true
+      react-dom:
+        optional: true
+
   fresh@0.5.2:
     resolution: {integrity: sha512-zJ2mQYM18rEFOudeV4GShTGIQ7RbzA7ozbU9I/XBpm7kqgMywgmylMwXHxZJmkVoYkna9d2pVXVXPdYTP9ej8Q==}
     engines: {node: '>= 0.6'}
@@ -2704,6 +2746,12 @@ packages:
     resolution: {integrity: sha512-AbegBVI4sh6El+1gNwvD5YIck7nSA36weD7xvIxG4in80j/UoK8AEGaWnnz8v1GxonMCltmlNs5ZKbGvl9b1XQ==}
     engines: {node: '>= 0.8.0'}
 
+  motion-dom@11.14.3:
+    resolution: {integrity: sha512-lW+D2wBy5vxLJi6aCP0xyxTxlTfiu+b+zcpVbGVFUxotwThqhdpPRSmX8xztAgtZMPMeU0WGVn/k1w4I+TbPqA==}
+
+  motion-utils@11.14.3:
+    resolution: {integrity: sha512-Xg+8xnqIJTpr0L/cidfTTBFkvRw26ZtGGuIhA94J9PQ2p4mEa06Xx7QVYZH0BP+EpMSaDlu+q0I0mmvwADPsaQ==}
+
   mrmime@2.0.0:
     resolution: {integrity: sha512-eu38+hdgojoyq63s+yTpN4XMBdt5l8HhMhc4VKLO9KM5caLIBvUm4thi7fFaxyTmCKeNnXZ5pAlBwCUnhA09uw==}
     engines: {node: '>=10'}
@@ -3045,23 +3093,6 @@ packages:
       react: ^16.14.0 || ^17.0.0 || ^18.0.0 || ^19.0.0 || ^19.0.0-rc
       react-dom: ^16.14.0 || ^17.0.0 || ^18.0.0 || ^19.0.0 || ^19.0.0-rc
 
-  react-router-dom@7.0.2:
-    resolution: {integrity: sha512-VJOQ+CDWFDGaWdrG12Nl+d7yHtLaurNgAQZVgaIy7/Xd+DojgmYLosFfZdGz1wpxmjJIAkAMVTKWcvkx1oggAw==}
-    engines: {node: '>=20.0.0'}
-    peerDependencies:
-      react: '>=18'
-      react-dom: '>=18'
-
-  react-router@7.0.2:
-    resolution: {integrity: sha512-m5AcPfTRUcjwmhBzOJGEl6Y7+Crqyju0+TgTQxoS4SO+BkWbhOrcfZNq6wSWdl2BBbJbsAoBUb8ZacOFT+/JlA==}
-    engines: {node: '>=20.0.0'}
-    peerDependencies:
-      react: '>=18'
-      react-dom: '>=18'
-    peerDependenciesMeta:
-      react-dom:
-        optional: true
-
   react-router@7.1.0:
     resolution: {integrity: sha512-VcFhWqkNIcojDRYaUO8qV0Jib52s9ULpCp3nkBbmrvtoCVFRp6tmk3tJ2w9BZauVctA1YRnJlFYDn9iJRuCpGA==}
     engines: {node: '>=20.0.0'}
@@ -3278,8 +3309,8 @@ packages:
   std-env@3.8.0:
     resolution: {integrity: sha512-Bc3YwwCB+OzldMxOXJIIvC6cPRWr/LxOp48CdQTOkPyk/t4JWWJbrilwBd7RJzKV8QW7tJkcgAmeuLLJugl5/w==}
 
-  storybook-addon-remix-react-router@3.0.2:
-    resolution: {integrity: sha512-vSr7o+TYs2JY4m/elZm28UnLKeK/GQwmNnXWEnR5FyZ8Kcz1S1fPhsdWUjMEU9wRiAMjJwmEHiTtpjbZ4/b0mg==}
+  storybook-addon-remix-react-router@3.0.3--canary.85.7d8672d.0:
+    resolution: {integrity: sha512-0X8B9NDGlzXKJ0XJyzufrGERpaa2rd8RRJkQMb2Trcd/SePks6UiL0Who1xBRZ24FKWB6IgxKcXB0xdhVcJb3Q==}
     peerDependencies:
       '@storybook/blocks': ^8.0.0
       '@storybook/channels': ^8.0.0
@@ -3288,9 +3319,9 @@ packages:
       '@storybook/manager-api': ^8.0.0
       '@storybook/preview-api': ^8.0.0
       '@storybook/theming': ^8.0.0
-      react: ^16.8.0 || ^17.0.0 || ^18.0.0
-      react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0
-      react-router-dom: ^6.4.0 || ^7.0.0
+      react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
+      react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
+      react-router: ^7.0.2
     peerDependenciesMeta:
       react:
         optional: true
@@ -4260,6 +4291,16 @@ snapshots:
       '@types/react': 19.0.2
       react: 18.3.1
 
+  '@mjackson/form-data-parser@0.4.0':
+    dependencies:
+      '@mjackson/multipart-parser': 0.6.3
+
+  '@mjackson/headers@0.5.1': {}
+
+  '@mjackson/multipart-parser@0.6.3':
+    dependencies:
+      '@mjackson/headers': 0.5.1
+
   '@mjackson/node-fetch-server@0.2.0': {}
 
   '@monaco-editor/loader@1.4.0(monaco-editor@0.52.2)':
@@ -4654,6 +4695,26 @@ snapshots:
       '@radix-ui/react-primitive': 2.0.1(@types/react-dom@19.0.2(@types/react@19.0.2))(@types/react@19.0.2)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       '@radix-ui/react-roving-focus': 1.1.1(@types/react-dom@19.0.2(@types/react@19.0.2))(@types/react@19.0.2)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       '@radix-ui/react-use-controllable-state': 1.1.0(@types/react@19.0.2)(react@19.0.0)
+      react: 19.0.0
+      react-dom: 19.0.0(react@19.0.0)
+    optionalDependencies:
+      '@types/react': 19.0.2
+      '@types/react-dom': 19.0.2(@types/react@19.0.2)
+
+  '@radix-ui/react-tooltip@1.1.6(@types/react-dom@19.0.2(@types/react@19.0.2))(@types/react@19.0.2)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)':
+    dependencies:
+      '@radix-ui/primitive': 1.1.1
+      '@radix-ui/react-compose-refs': 1.1.1(@types/react@19.0.2)(react@19.0.0)
+      '@radix-ui/react-context': 1.1.1(@types/react@19.0.2)(react@19.0.0)
+      '@radix-ui/react-dismissable-layer': 1.1.3(@types/react-dom@19.0.2(@types/react@19.0.2))(@types/react@19.0.2)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
+      '@radix-ui/react-id': 1.1.0(@types/react@19.0.2)(react@19.0.0)
+      '@radix-ui/react-popper': 1.2.1(@types/react-dom@19.0.2(@types/react@19.0.2))(@types/react@19.0.2)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
+      '@radix-ui/react-portal': 1.1.3(@types/react-dom@19.0.2(@types/react@19.0.2))(@types/react@19.0.2)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
+      '@radix-ui/react-presence': 1.1.2(@types/react-dom@19.0.2(@types/react@19.0.2))(@types/react@19.0.2)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
+      '@radix-ui/react-primitive': 2.0.1(@types/react-dom@19.0.2(@types/react@19.0.2))(@types/react@19.0.2)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
+      '@radix-ui/react-slot': 1.1.1(@types/react@19.0.2)(react@19.0.0)
+      '@radix-ui/react-use-controllable-state': 1.1.0(@types/react@19.0.2)(react@19.0.0)
+      '@radix-ui/react-visually-hidden': 1.1.1(@types/react-dom@19.0.2(@types/react@19.0.2))(@types/react@19.0.2)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       react: 19.0.0
       react-dom: 19.0.0(react@19.0.0)
     optionalDependencies:
@@ -5901,6 +5962,15 @@ snapshots:
 
   fraction.js@4.3.7: {}
 
+  framer-motion@11.15.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0):
+    dependencies:
+      motion-dom: 11.14.3
+      motion-utils: 11.14.3
+      tslib: 2.8.1
+    optionalDependencies:
+      react: 19.0.0
+      react-dom: 19.0.0(react@19.0.0)
+
   fresh@0.5.2: {}
 
   fs-extra@10.1.0:
@@ -6212,6 +6282,10 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
+  motion-dom@11.14.3: {}
+
+  motion-utils@11.14.3: {}
+
   mrmime@2.0.0: {}
 
   ms@2.0.0: {}
@@ -6511,22 +6585,6 @@ snapshots:
       react: 19.0.0
       react-dom: 19.0.0(react@19.0.0)
 
-  react-router-dom@7.0.2(react-dom@19.0.0(react@19.0.0))(react@19.0.0):
-    dependencies:
-      react: 19.0.0
-      react-dom: 19.0.0(react@19.0.0)
-      react-router: 7.0.2(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
-
-  react-router@7.0.2(react-dom@19.0.0(react@19.0.0))(react@19.0.0):
-    dependencies:
-      '@types/cookie': 0.6.0
-      cookie: 1.0.2
-      react: 19.0.0
-      set-cookie-parser: 2.7.1
-      turbo-stream: 2.4.0
-    optionalDependencies:
-      react-dom: 19.0.0(react@19.0.0)
-
   react-router@7.1.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0):
     dependencies:
       '@types/cookie': 0.6.0
@@ -6796,8 +6854,9 @@ snapshots:
 
   std-env@3.8.0: {}
 
-  storybook-addon-remix-react-router@3.0.2(@storybook/blocks@8.4.7(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(storybook@8.4.7(prettier@3.4.2)))(@storybook/channels@8.4.7(storybook@8.4.7(prettier@3.4.2)))(@storybook/components@8.4.7(storybook@8.4.7(prettier@3.4.2)))(@storybook/core-events@8.4.7(storybook@8.4.7(prettier@3.4.2)))(@storybook/manager-api@8.4.7(storybook@8.4.7(prettier@3.4.2)))(@storybook/preview-api@8.4.7(storybook@8.4.7(prettier@3.4.2)))(@storybook/theming@8.4.7(storybook@8.4.7(prettier@3.4.2)))(react-dom@19.0.0(react@19.0.0))(react-router-dom@7.0.2(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react@19.0.0):
+  storybook-addon-remix-react-router@3.0.3--canary.85.7d8672d.0(@storybook/blocks@8.4.7(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(storybook@8.4.7(prettier@3.4.2)))(@storybook/channels@8.4.7(storybook@8.4.7(prettier@3.4.2)))(@storybook/components@8.4.7(storybook@8.4.7(prettier@3.4.2)))(@storybook/core-events@8.4.7(storybook@8.4.7(prettier@3.4.2)))(@storybook/manager-api@8.4.7(storybook@8.4.7(prettier@3.4.2)))(@storybook/preview-api@8.4.7(storybook@8.4.7(prettier@3.4.2)))(@storybook/theming@8.4.7(storybook@8.4.7(prettier@3.4.2)))(react-dom@19.0.0(react@19.0.0))(react-router@7.1.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react@19.0.0):
     dependencies:
+      '@mjackson/form-data-parser': 0.4.0
       '@storybook/blocks': 8.4.7(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(storybook@8.4.7(prettier@3.4.2))
       '@storybook/channels': 8.4.7(storybook@8.4.7(prettier@3.4.2))
       '@storybook/components': 8.4.7(storybook@8.4.7(prettier@3.4.2))
@@ -6807,7 +6866,7 @@ snapshots:
       '@storybook/theming': 8.4.7(storybook@8.4.7(prettier@3.4.2))
       compare-versions: 6.1.1
       react-inspector: 6.0.2(react@19.0.0)
-      react-router-dom: 7.0.2(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
+      react-router: 7.1.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
     optionalDependencies:
       react: 19.0.0
       react-dom: 19.0.0(react@19.0.0)

@@ -21,7 +21,7 @@ export const RunTab = ({ isRunning, latestRun, onRun, onStop, chartData, clearCh
   const progress = latestRun?.progress ?? 0;
   const error = latestRun?.error ?? null;
 
-  const iterationsCompleted = latestRun?.iterations ?? 0;
+  const iterationsCompleted = latestRun?.completedIterations ?? 0;
   const totalIterations = latestRun?.totalIterations ?? 1000;
   const iterationsLabel = `${formatCount(iterationsCompleted)} / ${formatCount(totalIterations)}`;
 

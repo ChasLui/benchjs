@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { ConsoleTab } from "./ConsoleTab";
 
 const meta = {
-  title: "Playground/RunPanel/ConsoleTab",
+  title: "Playground/Code/RunPanel/tabs/ConsoleTab",
   component: ConsoleTab,
 } satisfies Meta<typeof ConsoleTab>;
 

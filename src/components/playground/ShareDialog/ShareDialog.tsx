@@ -45,10 +45,10 @@ export function ShareDialog({ implementations, runs, shareUrl, open, onOpenChang
         const opsPerSecond = latestRun?.result?.stats?.opsPerSecond?.average || 0;
         return {
           name: item.filename,
-          opsPerSecond: Number(opsPerSecond.toFixed(2)),
+          "Operations/sec": Number(opsPerSecond.toFixed(2)),
         };
       })
-      .filter((d) => d.opsPerSecond > 0);
+      .filter((d) => d["Operations/sec"] > 0);
   }, [implementations, runs, selectedImplementations]);
 
   const tableData = useMemo(() => {
@@ -187,7 +187,7 @@ export function ShareDialog({ implementations, runs, shareUrl, open, onOpenChang
                             }}
                             formatter={(value: number) => `${value.toLocaleString()} ops/sec`}
                           />
-                          <Bar dataKey="opsPerSecond" fill="#8884d8" radius={[4, 4, 0, 0]} />
+                          <Bar dataKey="Operations/sec" fill="#8884d8" radius={[4, 4, 0, 0]} />
                         </BarChart>
                       </ResponsiveContainer>
 

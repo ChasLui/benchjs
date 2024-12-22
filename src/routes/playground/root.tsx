@@ -4,6 +4,7 @@ import { BenchmarkRun, useBenchmarkStore } from "@/stores/benchmarkStore";
 import { Implementation, usePersistentStore } from "@/stores/persistentStore";
 import { useMonacoTabs } from "@/hooks/useMonacoTabs";
 import { CodeView } from "@/routes/playground/views/code/index";
+import { CompareView } from "@/routes/playground/views/compare";
 import { ShareDialog } from "@/components/playground/ShareDialog";
 import { Sidebar, SidebarTab } from "@/components/playground/Sidebar";
 import { TopBar } from "@/components/playground/TopBar";
@@ -52,6 +53,7 @@ export default function EditorRoute() {
       <div className="flex flex-1 w-full">
         <Sidebar activeTab={activeTab} onTabChange={setActiveTab} />
         {activeTab === "code" && <CodeView monacoTabs={monacoTabs} />}
+        {activeTab === "compare" && <CompareView />}
         {activeTab === "environment" && <div className="p-4">environment</div>}
         {activeTab === "settings" && <div className="p-4">settings</div>}
       </div>

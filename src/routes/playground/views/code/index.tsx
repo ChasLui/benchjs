@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils";
 import { benchmarkService } from "@/services/benchmark/benchmark-service";
 import { FileTree, FileTreeItem } from "@/components/common/FileTree";
 import { Monaco } from "@/components/common/Monaco";
-import { RunPanel } from "@/components/playground/RunPanel";
+import { RunPanel } from "@/components/playground/code/RunPanel";
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable";
 
 const MIN_SIDEBAR_WIDTH = 280;
