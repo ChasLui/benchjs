@@ -4,7 +4,7 @@ import { useShallow } from "zustand/shallow";
 import { useLatestRunForImplementation } from "@/stores/benchmarkStore";
 import { useBenchmarkStore } from "@/stores/benchmarkStore";
 import { Implementation } from "@/stores/persistentStore";
-import { RunTab } from "@/components/editor/RunPanel/tabs/RunTab";
+import { RunTab } from "@/components/playground/RunPanel/tabs/RunTab";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ConsoleTab } from "./tabs/ConsoleTab";
 

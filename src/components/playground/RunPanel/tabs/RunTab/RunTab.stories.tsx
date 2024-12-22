@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { RunTab } from "./RunTab";
 
 const meta = {
-  title: "editor/RunPanel/tabs/RunTab",
+  title: "Playground/RunPanel/tabs/RunTab",
   component: RunTab,
 } satisfies Meta<typeof RunTab>;
 

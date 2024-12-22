@@ -3,7 +3,7 @@ import { Search } from "lucide-react";
 import { SidebarIcon } from "./SidebarIcon";
 
 const meta: Meta<typeof SidebarIcon> = {
-  title: "Editor/SidebarIcon",
+  title: "Playground/SidebarIcon",
   component: SidebarIcon,
   render: (args) => (
     <div className="flex gap-2 items-center">

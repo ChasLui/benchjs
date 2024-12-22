@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { RunPanel } from "./RunPanel";
 
 const meta: Meta<typeof RunPanel> = {
-  title: "Editor/RunPanel",
+  title: "Playground/RunPanel",
   component: RunPanel,
 };
 export default meta;

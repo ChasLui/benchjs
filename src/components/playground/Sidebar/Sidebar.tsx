@@ -1,7 +1,7 @@
 import { ChartPieIcon, FolderTreeIcon, PackageIcon, SettingsIcon } from "lucide-react";
-import { SidebarIcon } from "@/components/editor/SidebarIcon";
+import { SidebarIcon } from "@/components/playground/SidebarIcon";
 
-export type SidebarTab = "code" | "environment" | "results" | "settings";
+export type SidebarTab = "code" | "environment" | "compare" | "settings";
 
 export interface SidebarProps {
   children?: React.ReactNode;
@@ -21,9 +21,9 @@ export const Sidebar = ({ children, activeTab, onTabChange }: SidebarProps) => {
         />
         <SidebarIcon
           icon={ChartPieIcon}
-          isActive={activeTab === "results"}
-          tooltip="Results"
-          onClick={() => onTabChange("results")}
+          isActive={activeTab === "compare"}
+          tooltip="Compare"
+          onClick={() => onTabChange("compare")}
         />
         <SidebarIcon
           icon={PackageIcon}

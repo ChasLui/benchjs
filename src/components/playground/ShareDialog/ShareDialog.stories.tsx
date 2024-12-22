@@ -55,7 +55,7 @@ const mockRuns = {
 };
 
 const meta = {
-  title: "Editor/ShareDialog",
+  title: "Playground/ShareDialog",
   component: ShareDialog,
   parameters: {
     layout: "centered",
