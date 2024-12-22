@@ -50,12 +50,14 @@ export default function EditorRoute() {
       {/* top bar */}
       <TopBar onShare={handleShare} />
 
-      <div className="flex flex-1 w-full">
+      <div className="flex overflow-hidden flex-1 w-full">
         <Sidebar activeTab={activeTab} onTabChange={setActiveTab} />
-        {activeTab === "code" && <CodeView monacoTabs={monacoTabs} />}
-        {activeTab === "compare" && <CompareView />}
-        {activeTab === "environment" && <div className="p-4">environment</div>}
-        {activeTab === "settings" && <div className="p-4">settings</div>}
+        <div className="flex overflow-auto flex-col flex-1 h-full">
+          {activeTab === "code" && <CodeView monacoTabs={monacoTabs} />}
+          {activeTab === "compare" && <CompareView />}
+          {activeTab === "environment" && <div className="p-4">environment</div>}
+          {activeTab === "settings" && <div className="p-4">settings</div>}
+        </div>
       </div>
 
       <ShareDialog

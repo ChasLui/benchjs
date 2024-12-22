@@ -61,7 +61,7 @@ export const ComparisonChart = ({ implementations, runs }: ComparisonChartProps)
                 borderRadius: "4px",
                 fontSize: "12px",
               }}
-              formatter={(value: number) => `${value.toLocaleString()} ops/sec`}
+              formatter={(value: number) => `${Math.round(value).toLocaleString()} ops/sec`}
             />
             <Legend />
             <Bar dataKey="Operations/sec" fill="#2563eb" radius={[4, 4, 0, 0]} />
