@@ -252,29 +252,31 @@ export function ShareDialog({ implementations, runs, shareUrl, open, onOpenChang
               </div>
 
               {/* actions */}
-              <div className="flex gap-4 justify-between pt-2">
-                <div className="flex gap-2 items-center">
-                  <Button className="gap-2" variant="outline" onClick={handleCopyImage}>
-                    <Copy className="w-4 h-4" />
-                    {copiedImage ? "Copied!" : "Copy Image"}
-                  </Button>
-                  <Button className="gap-2" variant="outline" onClick={handleDownloadImage}>
-                    <Download className="w-4 h-4" />
-                    Download Image
-                  </Button>
+              {chartData.length > 0 && (
+                <div className="flex gap-4 justify-between pt-2">
+                  <div className="flex gap-2 items-center">
+                    <Button className="gap-2" variant="outline" onClick={handleCopyImage}>
+                      <Copy className="w-4 h-4" />
+                      {copiedImage ? "Copied!" : "Copy Image"}
+                    </Button>
+                    <Button className="gap-2" variant="outline" onClick={handleDownloadImage}>
+                      <Download className="w-4 h-4" />
+                      Download Image
+                    </Button>
+                  </div>
+                  {/* <div className="flex gap-4 items-center"> */}
+                  {/*   <Button variant="outline" >  */}
+                  {/*     <SiX className="w-4 h-4" /> */}
+                  {/*   </Button> */}
+                  {/*   <Button variant="outline"> */}
+                  {/*     <SiFacebook className="w-4 h-4" /> */}
+                  {/*   </Button> */}
+                  {/*   <Button variant="outline"> */}
+                  {/*     <SiLinkedin className="w-4 h-4" /> */}
+                  {/*   </Button> */}
+                  {/* </div> */}
                 </div>
-                {/* <div className="flex gap-4 items-center"> */}
-                {/*   <Button variant="outline" >  */}
-                {/*     <SiX className="w-4 h-4" /> */}
-                {/*   </Button> */}
-                {/*   <Button variant="outline"> */}
-                {/*     <SiFacebook className="w-4 h-4" /> */}
-                {/*   </Button> */}
-                {/*   <Button variant="outline"> */}
-                {/*     <SiLinkedin className="w-4 h-4" /> */}
-                {/*   </Button> */}
-                {/* </div> */}
-              </div>
+              )}
             </div>
           )}
         </div>
