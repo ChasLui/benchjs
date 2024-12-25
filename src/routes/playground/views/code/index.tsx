@@ -2,6 +2,7 @@ import { useCallback, useMemo } from "react";
 import { nanoid } from "nanoid";
 import { useLatestRunForImplementation } from "@/stores/benchmarkStore";
 import { usePersistentStore } from "@/stores/persistentStore";
+import { useUserStore } from "@/stores/userStore";
 import { useMonacoTabs } from "@/hooks/useMonacoTabs";
 import { DEFAULT_IMPLEMENTATION } from "@/constants";
 import { cn } from "@/lib/utils";
@@ -10,7 +11,6 @@ import { FileTree, FileTreeItem } from "@/components/common/FileTree";
 import { Monaco } from "@/components/common/Monaco";
 import { RunPanel } from "@/components/playground/code/RunPanel";
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable";
-
 const MIN_SIDEBAR_WIDTH = 280;
 
 interface CodeViewProps {
@@ -19,6 +19,7 @@ interface CodeViewProps {
 
 export const CodeView = ({ monacoTabs }: CodeViewProps) => {
   const store = usePersistentStore();
+  const { codeViewLayout: layout, setCodeViewLayout } = useUserStore();
 
   const currentImplementation = useMemo(() => {
     return store.implementations.find((item) => item.id === monacoTabs.activeTabId);
@@ -194,8 +195,8 @@ export const CodeView = ({ monacoTabs }: CodeViewProps) => {
 
       <ResizablePanel>
         {/* right */}
-        <ResizablePanelGroup autoSaveId="code" className="h-full" direction="vertical">
-          <ResizablePanel defaultSize={80}>
+        <ResizablePanelGroup autoSaveId="code" className="h-full" direction={layout}>
+          <ResizablePanel defaultSize={layout === "vertical" ? 80 : 50}>
             <Monaco
               key={monacoTabs.activeTabId}
               extraLibs={extraLibs}
@@ -215,8 +216,14 @@ export const CodeView = ({ monacoTabs }: CodeViewProps) => {
           {currentImplementation && (
             <>
               <ResizableHandle />
-              <ResizablePanel defaultSize={35}>
-                <RunPanel implementation={currentImplementation} onRun={handleRun} onStop={handleStop} />
+              <ResizablePanel defaultSize={layout === "vertical" ? 35 : 50}>
+                <RunPanel
+                  implementation={currentImplementation}
+                  layout={layout}
+                  onLayoutChange={() => setCodeViewLayout(layout === "vertical" ? "horizontal" : "vertical")}
+                  onRun={handleRun}
+                  onStop={handleStop}
+                />
               </ResizablePanel>
             </>
           )}

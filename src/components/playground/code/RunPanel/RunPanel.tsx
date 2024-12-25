@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
-import { FlameIcon, Loader2Icon, SquareChevronRightIcon } from "lucide-react";
+import { Columns2Icon, FlameIcon, Loader2Icon, Rows2Icon, SquareChevronRightIcon } from "lucide-react";
 import { useShallow } from "zustand/shallow";
 import { useLatestRunForImplementation } from "@/stores/benchmarkStore";
 import { useBenchmarkStore } from "@/stores/benchmarkStore";
 import { Implementation } from "@/stores/persistentStore";
 import { RunTab } from "@/components/playground/code/RunPanel/tabs/RunTab";
+import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ConsoleTab } from "./tabs/ConsoleTab";
 
@@ -14,9 +15,11 @@ interface RunPanelProps {
   implementation: Implementation;
   onRun?: () => void;
   onStop?: () => void;
+  layout?: "horizontal" | "vertical";
+  onLayoutChange?: () => void;
 }
 
-export const RunPanel = ({ implementation, onRun, onStop }: RunPanelProps) => {
+export const RunPanel = ({ implementation, onRun, onStop, layout, onLayoutChange }: RunPanelProps) => {
   const latestRun = useLatestRunForImplementation(implementation.id);
   const chartData = useBenchmarkStore(
     useShallow((state) => (latestRun ? state.chartData[latestRun.id] || [] : [])),
@@ -64,12 +67,21 @@ export const RunPanel = ({ implementation, onRun, onStop }: RunPanelProps) => {
           <SquareChevronRightIcon className="w-4 h-4" />
           <span>Console</span>
         </TabsTrigger>
-        {isRunning && (
-          <div className="flex gap-1 items-center px-2 ml-auto">
-            <Loader2Icon className="w-4 h-4 animate-spin" />
-            <span className="text-xs text-muted-foreground">Running...</span>
-          </div>
-        )}
+        <div className="flex gap-2 items-center px-2 ml-auto">
+          {isRunning && (
+            <>
+              <Loader2Icon className="w-4 h-4 animate-spin" />
+              <span className="text-xs text-muted-foreground">Running...</span>
+            </>
+          )}
+          {onLayoutChange && (
+            <Button className="w-8 h-8" size="icon" variant="ghost" onClick={onLayoutChange}>
+              {layout === "horizontal" ?
+                <Columns2Icon className="w-4 h-4" />
+              : <Rows2Icon className="w-4 h-4" />}
+            </Button>
+          )}
+        </div>
       </TabsList>
 
       <div className="overflow-auto flex-1">
