@@ -16,7 +16,7 @@ export interface SidebarProps {
 
 export const Sidebar = ({ children, activeTab, onTabChange }: SidebarProps) => {
   return (
-    <div className="flex h-full bg-zinc-100">
+    <div className="flex h-full">
       <div className="flex flex-col flex-1 border-r">
         <SidebarIcon
           icon={FolderTreeIcon}

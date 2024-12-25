@@ -45,7 +45,6 @@ const stopPropagation = (e: React.MouseEvent) => {
 
 export const FileTree = ({ item, level = 0, onFileClick, activeFileId }: FileTreeProps) => {
   const [isOpen, setIsOpen] = useState(true);
-  const [isHovered, setIsHovered] = useState(false);
   const [editingName, setEditingName] = useState(false);
   const [newName, setNewName] = useState(item.name);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -75,9 +74,8 @@ export const FileTree = ({ item, level = 0, onFileClick, activeFileId }: FileTre
     return (
       <div
         className={cn(
-          "flex items-center h-7 px-2 hover:bg-[#e8e8e8] cursor-pointer rounded group relative",
-          isHovered && "bg-[#e8e8e8]",
-          isActive && "bg-blue-100",
+          "flex items-center h-7 px-2 hover:bg-[#e8e8e8] dark:hover:bg-zinc-500/20 cursor-pointer rounded group relative",
+          isActive && "bg-blue-100 dark:bg-zinc-300/20 dark:hover:bg-zinc-300/20",
         )}
         style={{ paddingLeft: `${(level + 1) * 12}px` }}
         onContextMenu={(e) => {
@@ -86,12 +84,13 @@ export const FileTree = ({ item, level = 0, onFileClick, activeFileId }: FileTre
             setIsMenuOpen(true);
           }
         }}
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
       >
         {/* icon */}
         <FileIcon
-          className={cn("mr-2 ml-1 w-4 h-4 shrink-0", isActive ? "text-blue-700" : "text-blue-600")}
+          className={cn(
+            "mr-2 ml-1 w-4 h-4 shrink-0",
+            isActive ? "text-blue-700 dark:text-yellow-500" : "text-blue-600 dark:text-yellow-500",
+          )}
         />
 
         {/* editing mode */}
@@ -135,7 +134,12 @@ export const FileTree = ({ item, level = 0, onFileClick, activeFileId }: FileTre
               onClick={() => onFileClick?.(item)}
             >
               {/* name */}
-              <span className={cn("truncate flex-1 text-sm text-left", isActive && "text-blue-900")}>
+              <span
+                className={cn(
+                  "truncate flex-1 text-sm text-left dark:text-zinc-300",
+                  isActive && "text-blue-900 dark:text-yellow-500",
+                )}
+              >
                 {item.name}
               </span>
 
@@ -208,19 +212,16 @@ export const FileTree = ({ item, level = 0, onFileClick, activeFileId }: FileTre
       {!isRoot && (
         <div
           className={cn(
-            "flex items-center h-7 px-2 hover:bg-[#e8e8e8] cursor-pointer rounded group relative",
-            isHovered && "bg-[#e8e8e8]",
+            "flex items-center h-7 px-2 hover:bg-[#e8e8e8] cursor-pointer rounded group relative dark:hover:bg-zinc-500/20",
           )}
           style={{ paddingLeft: `${level * 12}px` }}
           onClick={() => setIsOpen(!isOpen)}
-          onMouseEnter={() => setIsHovered(true)}
-          onMouseLeave={() => setIsHovered(false)}
         >
           {/* icon */}
           <ChevronRight className={cn("h-4 w-4 shrink-0 transition-transform", isOpen && "rotate-90")} />
           {isOpen ?
-            <FolderOpen className="mr-2 w-4 h-4 text-blue-600 shrink-0" />
-          : <FolderClosed className="mr-2 w-4 h-4 text-blue-600 shrink-0" />}
+            <FolderOpen className="mr-2 w-4 h-4 text-blue-600 dark:text-yellow-500 shrink-0" />
+          : <FolderClosed className="mr-2 w-4 h-4 text-blue-600 dark:text-yellow-500 shrink-0" />}
 
           {/* name */}
           <span className="flex-1 text-sm truncate">{item.name}</span>
@@ -245,7 +246,9 @@ export const FileTree = ({ item, level = 0, onFileClick, activeFileId }: FileTre
 
           {/* count badge */}
           {item.count && (
-            <span className="px-1 ml-2 text-xs text-blue-800 bg-blue-100 rounded-sm">{item.count}</span>
+            <span className="px-1 ml-2 text-xs text-blue-800 bg-blue-100 rounded-sm dark:text-yellow-500 dark:bg-zinc-300">
+              {item.count}
+            </span>
           )}
         </div>
       )}

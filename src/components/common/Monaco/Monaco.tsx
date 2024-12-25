@@ -1,11 +1,19 @@
-import { useCallback, useRef } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { DndContext, DragEndEvent, PointerSensor, useSensor, useSensors } from "@dnd-kit/core";
 import { restrictToHorizontalAxis } from "@dnd-kit/modifiers";
 import { horizontalListSortingStrategy, SortableContext } from "@dnd-kit/sortable";
-import Editor, { loader, Monaco as MonacoEditor } from "@monaco-editor/react";
+import Editor, { loader, Monaco as MonacoEditor, useMonaco } from "@monaco-editor/react";
 import type { editor } from "monaco-editor";
 import { cn } from "@/lib/utils";
 import { MonacoTab } from "@/components/common/MonacoTab";
+
+import vsDark from "./themes/vs-dark.json";
+import vsLight from "./themes/vs-light.json";
+
+export const themes = {
+  light: vsLight,
+  dark: vsDark,
+};
 
 const zodFiles = import.meta.glob("../../../../node_modules/zod/**/*.d.ts", {
   eager: true,
@@ -36,6 +44,7 @@ export interface MonacoProps {
   className?: string;
   tabs?: MonacoTab[];
   extraLibs?: { content: string; filename?: string }[];
+  theme?: keyof typeof themes;
   onChange?: (value: string | undefined) => void;
   onDTSChange?: (value: string) => void;
   onChangeTab?: (tab: MonacoTab) => void;
@@ -50,6 +59,7 @@ export const Monaco = ({
   className,
   tabs,
   extraLibs,
+  theme = "light",
   onChangeTab,
   onCloseTab,
   onCloseOtherTabs,
@@ -59,6 +69,7 @@ export const Monaco = ({
   onDTSChange,
   ...props
 }: MonacoProps) => {
+  const monacoHelper = useMonaco();
   const activeFile = tabs?.find((f) => f.active);
 
   const onDTSChangeRef = useRef<((value: string) => void) | null>(null);
@@ -152,14 +163,7 @@ export const Monaco = ({
       }
     });
 
-    monaco.editor.defineTheme("custom", {
-      base: "vs",
-      inherit: true,
-      rules: [],
-      colors: {},
-    });
     editor.updateOptions({
-      theme: "custom",
       automaticLayout: true,
       fixedOverflowWidgets: true,
       glyphMargin: false,
@@ -181,12 +185,23 @@ export const Monaco = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // sync theme
+  useEffect(() => {
+    if (!monacoHelper) return;
+    const themeConfig = themes[(theme as keyof typeof themes) ?? "vsLight"] as Parameters<
+      typeof monacoHelper.editor.defineTheme
+    >[1];
+    console.log(themeConfig);
+    monacoHelper.editor.defineTheme("theme", themeConfig);
+    monacoHelper.editor.setTheme("theme");
+  }, [monacoHelper, theme]);
+
   return (
     <div className="flex flex-col h-full">
       {/* tabs */}
       {tabs && tabs.length > 0 && (
         <DndContext modifiers={[restrictToHorizontalAxis]} sensors={sensors} onDragEnd={handleDragEnd}>
-          <div className="flex border-b bg-zinc-50">
+          <div className="flex border-b bg-zinc-50 dark:bg-zinc-900">
             <SortableContext items={tabs.map((f) => f.name)} strategy={horizontalListSortingStrategy}>
               <div className="flex overflow-x-auto overflow-y-hidden custom-scrollbar">
                 {tabs.map((file) => (

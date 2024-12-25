@@ -19,7 +19,7 @@ interface CodeViewProps {
 
 export const CodeView = ({ monacoTabs }: CodeViewProps) => {
   const store = usePersistentStore();
-  const { codeViewLayout: layout, setCodeViewLayout } = useUserStore();
+  const { codeViewLayout: layout, setCodeViewLayout, theme } = useUserStore();
 
   const currentImplementation = useMemo(() => {
     return store.implementations.find((item) => item.id === monacoTabs.activeTabId);
@@ -174,8 +174,8 @@ export const CodeView = ({ monacoTabs }: CodeViewProps) => {
     <ResizablePanelGroup className="flex flex-1 w-full" direction="horizontal">
       <ResizablePanel className={cn("flex")} defaultSize={defaultSidebarSize}>
         {/* left - file tree */}
-        <div className="flex-1 px-1 h-full text-sm bg-zinc-100">
-          <div className="p-2 font-medium uppercase">Code</div>
+        <div className="flex-1 px-1 h-full text-sm bg-zinc-100 dark:bg-zinc-900">
+          <div className="p-2 font-medium uppercase text-zinc-900 dark:text-zinc-100">Code</div>
           <FileTree
             activeFileId={monacoTabs.activeTabId || undefined}
             item={root}
@@ -196,12 +196,13 @@ export const CodeView = ({ monacoTabs }: CodeViewProps) => {
       <ResizablePanel>
         {/* right */}
         <ResizablePanelGroup autoSaveId="code" className="h-full" direction={layout}>
-          <ResizablePanel defaultSize={layout === "vertical" ? 80 : 50}>
+          <ResizablePanel defaultSize={layout === "vertical" ? 80 : 70}>
             <Monaco
               key={monacoTabs.activeTabId}
               extraLibs={extraLibs}
               language={monacoTabs.activeTabId?.endsWith(".md") ? "markdown" : "typescript"}
               tabs={monacoTabs.tabs}
+              theme={theme}
               value={getFileContent(monacoTabs.activeTabId ?? "")}
               onChange={handleFileContentChange}
               onChangeTab={monacoTabs.changeTab}

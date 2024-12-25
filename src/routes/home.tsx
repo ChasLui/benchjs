@@ -314,12 +314,12 @@ benchmark("Recursive Fibonacci", () => {
                     <MotionCard
                       // eslint-disable-next-line react/no-array-index-key
                       key={index}
-                      className="h-full bg-white border-none shadow-lg transition-colors backdrop-blur group dark:bg-zinc-900 dark:hover:bg-zinc-800 hover:bg-zinc-50"
+                      className="h-full bg-white border-none shadow-lg transition-colors backdrop-blur group dark:bg-zinc-900 dark:hover:bg-zinc-700 hover:bg-zinc-50"
                       variants={fadeInUp}
                       whileHover={{ y: -5 }}
                     >
                       <CardHeader>
-                        <div className="flex justify-center items-center mb-4 w-12 h-12 bg-yellow-300 rounded-lg transition-colors group-hover:bg-yellow-400 dark:bg-yellow-900/30 dark:group-hover:bg-yellow-900/50">
+                        <div className="flex justify-center items-center mb-4 w-12 h-12 bg-yellow-300 rounded-lg transition-colors group-hover:bg-yellow-400 dark:bg-yellow-600/80 dark:group-hover:bg-yellow-600/90">
                           {feature.icon}
                         </div>
                         <CardTitle>{feature.title}</CardTitle>
@@ -417,7 +417,7 @@ benchmark("Recursive Fibonacci", () => {
                     <div className="flex flex-col gap-12 items-center lg:flex-row">
                       <div className="space-y-6 lg:w-1/2">
                         <div className="flex gap-4 items-center">
-                          <div className="flex justify-center items-center w-12 h-12 text-xl font-bold bg-yellow-300 rounded-full text-zinc-800 dark:bg-yellow-900/30">
+                          <div className="flex justify-center items-center w-12 h-12 text-xl font-bold bg-yellow-300 rounded-full text-zinc-800 dark:bg-yellow-600/80">
                             1
                           </div>
                           <h3 className="text-2xl font-bold">Write Your Code</h3>
@@ -469,7 +469,7 @@ function quickSort(arr: number[]): number[] {
                     <div className="flex flex-col gap-12 items-center lg:flex-row-reverse">
                       <div className="space-y-6 lg:w-1/2">
                         <div className="flex gap-4 items-center">
-                          <div className="flex justify-center items-center w-12 h-12 text-xl font-bold bg-yellow-300 rounded-full text-zinc-800 dark:bg-purple-900/30">
+                          <div className="flex justify-center items-center w-12 h-12 text-xl font-bold bg-yellow-300 rounded-full text-zinc-800 dark:bg-yellow-600/80">
                             2
                           </div>
                           <h3 className="text-2xl font-bold">Run Benchmarks</h3>
@@ -529,7 +529,7 @@ function quickSort(arr: number[]): number[] {
                     <div className="flex flex-col gap-12 items-center lg:flex-row">
                       <div className="space-y-6 lg:w-1/2">
                         <div className="flex gap-4 items-center">
-                          <div className="flex justify-center items-center w-12 h-12 text-xl font-bold bg-yellow-300 rounded-full text-zinc-800 dark:bg-yellow-900/30">
+                          <div className="flex justify-center items-center w-12 h-12 text-xl font-bold bg-yellow-300 rounded-full text-zinc-800 dark:bg-yellow-600/80">
                             3
                           </div>
                           <h3 className="text-2xl font-bold">Analyze Results</h3>
@@ -707,7 +707,7 @@ function quickSort(arr: number[]): number[] {
           </main>
 
           {/* footer */}
-          <footer className="py-4 w-full bg-zinc-100 dark:bg-zinc-800">
+          <footer className="py-4 w-full bg-zinc-100 dark:bg-zinc-700/30">
             <div className="container flex justify-between items-center px-4 mx-auto max-w-6xl">
               <p className="text-xs text-zinc-500 dark:text-zinc-400">
                 <a href="https://andrei.fyi" rel="noopener noreferrer" target="_blank">

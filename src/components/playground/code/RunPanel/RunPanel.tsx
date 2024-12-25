@@ -52,16 +52,16 @@ export const RunPanel = ({ implementation, onRun, onStop, layout, onLayoutChange
 
   return (
     <Tabs className="flex flex-col h-full" value={activeTab} onValueChange={handleSetTab}>
-      <TabsList className="justify-start p-0 w-full h-auto bg-gray-50 rounded-none border-b">
+      <TabsList className="justify-start p-0 w-full h-auto rounded-none border-b bg-zinc-50 dark:bg-zinc-900 dark:border-zinc-800">
         <TabsTrigger
-          className="data-[state=active]:bg-white px-4 rounded-none border-r py-1.5 flex items-center gap-1"
+          className="data-[state=active]:bg-white dark:data-[state=active]:bg-zinc-800 px-4 rounded-none border-r dark:border-zinc-800 py-1.5 flex items-center gap-1"
           value="run"
         >
           <FlameIcon className="w-4 h-4" />
           <span>Run</span>
         </TabsTrigger>
         <TabsTrigger
-          className="data-[state=active]:bg-white px-4 rounded-none border-r py-1.5 flex items-center gap-1"
+          className="data-[state=active]:bg-white dark:data-[state=active]:bg-zinc-800 px-4 rounded-none border-r dark:border-zinc-800 py-1.5 flex items-center gap-1"
           value="console"
         >
           <SquareChevronRightIcon className="w-4 h-4" />
