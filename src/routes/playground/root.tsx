@@ -1,13 +1,15 @@
 import { useState } from "react";
 import { Route } from ".react-router/types/src/routes/playground/+types/root";
+import { Share2Icon } from "lucide-react";
 import { BenchmarkRun, useBenchmarkStore } from "@/stores/benchmarkStore";
 import { Implementation, usePersistentStore } from "@/stores/persistentStore";
 import { useMonacoTabs } from "@/hooks/useMonacoTabs";
 import { CodeView } from "@/routes/playground/views/code/index";
 import { CompareView } from "@/routes/playground/views/compare";
+import { Header } from "@/components/layout/Header";
 import { ShareDialog } from "@/components/playground/ShareDialog";
 import { Sidebar, SidebarTab } from "@/components/playground/Sidebar";
-import { TopBar } from "@/components/playground/TopBar";
+import { Button } from "@/components/ui/button";
 
 type ShareDialogPayload = {
   implementations: Implementation[];
@@ -18,9 +20,11 @@ type ShareDialogPayload = {
 // eslint-disable-next-line no-empty-pattern
 export function meta({}: Route.MetaArgs) {
   return [
-    //
-    { title: "Playground - BenchJS" },
-    { name: "description", content: "BenchJS - lean JavaScript benchmarking" },
+    { title: "BenchJS - JavaScript Benchmarking" },
+    {
+      name: "description",
+      content: "BenchJS - JavaScript benchmarking in your browser",
+    },
   ];
 }
 
@@ -48,14 +52,21 @@ export default function EditorRoute() {
   return (
     <div className="flex flex-col h-screen">
       {/* top bar */}
-      <TopBar onShare={handleShare} />
+      <Header
+        className="static"
+        customNav={
+          <Button className="gap-2" variant="outline" onClick={handleShare}>
+            <Share2Icon className="w-4 h-4" />
+            Share
+          </Button>
+        }
+      />
 
       <div className="flex overflow-hidden flex-1 w-full">
         <Sidebar activeTab={activeTab} onTabChange={setActiveTab} />
         <div className="flex overflow-auto flex-col flex-1 h-full">
           {activeTab === "code" && <CodeView monacoTabs={monacoTabs} />}
           {activeTab === "compare" && <CompareView />}
-          {activeTab === "environment" && <div className="p-4">environment</div>}
           {activeTab === "settings" && <div className="p-4">settings</div>}
         </div>
       </div>

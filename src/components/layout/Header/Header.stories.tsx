@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
+import { Button } from "@/components/ui/button";
 import { Header } from "./Header";
 
 const meta: Meta<typeof Header> = {
@@ -11,4 +12,14 @@ type Story = StoryObj<typeof Header>;
 
 export const Default: Story = {
   args: {},
+};
+
+export const CustomNav: Story = {
+  args: {
+    customNav: (
+      <Button className="gap-2 w-full sm:w-auto" variant="outline">
+        View Source
+      </Button>
+    ),
+  },
 };
