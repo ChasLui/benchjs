@@ -28,6 +28,11 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <meta content="width=device-width, initial-scale=1" name="viewport" />
         <Meta />
         <Links />
+        <script
+          data-website-id="ea9f6c22-8c85-4263-9ac3-117f77718a0a"
+          src="https://umami.dev.pet/script.js"
+          defer
+         />
       </head>
       <body>
         {children}
