@@ -26,6 +26,11 @@ export interface Implementation {
   content: string;
 }
 
+export interface Library {
+  name: string;
+  url: string;
+}
+
 export interface PersistentState {
   // implementations
   implementations: Implementation[];
@@ -51,7 +56,7 @@ export interface PersistentState {
   setReadmeContent: (content: string) => void;
 
   // libraries
-  libraries: { name: string; url: string }[];
+  libraries: Library[];
   addLibrary: (name: string, url: string) => void;
   removeLibrary: (name: string) => void;
 }

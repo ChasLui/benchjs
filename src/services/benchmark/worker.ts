@@ -131,7 +131,7 @@ const handleStartRuns = async (
       const blob = new Blob([run.processedCode], { type: "text/javascript" });
       const blobUrl = URL.createObjectURL(blob);
       const module = await import(blobUrl);
-
+      URL.revokeObjectURL(blobUrl);
       const benchmarkFn = module.default;
       if (typeof benchmarkFn !== "function") {
         log("Invalid benchmark function:", { benchmarkFn, run });

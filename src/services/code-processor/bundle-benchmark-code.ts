@@ -2,14 +2,13 @@ import { PluginItem } from "@babel/core";
 import * as Babel from "@babel/standalone";
 import * as esbuild from "esbuild-wasm";
 import wasmUrl from "esbuild-wasm/esbuild.wasm?url";
+import { Library } from "@/stores/persistentStore";
 import { transform } from "./babel";
 
 const t = Babel.packages.types;
 
 const esbuildPromise =
   typeof window === "undefined" ? Promise.resolve() : esbuild.initialize({ wasmURL: wasmUrl });
-
-type Library = { name: string; url: string };
 
 // transform import sources to library URLs
 const buildImportTransformPlugin = (libraries: Library[]): PluginItem => {
