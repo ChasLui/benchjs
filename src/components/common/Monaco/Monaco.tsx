@@ -172,13 +172,15 @@ export const Monaco = ({
         top: 8,
         bottom: 8,
       },
-      lineNumbers: "off",
+      lineNumbers: "on",
       minimap: {
         enabled: false,
       },
       insertSpaces: true,
       tabSize: 2,
       scrollBeyondLastLine: false,
+      renderLineHighlightOnlyWhenFocus: true,
+      overviewRulerBorder: false,
       ...props.options,
     });
 
@@ -229,6 +231,7 @@ export const Monaco = ({
           key={activeFile?.name}
           beforeMount={handleBeforeMount}
           className={cn("nodrag h-full", className)}
+          path={activeFile?.name}
           theme="custom"
           onMount={handleMount}
         />
