@@ -146,15 +146,15 @@ export const RunTab = ({ isRunning, latestRun, onRun, onStop, chartData, clearCh
             <div className="grid grid-cols-3 gap-4">
               <div>
                 <p className="text-sm text-muted-foreground">50th Percentile</p>
-                <p className="text-lg font-semibold">{formatTime(10)}</p>
+                <p className="text-lg font-semibold">{formatTime(stats.time.percentile50)}</p>
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">90th Percentile</p>
-                <p className="text-lg font-semibold">{formatTime(13)}</p>
+                <p className="text-lg font-semibold">{formatTime(stats.time.percentile90)}</p>
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">95th Percentile</p>
-                <p className="text-lg font-semibold">{formatTime(14)}</p>
+                <p className="text-lg font-semibold">{formatTime(stats.time.percentile95)}</p>
               </div>
             </div>
           </div>
