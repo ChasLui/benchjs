@@ -1,87 +1,114 @@
 import { PluginItem } from "@babel/core";
 import * as Babel from "@babel/standalone";
+import * as esbuild from "esbuild-wasm";
+import wasmUrl from "esbuild-wasm/esbuild.wasm?url";
 import { transform } from "./babel";
 
 const t = Babel.packages.types;
 
-const runFunctionProcessorPlugin: PluginItem = {
+const esbuildPromise =
+  typeof window === "undefined" ? Promise.resolve() : esbuild.initialize({ wasmURL: wasmUrl });
+
+type Library = { name: string; url: string };
+
+// transform import sources to library URLs
+const buildImportTransformPlugin = (libraries: Library[]): PluginItem => {
+  const plugin: PluginItem = {
+    name: "import-transform",
+    visitor: {
+      ImportDeclaration(path) {
+        const source = path.node.source.value;
+        const library = libraries.find((lib) => lib.name === source);
+        if (library) {
+          // eslint-disable-next-line no-param-reassign
+          path.node.source = t.stringLiteral(library.url);
+        }
+      },
+    },
+  };
+  return plugin;
+};
+
+// process exported run function
+export const runFunctionProcessorPlugin: PluginItem = {
   name: "run-function-processor",
   visitor: {
+    // export function run() { ... }
+    // export const run = () => { ... }
+    // export const run = function() { ... }
     ExportNamedDeclaration(path) {
-      const node = path.node;
-      const declaration = node.declaration;
+      const { declaration } = path.node;
+      if (!declaration) return;
 
+      // if "export function run() {...}"
       if (t.isFunctionDeclaration(declaration) && t.isIdentifier(declaration.id, { name: "run" })) {
-        // export function run() {...}
-        const funcExpr = t.functionExpression(
-          t.identifier("run"),
-          declaration.params,
-          declaration.body,
-          declaration.generator,
-          declaration.async,
-        );
-        path.replaceWith(t.returnStatement(funcExpr));
-      } else if (
+        // -> export default function run() { ... }
+        path.replaceWith(t.exportDefaultDeclaration(declaration));
+        path.skip();
+        return;
+      }
+
+      // if "export const run = (...) => { ... }" or "export const run = function(...) {...}"
+      if (
         t.isVariableDeclaration(declaration) &&
         declaration.declarations.length === 1 &&
         t.isVariableDeclarator(declaration.declarations[0]) &&
         t.isIdentifier(declaration.declarations[0].id, { name: "run" })
       ) {
         const init = declaration.declarations[0].init;
-        if (t.isArrowFunctionExpression(init)) {
-          // export const run = () => {...}
-          const functionBody = t.isBlockStatement(init.body)
-            ? init.body
-            : t.blockStatement([t.returnStatement(init.body)]);
-          const funcExpr = t.functionExpression(
+        if (t.isArrowFunctionExpression(init) || t.isFunctionExpression(init)) {
+          // -> arrow/function expression to function declaration
+          const body =
+            t.isBlockStatement(init.body) ? init.body : t.blockStatement([t.returnStatement(init.body)]);
+
+          const funcDecl = t.functionDeclaration(
             t.identifier("run"),
             init.params,
-            functionBody,
+            body,
             init.generator,
             init.async,
           );
-          path.replaceWith(t.returnStatement(funcExpr));
-        } else if (t.isFunctionExpression(init)) {
-          // export const run = function() {...}
-          const funcExpr = t.functionExpression(
-            t.identifier("run"),
-            init.params,
-            init.body,
-            init.generator,
-            init.async,
-          );
-          path.replaceWith(t.returnStatement(funcExpr));
+
+          // -> export default function run() { ... }
+          path.replaceWith(t.exportDefaultDeclaration(funcDecl));
+          path.skip();
         }
       }
     },
 
+    // export default function(...) { ... }
+    // export default () => { ... }
+    // export default function run() { ... }
     ExportDefaultDeclaration(path) {
-      const { node } = path;
-      const decl = node.declaration;
+      const decl = path.node.declaration;
 
+      // if any function-y default export (arrow, function expression, or named function)
+      // -> export default function run() { ... }
       if (
         t.isFunctionDeclaration(decl) ||
         t.isArrowFunctionExpression(decl) ||
         t.isFunctionExpression(decl)
       ) {
-        const functionBody = t.isBlockStatement(decl.body)
-          ? decl.body
-          : t.blockStatement([t.returnStatement(decl.body)]);
+        const body =
+          t.isBlockStatement(decl.body) ? decl.body : t.blockStatement([t.returnStatement(decl.body)]);
 
-        const funcExpr = t.functionExpression(
+        const funcDecl = t.functionDeclaration(
           t.identifier("run"),
           decl.params,
-          functionBody,
+          body,
           decl.generator,
           decl.async,
         );
 
-        path.replaceWith(t.returnStatement(funcExpr));
+        // -> export default function run() { ... }
+        path.replaceWith(t.exportDefaultDeclaration(funcDecl));
+        path.skip();
       }
     },
   },
 };
 
+// strip other exports
 export const stripExportsPlugin: PluginItem = {
   name: "strip-exports",
   visitor: {
@@ -104,6 +131,65 @@ export const stripExportsPlugin: PluginItem = {
   },
 };
 
-export const bundleBenchmarkCode = (code: string, setupCode: string, filename?: string) => {
-  return transform(`${setupCode}\n\n${code}`, filename, [runFunctionProcessorPlugin, stripExportsPlugin]);
+export const bundleBenchmarkCode = async (
+  userCode: string,
+  setupCode: string,
+  libraries: Library[] = [],
+  filename?: string,
+) => {
+  await esbuildPromise;
+
+  // babel transforms
+  const transformedCode = await transform(`${setupCode}\n\n${userCode}`, filename, [
+    buildImportTransformPlugin(libraries),
+    runFunctionProcessorPlugin,
+    stripExportsPlugin,
+  ]);
+
+  // bundle
+  const entryUrl = `${location.protocol}//${location.host}/main.ts`;
+  const bundle = await esbuild.build({
+    entryPoints: [entryUrl],
+    bundle: true,
+    format: "esm",
+    write: false,
+    platform: "browser",
+    target: "es2022",
+    plugins: [
+      {
+        name: "browser-resolver",
+        async setup(build) {
+          build.onResolve({ filter: /^https{0,1}:\/\// }, (args) => ({
+            path: args.path,
+            namespace: "http",
+          }));
+          build.onResolve({ filter: /.*/, namespace: "http" }, (args) => ({
+            path: new URL(args.path, args.importer).toString(),
+            namespace: "http",
+          }));
+          build.onLoad({ filter: /.*/, namespace: "http" }, async (args) => {
+            const url = new URL(args.path);
+
+            let loader: esbuild.Loader = "ts";
+            if (url.pathname.endsWith(".tsx")) loader = "tsx";
+
+            if (url.toString() === entryUrl) return { contents: transformedCode, loader };
+
+            const res = await fetch(url);
+            if (!res.ok) throw new Error(`Failed to fetch ${url}: status=${res.statusText}`);
+            const body = await res.text();
+
+            return { contents: body, loader };
+          });
+        },
+      },
+    ],
+  });
+  const { outputFiles } = bundle;
+  if (outputFiles.length !== 1) {
+    console.log("Bundle failure:", { transformedCode, bundle });
+    throw new Error("Failed to bundle code");
+  }
+  const code = outputFiles[0].text;
+  return code;
 };

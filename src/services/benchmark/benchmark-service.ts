@@ -3,6 +3,7 @@ import { nanoid } from "nanoid";
 import { serializeError } from "serialize-error";
 import { useBenchmarkStore } from "@/stores/benchmarkStore";
 import { Implementation } from "@/stores/persistentStore";
+import { usePersistentStore } from "@/stores/persistentStore";
 import { features } from "@/config";
 import { bundleBenchmarkCode } from "../code-processor/bundle-benchmark-code";
 import { BenchmarkResult, WorkerToMainMessage } from "./types";
@@ -79,7 +80,12 @@ export const benchmarkService = {
         const processedRuns = await Promise.all(
           runs.map(async (run) => {
             try {
-              const processedCode = await bundleBenchmarkCode(run.originalCode, setupCode);
+              const persistentStore = usePersistentStore.getState();
+              const processedCode = await bundleBenchmarkCode(
+                run.originalCode,
+                setupCode,
+                persistentStore.libraries,
+              );
               store.updateRun(run.id, {
                 processedCode,
               });

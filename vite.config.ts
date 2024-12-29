@@ -32,6 +32,9 @@ export default defineConfig({
       plugins: [tailwindcss, autoprefixer],
     },
   },
+  worker: {
+    format: 'es'
+  },
   plugins: [
     //
     !isStorybook && reactRouter(),

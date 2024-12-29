@@ -6,6 +6,7 @@ import { Implementation, usePersistentStore } from "@/stores/persistentStore";
 import { useMonacoTabs } from "@/hooks/useMonacoTabs";
 import { CodeView } from "@/routes/playground/views/code/index";
 import { CompareView } from "@/routes/playground/views/compare";
+import { SettingsView } from "@/routes/playground/views/settings";
 import { Header } from "@/components/layout/Header";
 import { ShareDialog } from "@/components/playground/ShareDialog";
 import { Sidebar, SidebarTab } from "@/components/playground/Sidebar";
@@ -67,7 +68,7 @@ export default function EditorRoute() {
         <div className="flex overflow-auto flex-col flex-1 h-full">
           {activeTab === "code" && <CodeView monacoTabs={monacoTabs} />}
           {activeTab === "compare" && <CompareView />}
-          {activeTab === "settings" && <div className="p-4">settings</div>}
+          {activeTab === "settings" && <SettingsView />}
         </div>
       </div>
 

@@ -1,7 +1,10 @@
+/* eslint-disable no-await-in-loop */
 declare const self: DedicatedWorkerGlobalScope;
 import { Bench, BenchmarkOptions } from "benchmate";
 import { serializeError } from "serialize-error";
 import { MainToWorkerMessage, WorkerToMainMessage } from "./types";
+
+const log = console.log;
 
 const CONSOLE_FLUSH_INTERVAL_MS = 500;
 
@@ -125,10 +128,13 @@ const handleStartRuns = async (
 
     // add tasks
     for (const run of runs) {
-      // eslint-disable-next-line @typescript-eslint/no-implied-eval, no-new-func
-      const createBenchmarkFn = new Function(run.processedCode);
-      const benchmarkFn = createBenchmarkFn();
+      const blob = new Blob([run.processedCode], { type: "text/javascript" });
+      const blobUrl = URL.createObjectURL(blob);
+      const module = await import(blobUrl);
+
+      const benchmarkFn = module.default;
       if (typeof benchmarkFn !== "function") {
+        log("Invalid benchmark function:", { benchmarkFn, run });
         throw new TypeError("Benchmark code must return a function");
       }
       runner.add(run.runId, benchmarkFn as () => void);
@@ -136,7 +142,6 @@ const handleStartRuns = async (
 
     // run benchmark
     const results = await runner.run();
-    // final console flush
     flushLogs(true);
 
     // send results
