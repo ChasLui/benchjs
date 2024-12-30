@@ -15,6 +15,7 @@ class DependencyService {
       fetcher: cachedFetch,
       handlers: {
         receivedFile: (content: string, path: string) => {
+          this.typeFiles.set(path, content);
           this.addExtraLib(content, path);
         },
         // started: () => {
@@ -49,6 +50,12 @@ class DependencyService {
     // add acquired types
     for (const [path, content] of this.typeFiles.entries()) {
       this.addExtraLib(content, path);
+    }
+
+    // reinitialize existing dependencies
+    const dependencies = useDependenciesStore.getState().dependencyMap;
+    for (const dependency of Object.values(dependencies)) {
+      this.acquireTypes(dependency.name);
     }
   }
 
