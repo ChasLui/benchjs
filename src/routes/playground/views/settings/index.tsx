@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
+import { Check, Pencil, Trash2, X } from "lucide-react";
 import { useDependenciesStore } from "@/stores/dependenciesStore";
 import { usePersistentStore } from "@/stores/persistentStore";
 import { cache } from "@/services/dependencies/cache";
@@ -19,6 +20,8 @@ export function SettingsView({ dependencyService }: SettingsViewProps) {
   const dependencies = useDependenciesStore();
   const [libraryName, setLibraryName] = useState("");
   const [cacheCount, setCacheCount] = useState(0);
+  const [editingName, setEditingName] = useState<string | null>(null);
+  const [editValue, setEditValue] = useState("");
 
   const getStatusBadge = (status: "error" | "loading" | "success") => {
     if (status === "error") return <Badge variant="destructive">{status}</Badge>;
@@ -28,6 +31,7 @@ export function SettingsView({ dependencyService }: SettingsViewProps) {
 
   const handleAddLibrary = async () => {
     if (!libraryName.trim()) return;
+    if (store.libraries.some((lib) => lib.name === libraryName.trim())) return;
     setLibraryName("");
     store.addLibrary(libraryName.trim());
     await dependencyService.addLibrary({ name: libraryName.trim() });
@@ -41,6 +45,36 @@ export function SettingsView({ dependencyService }: SettingsViewProps) {
   const handleClearCache = async () => {
     await cache.clear();
     setCacheCount(0);
+  };
+
+  const handleStartEdit = (name: string) => {
+    setEditingName(name);
+    setEditValue(name);
+  };
+
+  const handleCancelEdit = () => {
+    setEditingName(null);
+    setEditValue("");
+  };
+
+  const handleSave = async () => {
+    if (!editingName || !editValue.trim()) return;
+    const oldName = editingName;
+    const newName = editValue.trim();
+
+    if (oldName === newName) {
+      setEditingName(null);
+      return;
+    }
+    if (store.libraries.some((lib) => lib.name === newName)) return;
+
+    store.removeLibrary(oldName);
+    store.addLibrary(newName);
+    await dependencyService.addLibrary({ name: newName });
+
+    setEditingName(null);
+    setEditValue("");
+    setCacheCount(await cache.count());
   };
 
   // update cache size
@@ -95,9 +129,19 @@ export function SettingsView({ dependencyService }: SettingsViewProps) {
                   <TableBody>
                     {store.libraries.map((lib) => {
                       const dependency = dependencies.dependencyMap[lib.name];
+                      const isEditing = editingName === lib.name;
+
                       return (
                         <TableRow key={lib.name}>
-                          <TableCell className="font-medium">{lib.name}</TableCell>
+                          <TableCell className="font-medium">
+                            {isEditing ?
+                              <Input
+                                className="h-8"
+                                value={editValue}
+                                onChange={(e) => setEditValue(e.target.value)}
+                              />
+                            : lib.name}
+                          </TableCell>
                           <TableCell>{dependency?.package?.version || "-"}</TableCell>
                           <TableCell className="max-w-md truncate">
                             {dependency?.package?.description || "-"}
@@ -115,13 +159,34 @@ export function SettingsView({ dependencyService }: SettingsViewProps) {
                             : getStatusBadge("loading")}
                           </TableCell>
                           <TableCell>
-                            <Button
-                              size="sm"
-                              variant="destructive"
-                              onClick={() => handleRemoveLibrary(lib.name)}
-                            >
-                              Remove
-                            </Button>
+                            <div className="flex gap-2">
+                              {isEditing ?
+                                <>
+                                  <Button size="icon" variant="ghost" onClick={handleSave}>
+                                    <Check className="w-4 h-4" />
+                                  </Button>
+                                  <Button size="icon" variant="ghost" onClick={handleCancelEdit}>
+                                    <X className="w-4 h-4" />
+                                  </Button>
+                                </>
+                              : <>
+                                  <Button
+                                    size="icon"
+                                    variant="ghost"
+                                    onClick={() => handleStartEdit(lib.name)}
+                                  >
+                                    <Pencil className="w-4 h-4" />
+                                  </Button>
+                                  <Button
+                                    size="icon"
+                                    variant="ghost"
+                                    onClick={() => handleRemoveLibrary(lib.name)}
+                                  >
+                                    <Trash2 className="w-4 h-4" />
+                                  </Button>
+                                </>
+                              }
+                            </div>
                           </TableCell>
                         </TableRow>
                       );

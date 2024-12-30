@@ -4,7 +4,7 @@ import { persist } from "zustand/middleware";
 const VERTICAL_LAYOUT_MIN_WIDTH = 768;
 
 export type LayoutMode = "horizontal" | "vertical";
-export type Theme = "light" | "dark";
+export type Theme = "dark" | "light";
 
 interface UserPreferences {
   codeViewLayout: LayoutMode;
@@ -30,4 +30,3 @@ export const useUserStore = create<UserPreferences>()(
     },
   ),
 );
-
