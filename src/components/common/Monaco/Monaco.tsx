@@ -37,7 +37,7 @@ export interface MonacoProps {
   options?: editor.IStandaloneEditorConstructionOptions;
   className?: string;
   tabs?: MonacoTab[];
-  extraLibs?: { content: string; filename?: string }[];
+  extraLibs?: { content: string; filename: string }[];
   theme?: keyof typeof themes;
   onChange?: (value: string | undefined) => void;
   onDTSChange?: (value: string) => void;
@@ -107,10 +107,22 @@ export const Monaco = ({
       target: monaco.languages.typescript.ScriptTarget.ESNext,
       allowNonTsExtensions: true,
       declaration: true,
+      emitDeclarationOnly: true,
       esModuleInterop: true,
+      noEmit: false,
+      noEmitOnError: false,
+      noEmitHelpers: false,
+      skipLibCheck: true,
     });
 
-    // custom libs
+    monaco.languages.typescript.javascriptDefaults.setDiagnosticsOptions({
+      noSemanticValidation: false,
+      noSyntaxValidation: false,
+      diagnosticCodesToIgnore: [],
+    });
+
+    // init libs
+    monaco.languages.typescript.typescriptDefaults.setExtraLibs([]);
     for (const lib of extraLibs ?? []) {
       monaco.languages.typescript.typescriptDefaults.addExtraLib(lib.content, lib.filename);
     }
@@ -122,15 +134,16 @@ export const Monaco = ({
       props.onChange?.(value);
 
       if (onDTSChangeRef.current) {
-        (async () => {
-          const model = editor.getModel();
-          if (!model) return;
-          const tsWorker = await monaco.languages.typescript.getTypeScriptWorker();
-          const worker = await tsWorker(model.uri);
-          const outputs = await worker.getEmitOutput(model.uri.toString());
-          const dts = outputs.outputFiles.find((file) => file.name.endsWith(".d.ts"))?.text;
-          onDTSChangeRef.current?.(dts ? transformToGlobalDeclarations(dts) : "");
-        })();
+        const model = editor.getModel();
+        if (!model) return;
+        const tsWorker = await monaco.languages.typescript.getTypeScriptWorker();
+        const worker = await tsWorker(model.uri);
+        const outputs = await worker.getEmitOutput(model.uri.toString(), true, true);
+        const dts = outputs.outputFiles.find((file) => file.name.endsWith(".d.ts"))?.text;
+        if (!dts) return;
+
+        const transformedDTS = dts ? transformToGlobalDeclarations(dts) : "";
+        onDTSChangeRef.current?.(transformedDTS);
       }
     });
 
@@ -201,10 +214,10 @@ export const Monaco = ({
       <div className="h-full">
         <Editor
           {...props}
-          key={activeFile?.name}
+          key={activeFile?.name ?? "main.ts"}
           beforeMount={handleBeforeMount}
           className={cn("nodrag h-full", className)}
-          path={activeFile?.name}
+          path={activeFile?.name ?? "main.ts"}
           theme="custom"
           onMount={handleMount}
         />

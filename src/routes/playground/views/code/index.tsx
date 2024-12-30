@@ -135,6 +135,7 @@ export const CodeView = ({ monacoTabs, dependencyService }: CodeViewProps) => {
     if (!currentImplementation) return [];
     return [
       {
+        filename: "file:///setup.d.ts",
         content: store.setupDTS,
       },
     ];
