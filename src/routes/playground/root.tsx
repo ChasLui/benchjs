@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Route } from ".react-router/types/src/routes/playground/+types/root";
 import { Share2Icon } from "lucide-react";
 import { BenchmarkRun, useBenchmarkStore } from "@/stores/benchmarkStore";
@@ -7,6 +7,7 @@ import { useMonacoTabs } from "@/hooks/useMonacoTabs";
 import { CodeView } from "@/routes/playground/views/code/index";
 import { CompareView } from "@/routes/playground/views/compare";
 import { SettingsView } from "@/routes/playground/views/settings";
+import { DependencyService } from "@/services/dependencies/DependencyService";
 import { Header } from "@/components/layout/Header";
 import { ShareDialog } from "@/components/playground/ShareDialog";
 import { Sidebar, SidebarTab } from "@/components/playground/Sidebar";
@@ -38,7 +39,6 @@ export default function EditorRoute() {
     },
   });
   const [activeTab, setActiveTab] = useState<SidebarTab>("code");
-
   const [shareData, setShareData] = useState<ShareDialogPayload | null>(null);
 
   const handleShare = () => {
@@ -50,9 +50,15 @@ export default function EditorRoute() {
     });
   };
 
+  const dependencyService = useRef(new DependencyService());
+  useEffect(() => {
+    for (const library of store.libraries) {
+      dependencyService.current.addLibrary({ name: library.name });
+    }
+  }, [store.libraries]);
+
   return (
     <div className="flex flex-col h-screen">
-      {/* top bar */}
       <Header
         className="static"
         customNav={
@@ -66,9 +72,11 @@ export default function EditorRoute() {
       <div className="flex overflow-hidden flex-1 w-full">
         <Sidebar activeTab={activeTab} onTabChange={setActiveTab} />
         <div className="flex overflow-auto flex-col flex-1 h-full">
-          {activeTab === "code" && <CodeView monacoTabs={monacoTabs} />}
+          {activeTab === "code" && (
+            <CodeView dependencyService={dependencyService.current} monacoTabs={monacoTabs} />
+          )}
           {activeTab === "compare" && <CompareView />}
-          {activeTab === "settings" && <SettingsView />}
+          {activeTab === "settings" && <SettingsView dependencyService={dependencyService.current} />}
         </div>
       </div>
 

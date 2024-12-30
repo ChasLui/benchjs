@@ -1,4 +1,6 @@
 import { useCallback, useMemo } from "react";
+import { Monaco as MonacoEditor } from "@monaco-editor/react";
+import { editor as RawMonacoEditor } from "monaco-editor";
 import { nanoid } from "nanoid";
 import { useLatestRunForImplementation } from "@/stores/benchmarkStore";
 import { usePersistentStore } from "@/stores/persistentStore";
@@ -7,6 +9,7 @@ import { useMonacoTabs } from "@/hooks/useMonacoTabs";
 import { DEFAULT_IMPLEMENTATION } from "@/constants";
 import { cn } from "@/lib/utils";
 import { benchmarkService } from "@/services/benchmark/benchmark-service";
+import { DependencyService } from "@/services/dependencies";
 import { FileTree, FileTreeItem } from "@/components/common/FileTree";
 import { Monaco } from "@/components/common/Monaco";
 import { RunPanel } from "@/components/playground/code/RunPanel";
@@ -15,9 +18,10 @@ const MIN_SIDEBAR_WIDTH = 280;
 
 interface CodeViewProps {
   monacoTabs: ReturnType<typeof useMonacoTabs>;
+  dependencyService: DependencyService;
 }
 
-export const CodeView = ({ monacoTabs }: CodeViewProps) => {
+export const CodeView = ({ monacoTabs, dependencyService }: CodeViewProps) => {
   const store = usePersistentStore();
   const { codeViewLayout: layout, setCodeViewLayout, theme } = useUserStore();
 
@@ -170,6 +174,17 @@ export const CodeView = ({ monacoTabs }: CodeViewProps) => {
 
   const defaultSidebarSize = (MIN_SIDEBAR_WIDTH * 100) / window.innerWidth;
 
+  // editor
+  const handleEditorMount = useCallback(
+    (editor: RawMonacoEditor.IStandaloneCodeEditor, monaco: MonacoEditor) => {
+      dependencyService.mountEditor(editor, monaco);
+      for (const item of store.libraries) {
+        dependencyService.addLibrary(item);
+      }
+    },
+    [store.libraries, dependencyService],
+  );
+
   return (
     <ResizablePanelGroup className="flex flex-1 w-full" direction="horizontal">
       <ResizablePanel className={cn("flex")} defaultSize={defaultSidebarSize}>
@@ -211,6 +226,7 @@ export const CodeView = ({ monacoTabs }: CodeViewProps) => {
               onCloseTabsToLeft={monacoTabs.closeTabsToLeft}
               onCloseTabsToRight={monacoTabs.closeTabsToRight}
               onDTSChange={monacoTabs.activeTabId === "setup.ts" ? handleSetupDTSChange : undefined}
+              onMount={handleEditorMount}
               onSetTabs={monacoTabs.setTabs}
             />
           </ResizablePanel>

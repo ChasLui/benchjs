@@ -15,12 +15,6 @@ export const themes = {
   dark: vsDark,
 };
 
-const zodFiles = import.meta.glob("../../../../node_modules/zod/**/*.d.ts", {
-  eager: true,
-  query: "?raw",
-  import: "default",
-}) as Record<string, string>;
-
 const transformToGlobalDeclarations = (dts: string) => {
   return `declare global {
 ${dts
@@ -53,6 +47,7 @@ export interface MonacoProps {
   onCloseTabsToLeft?: (tab: MonacoTab) => void;
   onCloseTabsToRight?: (tab: MonacoTab) => void;
   onSetTabs?: (tabs: MonacoTab[]) => void;
+  onMount?: (editor: editor.IStandaloneCodeEditor, monaco: MonacoEditor) => void;
 }
 
 export const Monaco = ({
@@ -67,6 +62,7 @@ export const Monaco = ({
   onCloseTabsToRight,
   onSetTabs,
   onDTSChange,
+  onMount,
   ...props
 }: MonacoProps) => {
   const monacoHelper = useMonaco();
@@ -111,33 +107,8 @@ export const Monaco = ({
       target: monaco.languages.typescript.ScriptTarget.ESNext,
       allowNonTsExtensions: true,
       declaration: true,
+      esModuleInterop: true,
     });
-
-    for (const file of Object.keys(zodFiles)) {
-      monaco.languages.typescript.typescriptDefaults.addExtraLib(
-        file.endsWith("index.d.ts") ? zodFiles[file] : `declare module 'zod' { ${zodFiles[file]} }`,
-        "file:///node_modules/zod/",
-      );
-    }
-
-    monaco.languages.typescript.typescriptDefaults.addExtraLib(
-      `declare module 'zod' {
-        import * as z from 'zod';
-        export { z }
-      }
-      `,
-      "zod",
-    );
-
-    monaco.languages.typescript.typescriptDefaults.addExtraLib(
-      `
-      import * as zz from 'zod';
-      declare global {
-        var z: typeof zz;
-      }
-      declare const x: number;
-      `,
-    );
 
     // custom libs
     for (const lib of extraLibs ?? []) {
@@ -183,6 +154,8 @@ export const Monaco = ({
       overviewRulerBorder: false,
       ...props.options,
     });
+
+    onMount?.(editor, monaco);
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

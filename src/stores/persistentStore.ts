@@ -28,7 +28,6 @@ export interface Implementation {
 
 export interface Library {
   name: string;
-  url: string;
 }
 
 export interface PersistentState {
@@ -57,7 +56,7 @@ export interface PersistentState {
 
   // libraries
   libraries: Library[];
-  addLibrary: (name: string, url: string) => void;
+  addLibrary: (name: string) => void;
   removeLibrary: (name: string) => void;
 }
 
@@ -113,9 +112,9 @@ export const usePersistentStore = create<PersistentState>()(
 
         // libraries
         libraries: [],
-        addLibrary: (name, url) => {
+        addLibrary: (name: string) => {
           set((state) => ({
-            libraries: [...state.libraries, { name, url }],
+            libraries: [...state.libraries, { name }],
           }));
         },
         removeLibrary: (name) => {

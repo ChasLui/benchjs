@@ -3,6 +3,7 @@ import * as Babel from "@babel/standalone";
 import * as esbuild from "esbuild-wasm";
 import wasmUrl from "esbuild-wasm/esbuild.wasm?url";
 import { Library } from "@/stores/persistentStore";
+import { cachedFetch } from "@/services/dependencies/cachedFetch";
 import { transform } from "./babel";
 
 const t = Babel.packages.types;
@@ -20,7 +21,7 @@ const buildImportTransformPlugin = (libraries: Library[]): PluginItem => {
         const library = libraries.find((lib) => lib.name === source);
         if (library) {
           // eslint-disable-next-line no-param-reassign
-          path.node.source = t.stringLiteral(library.url);
+          path.node.source = t.stringLiteral(`https://esm.sh/${library.name}`);
         }
       },
     },
@@ -171,10 +172,9 @@ export const bundleBenchmarkCode = async (
 
             let loader: esbuild.Loader = "ts";
             if (url.pathname.endsWith(".tsx")) loader = "tsx";
-
             if (url.toString() === entryUrl) return { contents: transformedCode, loader };
 
-            const res = await fetch(url);
+            const res = await cachedFetch(url);
             if (!res.ok) throw new Error(`Failed to fetch ${url}: status=${res.statusText}`);
             const body = await res.text();
 

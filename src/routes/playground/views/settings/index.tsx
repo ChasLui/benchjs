@@ -1,25 +1,52 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
+import { useDependenciesStore } from "@/stores/dependenciesStore";
 import { usePersistentStore } from "@/stores/persistentStore";
+import { cache } from "@/services/dependencies/cache";
+import { DependencyService } from "@/services/dependencies/DependencyService";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
-export function SettingsView() {
+interface SettingsViewProps {
+  dependencyService: DependencyService;
+}
+
+export function SettingsView({ dependencyService }: SettingsViewProps) {
   const store = usePersistentStore();
+  const dependencies = useDependenciesStore();
   const [libraryName, setLibraryName] = useState("");
-  const [libraryUrl, setLibraryUrl] = useState("");
+  const [cacheCount, setCacheCount] = useState(0);
 
-  const handleAddLibrary = () => {
-    if (!libraryName.trim() || !libraryUrl.trim()) return;
-    store.addLibrary(libraryName.trim(), libraryUrl.trim());
+  const getStatusBadge = (status: "error" | "loading" | "success") => {
+    if (status === "error") return <Badge variant="destructive">{status}</Badge>;
+    if (status === "loading") return <Badge variant="outline">{status}</Badge>;
+    return <Badge variant="success">{status}</Badge>;
+  };
+
+  const handleAddLibrary = async () => {
+    if (!libraryName.trim()) return;
     setLibraryName("");
-    setLibraryUrl("");
+    store.addLibrary(libraryName.trim());
+    await dependencyService.addLibrary({ name: libraryName.trim() });
+    setCacheCount(await cache.count());
   };
 
   const handleRemoveLibrary = (name: string) => {
     store.removeLibrary(name);
   };
+
+  const handleClearCache = async () => {
+    await cache.clear();
+    setCacheCount(0);
+  };
+
+  // update cache size
+  useEffect(() => {
+    cache.count().then(setCacheCount);
+  }, []);
 
   return (
     <div className="container py-8 px-4 mx-auto">
@@ -36,44 +63,71 @@ export function SettingsView() {
             <CardHeader>
               <CardTitle className="flex justify-between items-center">
                 <span>Libraries</span>
+                <Button variant="outline" onClick={handleClearCache}>
+                  Clear Cache {cacheCount > 0 && `(${cacheCount})`}
+                </Button>
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="space-y-2">
+              <div className="space-y-4">
                 {/* add library */}
                 <div className="flex gap-2">
                   <Input
-                    className="flex-1 px-2 text-sm rounded border border-zinc-300 dark:bg-zinc-800 dark:text-zinc-100"
+                    className="flex-1"
                     placeholder="lodash"
                     value={libraryName}
                     onChange={(e) => setLibraryName(e.target.value)}
-                  />
-                  <Input
-                    className="flex-1 px-2 text-sm rounded border border-zinc-300 dark:bg-zinc-800 dark:text-zinc-100"
-                    placeholder="https://esm.sh/lodash-es"
-                    value={libraryUrl}
-                    onChange={(e) => setLibraryUrl(e.target.value)}
                   />
                   <Button onClick={handleAddLibrary}>Add</Button>
                 </div>
 
                 {/* list */}
-                <div className="space-y-2">
-                  {store.libraries.map((lib) => (
-                    <div
-                      key={lib.name}
-                      className="flex justify-between items-center p-2 rounded bg-zinc-100 dark:bg-zinc-900"
-                    >
-                      <div>
-                        <span className="text-sm font-medium">{lib.name}</span>
-                        <span className="text-sm text-zinc-500 dark:text-zinc-400"> — {lib.url}</span>
-                      </div>
-                      <Button variant="destructive" onClick={() => handleRemoveLibrary(lib.name)}>
-                        Remove
-                      </Button>
-                    </div>
-                  ))}
-                </div>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Name</TableHead>
+                      <TableHead>Version</TableHead>
+                      <TableHead>Description</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead>Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {store.libraries.map((lib) => {
+                      const dependency = dependencies.dependencyMap[lib.name];
+                      return (
+                        <TableRow key={lib.name}>
+                          <TableCell className="font-medium">{lib.name}</TableCell>
+                          <TableCell>{dependency?.package?.version || "-"}</TableCell>
+                          <TableCell className="max-w-md truncate">
+                            {dependency?.package?.description || "-"}
+                          </TableCell>
+                          <TableCell>
+                            {dependency ?
+                              <>
+                                {getStatusBadge(dependency.status)}
+                                {dependency.error && (
+                                  <span className="ml-2 text-sm text-red-600 dark:text-red-400">
+                                    {dependency.error}
+                                  </span>
+                                )}
+                              </>
+                            : getStatusBadge("loading")}
+                          </TableCell>
+                          <TableCell>
+                            <Button
+                              size="sm"
+                              variant="destructive"
+                              onClick={() => handleRemoveLibrary(lib.name)}
+                            >
+                              Remove
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
+                  </TableBody>
+                </Table>
               </div>
             </CardContent>
           </Card>
@@ -82,4 +136,3 @@ export function SettingsView() {
     </div>
   );
 }
-

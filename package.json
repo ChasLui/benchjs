@@ -38,6 +38,7 @@
     "@radix-ui/react-tooltip": "^1.1.6",
     "@react-router/node": "^7.1.0",
     "@react-router/serve": "^7.1.0",
+    "@typescript/ata": "^0.9.7",
     "benchmate": "^1.12.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
@@ -46,6 +47,7 @@
     "esbuild-wasm": "^0.24.2",
     "framer-motion": "^11.15.0",
     "html-to-image": "^1.11.11",
+    "idb": "^8.0.1",
     "isbot": "^5.1.18",
     "lucide-react": "^0.469.0",
     "lz-string": "^1.5.0",
@@ -62,6 +64,7 @@
     "serialize-error": "^11.0.3",
     "tailwind-merge": "^2.5.5",
     "tailwindcss-animate": "^1.0.7",
+    "typescript": "^5.7.2",
     "zod": "^3.24.1",
     "zustand": "^5.0.2"
   },
@@ -89,7 +92,6 @@
     "storybook": "^8.4.7",
     "storybook-addon-remix-react-router": "3.0.3--canary.85.7d8672d.0",
     "tailwindcss": "^3.4.17",
-    "typescript": "^5.7.2",
     "vite": "^6.0.5",
     "vite-tsconfig-paths": "^5.1.4",
     "vitest": "^2.1.8"
