@@ -5,18 +5,40 @@ import { DEFAULT_IMPLEMENTATION, DEFAULT_SETUP_CODE, DEFAULT_SETUP_DTS, README_C
 
 const { compressToEncodedURIComponent, decompressFromEncodedURIComponent } = lz;
 
-const hashStorage: StateStorage = {
-  getItem: (_key): string => {
-    const encoded = location.hash.slice(2);
-    const decompressed = decompressFromEncodedURIComponent(encoded);
-    return JSON.parse(decompressed);
+const hybridStorage: StateStorage = {
+  getItem: (key): string | null => {
+    try {
+      // check hash storage first
+      if (location.hash.length > 2) {
+        const encoded = location.hash.slice(2);
+        const decompressed = decompressFromEncodedURIComponent(encoded);
+        if (!decompressed) return null;
+
+        const hashData = JSON.parse(decompressed);
+        // update localStorage with hash data
+        localStorage.setItem(key, JSON.stringify(hashData));
+        return hashData;
+      }
+
+      // fall back to localStorage
+      const stored = localStorage.getItem(key);
+      if (!stored) return null;
+      JSON.parse(stored);
+      return stored;
+    } catch (error) {
+      console.error("Error reading store:", error);
+      return null;
+    }
   },
-  setItem: (_key, newValue): void => {
-    const compressed = compressToEncodedURIComponent(JSON.stringify(newValue));
+  setItem: (key, newValue): void => {
+    const parsed = JSON.parse(newValue);
+    const compressed = compressToEncodedURIComponent(newValue);
     location.hash = `#/${compressed}`;
+    localStorage.setItem(key, JSON.stringify(parsed));
   },
-  removeItem: (_key): void => {
+  removeItem: (key): void => {
     location.hash = "";
+    localStorage.removeItem(key);
   },
 };
 
@@ -139,7 +161,7 @@ export const usePersistentStore = create<PersistentState>()(
       }),
       {
         name: "persistent-store",
-        storage: createJSONStorage(() => hashStorage),
+        storage: createJSONStorage(() => hybridStorage),
         version: CURRENT_VERSION,
         migrate: (prevState, prevVersion) => {
           return migratePersistentState(prevState as PersistentStateVersion, prevVersion);
