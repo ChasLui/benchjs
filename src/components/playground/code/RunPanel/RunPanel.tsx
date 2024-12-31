@@ -60,14 +60,14 @@ export const RunPanelTabs = ({
         {!isVerticalCollapsed && (
           <>
             <TabsTrigger
-              className="data-[state=active]:bg-white dark:data-[state=active]:bg-zinc-800 px-4 rounded-none border-r dark:border-zinc-800 py-1.5 flex items-center gap-1"
+              className="data-[state=active]:bg-white dark:data-[state=active]:bg-zinc-800 px-4 rounded-none border-r dark:border-zinc-800 py-1.5 flex items-center gap-1 h-full"
               value="run"
             >
               <FlameIcon className="w-4 h-4" />
               <span>Run</span>
             </TabsTrigger>
             <TabsTrigger
-              className="data-[state=active]:bg-white dark:data-[state=active]:bg-zinc-800 px-4 rounded-none border-r dark:border-zinc-800 py-1.5 flex items-center gap-1"
+              className="data-[state=active]:bg-white dark:data-[state=active]:bg-zinc-800 px-4 rounded-none border-r dark:border-zinc-800 py-1.5 flex items-center gap-1 h-full"
               value="console"
             >
               <SquareChevronRightIcon className="w-4 h-4" />
@@ -90,13 +90,23 @@ export const RunPanelTabs = ({
           )}
 
           {onLayoutChange && (
-            <Button className="w-8 h-8" size="icon" variant="ghost" onClick={onLayoutChange}>
+            <Button
+              size="icon"
+              tooltip={`Switch to ${layout === "horizontal" ? "horizontal" : "vertical"} layout`}
+              variant="ghost"
+              onClick={onLayoutChange}
+            >
               {layout === "horizontal" ?
                 <Columns2Icon className="w-4 h-4" />
               : <Rows2Icon className="w-4 h-4" />}
             </Button>
           )}
-          <Button className="w-8 h-8" size="icon" variant="ghost" onClick={onToggleCollapse}>
+          <Button
+            size="icon"
+            tooltip={`${collapsed ? "Expand" : "Collapse"}`}
+            variant="ghost"
+            onClick={onToggleCollapse}
+          >
             {collapsed && layout === "horizontal" && <ChevronsLeftIcon />}
             {!collapsed && layout === "horizontal" && <ChevronsRightIcon />}
             {collapsed && layout === "vertical" && <ChevronsUpIcon />}

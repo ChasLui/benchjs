@@ -83,7 +83,7 @@ const Section = ({ children, className }: { children: React.ReactNode; className
   );
 };
 
-const MotionCard = motion(Card);
+const MotionCard = motion.create(Card);
 
 // const stats = [
 //   { number: "10K+", label: "GitHub Stars" },

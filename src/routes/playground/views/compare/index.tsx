@@ -4,17 +4,23 @@ import { Download, Loader2, PlayIcon } from "lucide-react";
 import { useBenchmarkStore } from "@/stores/benchmarkStore";
 import { Implementation, usePersistentStore } from "@/stores/persistentStore";
 import { benchmarkService } from "@/services/benchmark/benchmark-service";
+import { ExportModal } from "@/components/ExportModal";
+import { ComparisonChart } from "@/components/playground/compare/ComparisonChart/ComparisonChart";
+import { ComparisonTable } from "@/components/playground/compare/ComparisonTable";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ComparisonChart } from "../../../../components/playground/compare/ComparisonChart/ComparisonChart";
-import { ComparisonTable } from "../../../../components/playground/compare/ComparisonTable";
 
 interface ExtendedImplementation extends Implementation {
   selected: boolean;
+  id: string;
+  filename: string;
+  content: string;
 }
 
 export const CompareView = () => {
   const [implementations, setImplementations] = useState<ExtendedImplementation[]>([]);
+  const [showExportModal, setShowExportModal] = useState(false);
+  const [exportData, setExportData] = useState("");
   const store = useBenchmarkStore();
   const persistentStore = usePersistentStore();
 
@@ -71,15 +77,8 @@ export const CompareView = () => {
         };
       });
 
-    const jsonString = JSON.stringify(resultsData, null, 2);
-    const blob = new Blob([jsonString], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = "benchmark_results.json";
-    document.body.append(link);
-    link.click();
-    document.body.removeChild(link);
+    setExportData(JSON.stringify(resultsData, null, 2));
+    setShowExportModal(true);
   };
 
   const isRunning = implementations.some((item) => {
@@ -154,6 +153,8 @@ export const CompareView = () => {
           </Card>
         </motion.div>
       </AnimatePresence>
+
+      <ExportModal open={showExportModal} value={exportData} onOpenChange={setShowExportModal} />
     </div>
   );
 };
