@@ -1,4 +1,4 @@
-export const formatTime = (ms: number): string => {
+export const formatDuration = (ms: number): string => {
   if (ms >= 1000) return `${(ms / 1000).toFixed(2)}s`;
   if (ms >= 1) return `${ms.toFixed(2)}ms`;
   if (ms >= 0.001) return `${(ms * 1000).toFixed(2)}µs`;
@@ -14,7 +14,7 @@ export const formatBytes = (bytes: number) => {
 };
 
 export const formatCount = (num: number): string => {
-  return new Intl.NumberFormat("en-US").format(num);
+  return new Intl.NumberFormat("en-US").format(Math.floor(num));
 };
 
 export const formatCountShort = (value: number): string => {

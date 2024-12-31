@@ -5,7 +5,7 @@ import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxi
 // import { SiFacebook, SiLinkedin, SiX } from "@icons-pack/react-simple-icons";
 import type { BenchmarkRun } from "@/stores/benchmarkStore";
 import type { Implementation } from "@/stores/persistentStore";
-import { formatCountShort } from "@/lib/formatters";
+import { formatCount, formatCountShort, formatDuration } from "@/lib/formatters";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -185,7 +185,7 @@ export function ShareDialog({ implementations, runs, shareUrl, open, onOpenChang
                               borderRadius: "4px",
                               fontSize: "12px",
                             }}
-                            formatter={(value: number) => `${value.toLocaleString()} ops/sec`}
+                            formatter={(value: number) => `${formatCount(value)} ops/sec`}
                           />
                           <Bar dataKey="Operations/sec" fill="#8884d8" radius={[4, 4, 0, 0]} />
                         </BarChart>
@@ -207,10 +207,10 @@ export function ShareDialog({ implementations, runs, shareUrl, open, onOpenChang
                               <TableRow key={item.name}>
                                 <TableCell className="py-2 font-medium">{item.name}</TableCell>
                                 <TableCell className="py-2 text-right">
-                                  {item.opsPerSecond.toLocaleString()}
+                                  {formatCount(item.opsPerSecond)}
                                 </TableCell>
                                 <TableCell className="py-2 text-right">
-                                  {item.averageTime.toFixed(2)}ms
+                                  {formatDuration(item.averageTime)}
                                 </TableCell>
                                 <TableCell className="py-2 text-right">{item.p95.toFixed(2)}ms</TableCell>
                               </TableRow>

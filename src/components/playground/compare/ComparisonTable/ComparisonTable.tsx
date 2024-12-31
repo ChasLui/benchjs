@@ -1,7 +1,7 @@
 import { Info, Square } from "lucide-react";
 import { BenchmarkRun } from "@/stores/benchmarkStore";
 import { Implementation } from "@/stores/persistentStore";
-import { formatCount, formatTime } from "@/lib/formatters";
+import { formatCount, formatDuration } from "@/lib/formatters";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -209,7 +209,7 @@ export const ComparisonTable = ({
             </TableCell>
             <TableCell>{implementation.filename}</TableCell>
             <TableCell>{run?.status ?? "N/A"}</TableCell>
-            <TableCell>{run ? formatTime(run.elapsedTime) : "-"}</TableCell>
+            <TableCell>{run ? formatDuration(run.elapsedTime) : "-"}</TableCell>
             <TableCell>
               <OpsPerSecondCell metrics={metrics} run={run} />
             </TableCell>

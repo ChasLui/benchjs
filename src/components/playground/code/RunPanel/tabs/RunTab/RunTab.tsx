@@ -3,7 +3,7 @@ import { Loader2Icon, PlayIcon, SquareIcon, TriangleAlertIcon } from "lucide-rea
 import { CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import type { BenchmarkRun, ChartDataPoint } from "@/stores/benchmarkStore";
 import { features } from "@/config";
-import { formatBytes, formatCount, formatCountShort, formatTime } from "@/lib/formatters";
+import { formatBytes, formatCount, formatCountShort, formatDuration } from "@/lib/formatters";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
@@ -29,8 +29,8 @@ export const RunTab = ({ isRunning, latestRun, onRun, onStop, chartData, clearCh
   const averageTime = latestRun?.result?.stats.time.average ?? 0;
   const formattedAverageTime =
     isRunning && iterationsCompleted > 0 ?
-      formatTime(elapsedTime / iterationsCompleted)
-    : formatTime(averageTime);
+      formatDuration(elapsedTime / iterationsCompleted)
+    : formatDuration(averageTime);
 
   const stats = latestRun?.result?.stats;
   const memoryUsage = latestRun?.memoryUsage ?? 0;
@@ -86,7 +86,7 @@ export const RunTab = ({ isRunning, latestRun, onRun, onStop, chartData, clearCh
           </div>
           <div className="grid grid-cols-2 gap-2 text-sm">
             <div>
-              Elapsed Time: <span className="font-medium">{formatTime(elapsedTime)}</span>
+              Elapsed Time: <span className="font-medium">{formatDuration(elapsedTime)}</span>
             </div>
             <div>
               Samples: <span className="font-medium">{iterationsLabel}</span>
@@ -125,19 +125,19 @@ export const RunTab = ({ isRunning, latestRun, onRun, onStop, chartData, clearCh
             </div>
             <div>
               <p className="text-sm text-muted-foreground">Total Time</p>
-              <p className="text-lg font-semibold">{formatTime(stats.time.total)}</p>
+              <p className="text-lg font-semibold">{formatDuration(stats.time.total)}</p>
             </div>
             <div>
               <p className="text-sm text-muted-foreground">Average Time</p>
-              <p className="text-lg font-semibold">{formatTime(stats.time.average)}</p>
+              <p className="text-lg font-semibold">{formatDuration(stats.time.average)}</p>
             </div>
             <div>
               <p className="text-sm text-muted-foreground">Min Time</p>
-              <p className="text-lg font-semibold">{formatTime(stats.time.min)}</p>
+              <p className="text-lg font-semibold">{formatDuration(stats.time.min)}</p>
             </div>
             <div>
               <p className="text-sm text-muted-foreground">Max Time</p>
-              <p className="text-lg font-semibold">{formatTime(stats.time.max)}</p>
+              <p className="text-lg font-semibold">{formatDuration(stats.time.max)}</p>
             </div>
           </div>
           <div className="pt-4 mt-4 border-t">
@@ -145,15 +145,15 @@ export const RunTab = ({ isRunning, latestRun, onRun, onStop, chartData, clearCh
             <div className="grid grid-cols-3 gap-4">
               <div>
                 <p className="text-sm text-muted-foreground">50th Percentile</p>
-                <p className="text-lg font-semibold">{formatTime(stats.time.percentile50)}</p>
+                <p className="text-lg font-semibold">{formatDuration(stats.time.percentile50)}</p>
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">90th Percentile</p>
-                <p className="text-lg font-semibold">{formatTime(stats.time.percentile90)}</p>
+                <p className="text-lg font-semibold">{formatDuration(stats.time.percentile90)}</p>
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">95th Percentile</p>
-                <p className="text-lg font-semibold">{formatTime(stats.time.percentile95)}</p>
+                <p className="text-lg font-semibold">{formatDuration(stats.time.percentile95)}</p>
               </div>
             </div>
           </div>
@@ -184,12 +184,12 @@ export const RunTab = ({ isRunning, latestRun, onRun, onStop, chartData, clearCh
             <LineChart data={chartData} margin={{ top: 5, right: 30, left: 30, bottom: 5 }}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="time" tickFormatter={(value: number) => `${(value / 1000).toFixed(1)}s`} />
-              <YAxis tickFormatter={formatTime} width={60} yAxisId="left" />
+              <YAxis tickFormatter={formatDuration} width={60} yAxisId="left" />
               <YAxis orientation="right" tickFormatter={formatCountShort} width={60} yAxisId="right" />
               <Tooltip
                 formatter={(value: number, name: string) => {
                   if (name === "Total Samples") return [formatCount(value), name];
-                  return [formatTime(value), name];
+                  return [formatDuration(value), name];
                 }}
                 labelFormatter={(value) => `Time: ${(value / 1000).toFixed(1)}s`}
               />
