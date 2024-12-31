@@ -31,6 +31,9 @@ export interface Library {
 }
 
 export interface PersistentState {
+  // version
+  version: number;
+
   // implementations
   implementations: Implementation[];
   addImplementation: (implementation: Implementation) => void;
@@ -60,10 +63,21 @@ export interface PersistentState {
   removeLibrary: (name: string) => void;
 }
 
+type PersistentStateVersion = PersistentState;
+
+// versioning
+const CURRENT_VERSION = 1;
+const migratePersistentState = (state: PersistentStateVersion, _prevVersion: number) => {
+  return state;
+};
+
 export const usePersistentStore = create<PersistentState>()(
   devtools(
     persist(
       (set) => ({
+        // version
+        version: CURRENT_VERSION,
+
         // implementations
         implementations: [
           {
@@ -126,6 +140,10 @@ export const usePersistentStore = create<PersistentState>()(
       {
         name: "persistent-store",
         storage: createJSONStorage(() => hashStorage),
+        version: CURRENT_VERSION,
+        migrate: (prevState, prevVersion) => {
+          return migratePersistentState(prevState as PersistentStateVersion, prevVersion);
+        },
       },
     ),
   ),
