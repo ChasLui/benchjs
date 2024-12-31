@@ -4,6 +4,8 @@ A browser-based JavaScript benchmarking tool: https://benchjs.com
 \
 Currently powered by [benchmate](https://github.com/3rd/benchmate).
 
+![screenshot](https://root.b-cdn.net/benchjs/Social.png)
+
 ## Features
 
 - 🚀 **Zero Setup Required** - Write and run benchmarks directly in your browser
