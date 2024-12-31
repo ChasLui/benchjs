@@ -14,15 +14,13 @@ import {
   Users,
 } from "lucide-react";
 import { useInView } from "react-intersection-observer";
-import { Link, useNavigate } from "react-router";
+import { useNavigate } from "react-router";
 import { cn } from "@/lib/utils";
 import { Logo } from "@/components/common/Logo";
 import { Header } from "@/components/layout/Header";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { Route } from "../../src/routes/+types/home";
-
-const isOpenSource = false;
 
 // eslint-disable-next-line no-empty-pattern
 export function meta({}: Route.MetaArgs) {
@@ -72,7 +70,7 @@ const Section = ({ children, className }: { children: React.ReactNode; className
       ref={ref}
       animate={controls}
       className={cn(
-        "container overflow-hidden relative py-16 px-12 mx-auto max-w-6xl bg-zinc-100 rounded-3xl dark:bg-zinc-800",
+        "container overflow-hidden relative py-12 sm:py-16 px-6 sm:px-12 mx-auto max-w-6xl bg-zinc-100 rounded-3xl dark:bg-zinc-800",
         className,
       )}
       initial="hidden"
@@ -107,7 +105,7 @@ const features = [
   },
   {
     icon: <BarChart2 className="w-6 h-6" />,
-    title: "Real-time Analytics",
+    title: "Real-time Metrics",
     description: "Watch your benchmarks run in real-time with detailed performance metrics.",
     link: "/docs/analytics",
   },
@@ -191,9 +189,9 @@ export default function HomePage() {
         >
           <Header />
 
-          <main className="py-8 px-8 space-y-12 md:px-16">
+          <main className="py-8 px-4 space-y-12 md:px-16">
             {/* hero */}
-            <section className="container py-32 px-4 pt-48 mx-auto max-w-7xl">
+            <section className="container py-32 px-4 pt-48 mx-auto">
               <div className="flex flex-col gap-12 items-center lg:flex-row">
                 {/* left */}
                 <motion.div
@@ -235,14 +233,12 @@ export default function HomePage() {
                       <Rocket className="w-4 h-4" />
                       Enter Playground
                     </Button>
-                    {isOpenSource && (
-                      <a href="https://github.com/3rd/benchjs" rel="noopener noreferrer" target="_blank">
-                        <Button className="gap-2 w-full sm:w-auto" size="lg" variant="outline">
-                          <Github className="w-4 h-4" />
-                          View Source
-                        </Button>
-                      </a>
-                    )}
+                    <a href="https://github.com/3rd/benchjs" rel="noopener noreferrer" target="_blank">
+                      <Button className="gap-2 w-full sm:w-auto" size="lg" variant="outline">
+                        <Github className="w-4 h-4" />
+                        View Source
+                      </Button>
+                    </a>
                   </div>
 
                   {/* stats */}
@@ -262,7 +258,7 @@ export default function HomePage() {
                 {/* right */}
                 <motion.div
                   animate="visible"
-                  className="lg:w-1/2"
+                  className="lg:w-2/3"
                   initial="hidden"
                   layoutId="editor"
                   variants={fadeInUp}
@@ -280,18 +276,8 @@ export default function HomePage() {
                         ease: "easeInOut",
                       }}
                     />
-                    <div className="relative p-6 rounded-lg shadow-2xl bg-black/80">
-                      <pre className="font-mono text-sm text-zinc-300">
-                        <code>{`// Example benchmark
-function fibonacci(n: number): number {
-  if (n <= 1) return n;
-  return fibonacci(n - 1) + fibonacci(n - 2);
-}
-
-benchmark("Recursive Fibonacci", () => {
-  fibonacci(20);
-});`}</code>
-                      </pre>
+                    <div className="relative">
+                      <img alt="Screenshot" src="https://root.b-cdn.net/benchjs/Hero.png" />
                     </div>
                   </div>
                 </motion.div>
@@ -333,73 +319,6 @@ benchmark("Recursive Fibonacci", () => {
               </section>
             </Section>
 
-            {/* community */}
-            {/* <Section> */}
-            {/*   <section> */}
-            {/*     <div className="mx-auto mb-12 max-w-2xl text-center"> */}
-            {/*       <h2 className="mb-4 text-3xl font-bold">Join Our Community</h2> */}
-            {/*       <p className="text-zinc-600 dark:text-zinc-300"> */}
-            {/*         BenchJS is built by the community, for the community. Get involved and help shape the */}
-            {/*         future of JavaScript performance testing. */}
-            {/*       </p> */}
-            {/*     </div> */}
-            {/*     <div className="grid gap-8 mx-auto max-w-4xl md:grid-cols-3"> */}
-            {/*       <Card className="bg-white shadow-lg dark:bg-zinc-900"> */}
-            {/*         <CardHeader> */}
-            {/*           <Github className="mb-2 w-8 h-8 text-primary" /> */}
-            {/*           <CardTitle>Contribute</CardTitle> */}
-            {/*         </CardHeader> */}
-            {/*         <CardContent> */}
-            {/*           <p className="mb-4 text-zinc-600 dark:text-zinc-300"> */}
-            {/*             Help improve BenchJS by contributing code, documentation, or ideas. */}
-            {/*           </p> */}
-            {/*           <a */}
-            {/*             className="text-yellow-700 dark:text-purple-400 hover:underline" */}
-            {/*             href="https://github.com/benchjs/benchjs/contribute" */}
-            {/*             rel="noopener noreferrer" */}
-            {/*             target="_blank" */}
-            {/*           > */}
-            {/*             View Contributing Guide → */}
-            {/*           </a> */}
-            {/*         </CardContent> */}
-            {/*       </Card> */}
-            {/*       <Card className="bg-white shadow-lg dark:bg-zinc-900"> */}
-            {/*         <CardHeader> */}
-            {/*           <MessageSquare className="mb-2 w-8 h-8 text-primary" /> */}
-            {/*           <CardTitle>Discuss</CardTitle> */}
-            {/*         </CardHeader> */}
-            {/*         <CardContent> */}
-            {/*           <p className="mb-4 text-zinc-600 dark:text-zinc-300"> */}
-            {/*             Join our Discord community to discuss performance optimization. */}
-            {/*           </p> */}
-            {/*           <a */}
-            {/*             className="text-yellow-700 dark:text-purple-400 hover:underline" */}
-            {/*             href="https://discord.gg/benchjs" */}
-            {/*             rel="noopener noreferrer" */}
-            {/*             target="_blank" */}
-            {/*           > */}
-            {/*             Join Discord → */}
-            {/*           </a> */}
-            {/*         </CardContent> */}
-            {/*       </Card> */}
-            {/*       <Card className="bg-white shadow-lg dark:bg-zinc-900"> */}
-            {/*         <CardHeader> */}
-            {/*           <BookOpen className="mb-2 w-8 h-8 text-primary" /> */}
-            {/*           <CardTitle>Learn</CardTitle> */}
-            {/*         </CardHeader> */}
-            {/*         <CardContent> */}
-            {/*           <p className="mb-4 text-zinc-600 dark:text-zinc-300"> */}
-            {/*             Explore our guides and documentation to master performance testing. */}
-            {/*           </p> */}
-            {/*           <Link className="text-yellow-700 dark:text-purple-400 hover:underline" to="/docs"> */}
-            {/*             Read Documentation → */}
-            {/*           </Link> */}
-            {/*         </CardContent> */}
-            {/*       </Card> */}
-            {/*     </div> */}
-            {/*   </section> */}
-            {/* </Section> */}
-
             {/* how it works */}
             <Section>
               <section>
@@ -414,7 +333,7 @@ benchmark("Recursive Fibonacci", () => {
 
                   {/* Step 1: Write */}
                   <div className="mx-auto mb-24 max-w-6xl">
-                    <div className="flex flex-col gap-12 items-center lg:flex-row">
+                    <div className="flex flex-col gap-4 items-center sm:gap-12 lg:flex-row">
                       <div className="space-y-6 lg:w-1/2">
                         <div className="flex gap-4 items-center">
                           <div className="flex justify-center items-center w-12 h-12 text-xl font-bold bg-yellow-300 rounded-full text-zinc-800 dark:bg-yellow-600/80">
@@ -436,7 +355,7 @@ benchmark("Recursive Fibonacci", () => {
                           </li>
                         </ul>
                       </div>
-                      <div className="lg:w-1/2">
+                      <div className="w-full lg:w-1/2">
                         <div className="p-6 bg-black rounded-lg shadow-xl dark:bg-black">
                           <div className="flex gap-2 items-center mb-4">
                             <div className="w-3 h-3 bg-red-500 rounded-full" />
@@ -444,20 +363,11 @@ benchmark("Recursive Fibonacci", () => {
                             <div className="w-3 h-3 bg-green-500 rounded-full" />
                           </div>
                           <pre className="font-mono text-sm text-zinc-300">
-                            <code>{`// Implementation 1: QuickSort
-function quickSort(arr: number[]): number[] {
-  if (arr.length <= 1) return arr;
-  const pivot = arr[0];
-  const left = arr.slice(1)
-    .filter(x => x <= pivot);
-  const right = arr.slice(1)
-    .filter(x => x > pivot);
-  return [
-    ...quickSort(left),
-    pivot,
-    ...quickSort(right)
-  ];
-}`}</code>
+                            <code>{`import { pick } from "lodash-es";
+
+export const run = () => {
+  return pick(data, keysToPick);
+};`}</code>
                           </pre>
                         </div>
                       </div>
@@ -488,8 +398,8 @@ function quickSort(arr: number[]): number[] {
                           </li>
                         </ul>
                       </div>
-                      <div className="space-y-6 lg:w-1/2">
-                        <div className="p-6 bg-white rounded-lg shadow-xl backdrop-blur dark:bg-zinc-900">
+                      <div className="w-full lg:w-1/2">
+                        <div className="flex-1 p-6 bg-white rounded-lg shadow-xl backdrop-blur dark:bg-zinc-900">
                           <div className="space-y-6">
                             <div>
                               <div className="flex justify-between mb-2 text-sm">
@@ -524,7 +434,7 @@ function quickSort(arr: number[]): number[] {
                     </div>
                   </div>
 
-                  {/* Step 3: Analyze */}
+                  {/* Step 3: Share */}
                   <div className="mx-auto max-w-6xl">
                     <div className="flex flex-col gap-12 items-center lg:flex-row">
                       <div className="space-y-6 lg:w-1/2">
@@ -532,44 +442,19 @@ function quickSort(arr: number[]): number[] {
                           <div className="flex justify-center items-center w-12 h-12 text-xl font-bold bg-yellow-300 rounded-full text-zinc-800 dark:bg-yellow-600/80">
                             3
                           </div>
-                          <h3 className="text-2xl font-bold">Analyze Results</h3>
+                          <h3 className="text-2xl font-bold">Share Results</h3>
                         </div>
                         <p className="text-zinc-600 dark:text-zinc-300">
-                          Compare multiple implementations, share results with your team and make data-driven
-                          decisions.
+                          Share an image of your benchmark results or a link for others to run them on their
+                          own.
                         </p>
-                        <ul className="space-y-3">
-                          <li className="flex gap-3 items-center">
-                            <Check className="w-5 h-5 text-green-500" />
-                            <span>Statistical analysis</span>
-                          </li>
-                          <li className="flex gap-3 items-center">
-                            <Check className="w-5 h-5 text-green-500" />
-                            <span>Shareable reports</span>
-                          </li>
-                        </ul>
                       </div>
                       <div className="lg:w-1/2">
-                        <div className="p-6 space-y-6 bg-white rounded-lg shadow-xl backdrop-blur dark:bg-zinc-900">
-                          <div>
-                            <h4 className="mb-2 font-semibold">Performance Summary</h4>
-                            <div className="space-y-2 text-sm text-zinc-600 dark:text-zinc-300">
-                              <p>
-                                • QuickSort is <span className="font-medium text-green-600">25% faster</span>{" "}
-                                than MergeSort
-                              </p>
-                              <p>• Consistent performance across all input sizes</p>
-                              <p>• 95% confidence interval: ±0.5%</p>
-                            </div>
-                          </div>
-                          {/* <div> */}
-                          {/*   <h4 className="mb-2 font-semibold">Memory Usage</h4> */}
-                          {/*   <div className="space-y-2 text-sm text-zinc-600 dark:text-zinc-300"> */}
-                          {/*     <p>• 15% less memory allocation</p> */}
-                          {/*     <p>• No memory leaks detected</p> */}
-                          {/*     <p>• Stable garbage collection pattern</p> */}
-                          {/*   </div> */}
-                          {/* </div> */}
+                        <div className="bg-white rounded-lg shadow-xl dark:bg-zinc-900">
+                          <img
+                            alt="Shared benchmark results"
+                            src="https://root.b-cdn.net/benchjs/benchmark-comparison%20(4).png"
+                          />
                         </div>
                       </div>
                     </div>
@@ -615,95 +500,87 @@ function quickSort(arr: number[]): number[] {
             {/* </Section> */}
 
             {/* Open Source Section */}
-            {isOpenSource && (
-              <Section className="bg-gradient-to-br from-yellow-200 to-orange-200 dark:from-yellow-900/50 dark:to-orange-900/50">
-                <section>
-                  <div className="absolute inset-0 bg-grid-black/[0.03] dark:bg-grid-white/[0.03]" />
-                  <div className="relative">
-                    <div className="flex flex-col gap-12 items-center lg:flex-row">
-                      <div className="text-center lg:w-1/2 lg:text-left">
-                        <h2 className="mb-6 text-4xl font-bold">Built by the Community</h2>
-                        <p className="mb-8 text-xl text-zinc-600 dark:text-zinc-300">
-                          BenchJS thrives on community contributions. From bug fixes to new features, every
-                          improvement comes from developers like you.
-                        </p>
-                        <div className="flex flex-col gap-4 sm:flex-row">
-                          <a href="https://github.com/3rd/benchjs" rel="noopener noreferrer" target="_blank">
-                            <Button className="gap-2 w-full sm:w-auto" size="lg" variant="default">
-                              <Github className="w-4 h-4" />
-                              View Source
-                            </Button>
-                          </a>
-                          <Link to="/docs/contributing">
-                            <Button className="gap-2 w-full sm:w-auto" size="lg" variant="outline">
-                              <GitBranch className="w-4 h-4" />
-                              Contribute
-                            </Button>
-                          </Link>
+            <Section className="bg-gradient-to-br from-yellow-200 to-orange-200 dark:from-yellow-900/50 dark:to-orange-900/50">
+              <section>
+                <div className="absolute inset-0 bg-grid-black/[0.03] dark:bg-grid-white/[0.03]" />
+                <div className="relative">
+                  <div className="flex flex-col gap-12 items-center lg:flex-row">
+                    <div className="text-center lg:w-1/2 lg:text-left">
+                      <h2 className="mb-6 text-4xl font-bold">Built by the Community</h2>
+                      <p className="mb-8 text-xl text-zinc-600 dark:text-zinc-300">
+                        BenchJS thrives on community contributions. From bug fixes to new features, every
+                        improvement comes from developers like you.
+                      </p>
+                      <div className="flex flex-col gap-4 sm:flex-row">
+                        <a href="https://github.com/3rd/benchjs" rel="noopener noreferrer" target="_blank">
+                          <Button className="gap-2 w-full sm:w-auto" size="lg">
+                            <GitBranch className="w-4 h-4" />
+                            Contribute
+                          </Button>
+                        </a>
+                      </div>
+                      <div className="grid grid-cols-2 gap-8 mt-8">
+                        <div className="text-left">
+                          <h3 className="flex gap-2 items-center mb-2 font-semibold">
+                            <GitBranch className="w-5 h-5 text-yellow-700" />
+                            MIT License
+                          </h3>
+                          <p className="text-sm text-zinc-600 dark:text-zinc-400">
+                            Free and open source under the MIT License. Use it however you want.
+                          </p>
                         </div>
-                        <div className="grid grid-cols-2 gap-8 mt-8">
-                          <div className="text-left">
-                            <h3 className="flex gap-2 items-center mb-2 font-semibold">
-                              <GitBranch className="w-5 h-5 text-yellow-700" />
-                              MIT License
-                            </h3>
-                            <p className="text-sm text-zinc-600 dark:text-zinc-400">
-                              Free and open source under the MIT License. Use it however you want.
-                            </p>
-                          </div>
-                          <div className="text-left">
-                            <h3 className="flex gap-2 items-center mb-2 font-semibold">
-                              <Users className="w-5 h-5 text-yellow-700" />
-                              Active Community
-                            </h3>
-                            <p className="text-sm text-zinc-600 dark:text-zinc-400">
-                              Join our Discord for discussions, help, and collaboration.
-                            </p>
-                          </div>
+                        <div className="text-left">
+                          <h3 className="flex gap-2 items-center mb-2 font-semibold">
+                            <Users className="w-5 h-5 text-yellow-700" />
+                            Active Community
+                          </h3>
+                          <p className="text-sm text-zinc-600 dark:text-zinc-400">
+                            Join our Discord for discussions, help, and collaboration.
+                          </p>
                         </div>
                       </div>
-                      <div className="p-8 bg-white rounded-xl shadow-xl lg:w-1/2 backdrop-blur dark:bg-zinc-900">
-                        <div className="space-y-6">
-                          <div className="flex gap-4 items-start">
-                            <div className="flex flex-shrink-0 justify-center items-center w-8 h-8 bg-yellow-200 rounded-full dark:bg-purple-900/30">
-                              <Code className="w-4 h-4 text-yellow-700" />
-                            </div>
-                            <div>
-                              <h3 className="mb-1 font-semibold">Contribute Code</h3>
-                              <p className="text-sm text-zinc-600 dark:text-zinc-400">
-                                Help improve the core functionality, fix bugs, or add new features.
-                              </p>
-                            </div>
+                    </div>
+                    <div className="p-8 bg-white rounded-xl shadow-xl lg:w-1/2 backdrop-blur dark:bg-zinc-900">
+                      <div className="space-y-6">
+                        <div className="flex gap-4 items-start">
+                          <div className="flex flex-shrink-0 justify-center items-center w-8 h-8 bg-yellow-200 rounded-full dark:bg-purple-900/30">
+                            <Code className="w-4 h-4 text-yellow-700" />
                           </div>
-                          <div className="flex gap-4 items-start">
-                            <div className="flex flex-shrink-0 justify-center items-center w-8 h-8 bg-yellow-200 rounded-full dark:bg-purple-900/30">
-                              <BookOpen className="w-4 h-4 text-yellow-700" />
-                            </div>
-                            <div>
-                              <h3 className="mb-1 font-semibold">Improve Docs</h3>
-                              <p className="text-sm text-zinc-600 dark:text-zinc-400">
-                                Help make our documentation better, clearer, and more comprehensive.
-                              </p>
-                            </div>
+                          <div>
+                            <h3 className="mb-1 font-semibold">Contribute Code</h3>
+                            <p className="text-sm text-zinc-600 dark:text-zinc-400">
+                              Help improve the core functionality, fix bugs, or add new features.
+                            </p>
                           </div>
-                          <div className="flex gap-4 items-start">
-                            <div className="flex flex-shrink-0 justify-center items-center w-8 h-8 bg-yellow-200 rounded-full dark:bg-purple-900/30">
-                              <MessageSquare className="w-4 h-4 text-yellow-700" />
-                            </div>
-                            <div>
-                              <h3 className="mb-1 font-semibold">Join Discussions</h3>
-                              <p className="text-sm text-zinc-600 dark:text-zinc-400">
-                                Share ideas, report issues, and help shape the future of BenchJS.
-                              </p>
-                            </div>
+                        </div>
+                        <div className="flex gap-4 items-start">
+                          <div className="flex flex-shrink-0 justify-center items-center w-8 h-8 bg-yellow-200 rounded-full dark:bg-purple-900/30">
+                            <BookOpen className="w-4 h-4 text-yellow-700" />
+                          </div>
+                          <div>
+                            <h3 className="mb-1 font-semibold">Improve Docs</h3>
+                            <p className="text-sm text-zinc-600 dark:text-zinc-400">
+                              Help make our documentation better, clearer, and more comprehensive.
+                            </p>
+                          </div>
+                        </div>
+                        <div className="flex gap-4 items-start">
+                          <div className="flex flex-shrink-0 justify-center items-center w-8 h-8 bg-yellow-200 rounded-full dark:bg-purple-900/30">
+                            <MessageSquare className="w-4 h-4 text-yellow-700" />
+                          </div>
+                          <div>
+                            <h3 className="mb-1 font-semibold">Join Discussions</h3>
+                            <p className="text-sm text-zinc-600 dark:text-zinc-400">
+                              Share ideas, report issues, and help shape the future of BenchJS.
+                            </p>
                           </div>
                         </div>
                       </div>
                     </div>
                   </div>
-                </section>
-              </Section>
-            )}
+                </div>
+              </section>
+            </Section>
           </main>
 
           {/* footer */}
@@ -711,20 +588,18 @@ function quickSort(arr: number[]): number[] {
             <div className="container flex justify-between items-center px-4 mx-auto max-w-6xl">
               <p className="text-xs text-zinc-500 dark:text-zinc-400">
                 <a href="https://andrei.fyi" rel="noopener noreferrer" target="_blank">
-                  © Andrei ❤️
+                  Built with ❤️
                 </a>
               </p>
-              {isOpenSource && (
-                <div className="flex space-x-4">
-                  <a
-                    className="text-zinc-500 dark:hover:text-zinc-300 hover:text-zinc-600"
-                    href="https://github.com/3rd/benchjs"
-                  >
-                    <span className="sr-only">GitHub</span>
-                    <Github className="w-6 h-6" />
-                  </a>
-                </div>
-              )}
+              <div className="flex space-x-4">
+                <a
+                  className="text-zinc-500 dark:hover:text-zinc-300 hover:text-zinc-600"
+                  href="https://github.com/3rd/benchjs"
+                >
+                  <span className="sr-only">GitHub</span>
+                  <Github className="w-4 h-4" />
+                </a>
+              </div>
             </div>
           </footer>
         </motion.div>

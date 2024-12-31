@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Route } from ".react-router/types/src/routes/playground/+types/root";
 import { Share2Icon } from "lucide-react";
+import { Link } from "react-router";
 import { BenchmarkRun, useBenchmarkStore } from "@/stores/benchmarkStore";
 import { Implementation, usePersistentStore } from "@/stores/persistentStore";
 import { useMonacoTabs } from "@/hooks/useMonacoTabs";
@@ -87,6 +88,19 @@ export default function EditorRoute() {
         shareUrl={shareData?.shareUrl ?? ""}
         onOpenChange={(open) => setShareData(open ? shareData : null)}
       />
+
+      <div className="flex fixed top-0 right-0 bottom-0 left-0 z-50 justify-center items-center p-4 w-full h-full sm:hidden bg-black/50 backdrop-blur-sm dark:bg-black/80">
+        <div className="flex flex-col gap-4 justify-center items-center p-4 py-8 text-center bg-white rounded-lg shadow-xl dark:bg-zinc-900">
+          <h1 className="mb-4 text-2xl font-bold">Mobile is not supported 🫠</h1>
+          <p>
+            The playground includes a code editor and many tabs, and it&apos;s not a good experience on
+            mobile, please use a desktop browser.
+          </p>
+          <Link className="text-zinc-900 dark:text-zinc-100" to="/">
+            <Button variant="outline">Go back</Button>
+          </Link>
+        </div>
+      </div>
     </div>
   );
 }

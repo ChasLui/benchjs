@@ -154,7 +154,7 @@ export function ShareDialog({ implementations, runs, shareUrl, open, onOpenChang
                 {/* image */}
                 {chartData.length > 0 && (
                   <div className="flex-1 space-y-4">
-                    <div ref={imageRef} className="p-2 bg-white rounded-lg border">
+                    <div ref={imageRef} className="p-2 bg-white rounded-lg border dark:bg-zinc-900">
                       {/* chart */}
                       <ResponsiveContainer className="mx-auto" height={150} width={490}>
                         <BarChart data={chartData} margin={{ top: 10, right: 10, left: 20, bottom: 0 }}>
