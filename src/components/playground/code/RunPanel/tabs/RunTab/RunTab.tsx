@@ -49,7 +49,6 @@ export const RunTab = ({ isRunning, latestRun, onRun, onStop, chartData, clearCh
           {!isRunning && <PlayIcon className="w-4 h-4" />}
 
           {!isRunning && "Run Benchmark"}
-          {isRunning && latestRun?.status === "idle" && "Preparing..."}
           {isRunning && latestRun?.status === "warmup" && "Warming up..."}
           {isRunning && latestRun?.status === "running" && "Running..."}
         </Button>

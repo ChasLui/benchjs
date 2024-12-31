@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Columns2Icon, FlameIcon, Loader2Icon, Rows2Icon, SquareChevronRightIcon } from "lucide-react";
 import { useShallow } from "zustand/shallow";
 import { useLatestRunForImplementation } from "@/stores/benchmarkStore";
@@ -33,22 +33,15 @@ export const RunPanel = ({ implementation, onRun, onStop, layout, onLayoutChange
   const consoleLogs = useBenchmarkStore((state) => (latestRun ? state.consoleLogs[latestRun.id] : null));
 
   const [activeTab, setActiveTab] = useState<RunPanelTab>("run");
-  const [isRunning, setIsRunning] = useState(latestRun?.status === "running");
+  const isRunning = latestRun?.status === "running" || latestRun?.status === "warmup";
 
   const handleSetTab = (tab: string) => {
     setActiveTab(tab as RunPanelTab);
   };
 
   const handleRun = async () => {
-    setIsRunning(true);
     onRun?.();
   };
-
-  useEffect(() => {
-    if (!latestRun || ["cancelled", "completed", "failed"].includes(latestRun.status)) {
-      setIsRunning(false);
-    }
-  }, [latestRun]);
 
   return (
     <Tabs className="flex flex-col h-full" value={activeTab} onValueChange={handleSetTab}>

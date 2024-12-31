@@ -63,7 +63,7 @@ export const benchmarkService = {
           createdAt: Date.now(),
           warmupStartedAt: null,
           warmupEndedAt: null,
-          status: "idle" as const,
+          status: "running" as const,
           filename: implementation.filename,
           originalCode: implementation.content,
           processedCode: "",

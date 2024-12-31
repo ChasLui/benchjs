@@ -3,7 +3,7 @@ import { create } from "zustand";
 import { devtools } from "zustand/middleware";
 import { BenchmarkResult } from "@/services/benchmark/types";
 
-export type BenchmarkStatus = "cancelled" | "completed" | "failed" | "idle" | "running" | "warmup";
+export type BenchmarkStatus = "cancelled" | "completed" | "failed" | "running" | "warmup";
 
 export interface BenchmarkRun {
   id: string;
