@@ -192,7 +192,7 @@ export function ShareDialog({ implementations, runs, shareUrl, open, onOpenChang
                       </ResponsiveContainer>
 
                       {/* table */}
-                      <div className="overflow-visible text-sm">
+                      <div className="p-2 text-sm deep-overflow-visible">
                         <Table>
                           <TableHeader>
                             <TableRow>
