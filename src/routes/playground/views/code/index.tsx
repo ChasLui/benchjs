@@ -1,7 +1,8 @@
-import { useCallback, useMemo } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import { Monaco as MonacoEditor } from "@monaco-editor/react";
 import { editor as RawMonacoEditor } from "monaco-editor";
 import { nanoid } from "nanoid";
+import { ImperativePanelHandle } from "react-resizable-panels";
 import { useLatestRunForImplementation } from "@/stores/benchmarkStore";
 import { usePersistentStore } from "@/stores/persistentStore";
 import { useUserStore } from "@/stores/userStore";
@@ -12,8 +13,9 @@ import { benchmarkService } from "@/services/benchmark/benchmark-service";
 import { DependencyService } from "@/services/dependencies";
 import { FileTree, FileTreeItem } from "@/components/common/FileTree";
 import { Monaco } from "@/components/common/Monaco";
-import { RunPanel } from "@/components/playground/code/RunPanel";
+import { RunPanel, RunPanelTabs } from "@/components/playground/code/RunPanel";
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable";
+
 const MIN_SIDEBAR_WIDTH = 280;
 
 interface CodeViewProps {
@@ -186,9 +188,13 @@ export const CodeView = ({ monacoTabs, dependencyService }: CodeViewProps) => {
     [store.libraries, dependencyService],
   );
 
+  const runPanelRef = useRef<ImperativePanelHandle>(null);
+  const [isRunPanelCollapsed, setIsRunPanelCollapsed] = useState(false);
+  const [activeRunPanelTab, setActiveRunPanelTab] = useState<"console" | "run">("run");
+
   return (
     <ResizablePanelGroup className="flex flex-1 w-full" direction="horizontal">
-      <ResizablePanel className={cn("flex")} defaultSize={defaultSidebarSize}>
+      <ResizablePanel className={cn("flex")} defaultSize={defaultSidebarSize} id="file-tree-panel">
         {/* left - file tree */}
         <div className="flex-1 px-1 h-full text-sm bg-zinc-100 dark:bg-zinc-900">
           <div className="p-2 font-medium uppercase text-zinc-900 dark:text-zinc-100">Code</div>
@@ -209,10 +215,10 @@ export const CodeView = ({ monacoTabs, dependencyService }: CodeViewProps) => {
 
       <ResizableHandle />
 
-      <ResizablePanel>
+      <ResizablePanel id="right-panel">
         {/* right */}
-        <ResizablePanelGroup autoSaveId="code" className="h-full" direction={layout}>
-          <ResizablePanel defaultSize={layout === "vertical" ? 80 : 70}>
+        <ResizablePanelGroup className="h-full" direction={layout}>
+          <ResizablePanel defaultSize={70} id="editor-panel">
             <Monaco
               key={monacoTabs.activeTabId}
               extraLibs={extraLibs}
@@ -234,15 +240,49 @@ export const CodeView = ({ monacoTabs, dependencyService }: CodeViewProps) => {
           {currentImplementation && (
             <>
               <ResizableHandle />
-              <ResizablePanel defaultSize={layout === "vertical" ? 35 : 50}>
+
+              {/* full run panel */}
+              <ResizablePanel
+                ref={runPanelRef}
+                defaultSize={layout === "vertical" ? 35 : 50}
+                id="run-panel"
+                minSize={10}
+                collapsible
+              >
                 <RunPanel
+                  activeTab={activeRunPanelTab}
                   implementation={currentImplementation}
                   layout={layout}
                   onLayoutChange={() => setCodeViewLayout(layout === "vertical" ? "horizontal" : "vertical")}
                   onRun={handleRun}
                   onStop={handleStop}
+                  onTabChange={setActiveRunPanelTab}
+                  onToggleCollapse={() => {
+                    if (runPanelRef.current) {
+                      runPanelRef.current.collapse();
+                      setIsRunPanelCollapsed(true);
+                    }
+                  }}
                 />
               </ResizablePanel>
+
+              {/* collapsed run panel */}
+              {isRunPanelCollapsed && (
+                <RunPanelTabs
+                  activeTab={activeRunPanelTab}
+                  isRunning={latestRun?.status === "running" || latestRun?.status === "warmup"}
+                  layout={layout}
+                  collapsed
+                  onLayoutChange={() => setCodeViewLayout(layout === "vertical" ? "horizontal" : "vertical")}
+                  onTabChange={(tab) => setActiveRunPanelTab(tab as "console" | "run")}
+                  onToggleCollapse={() => {
+                    if (runPanelRef.current) {
+                      runPanelRef.current.expand();
+                      setIsRunPanelCollapsed(false);
+                    }
+                  }}
+                />
+              )}
             </>
           )}
         </ResizablePanelGroup>

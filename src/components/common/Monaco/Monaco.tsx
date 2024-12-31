@@ -179,7 +179,6 @@ export const Monaco = ({
     const themeConfig = themes[(theme as keyof typeof themes) ?? "vsLight"] as Parameters<
       typeof monacoHelper.editor.defineTheme
     >[1];
-    console.log(themeConfig);
     monacoHelper.editor.defineTheme("theme", themeConfig);
     monacoHelper.editor.setTheme("theme");
   }, [monacoHelper, theme]);
