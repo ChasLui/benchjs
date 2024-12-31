@@ -26,6 +26,30 @@ export function Layout({ children }: { children: React.ReactNode }) {
       <head>
         <meta charSet="utf-8" />
         <meta content="width=device-width, initial-scale=1" name="viewport" />
+        <meta
+          content="JavaScript, TypeScript, benchmarking, performance, browser, BenchJS, code comparison, real-time metrics"
+          name="keywords"
+        />
+        <meta content="website" property="og:type" />
+        <meta content="BenchJS - JavaScript Benchmarking" property="og:title" />
+        <meta
+          content="Run, compare, and share JavaScript benchmarks in your browser with BenchJS."
+          property="og:description"
+        />
+        <meta content="https://benchjs.com" property="og:url" />
+        <meta content="https://root.b-cdn.net/benchjs/Social.png" property="og:image" />
+        <meta content="BenchJS" property="og:site_name" />
+        <meta content="summary_large_image" name="twitter:card" />
+        <meta content="BenchJS - JavaScript Benchmarking" name="twitter:title" />
+        <meta
+          content="Run, compare, and share JavaScript benchmarks in your browser with BenchJS."
+          name="twitter:description"
+        />
+        <meta content="https://root.b-cdn.net/benchjs/Social.png" name="twitter:image" />
+        <link href="https://benchjs.com" rel="canonical" />
+        <meta content="BenchJS" name="application-name" />
+        <meta content="index, follow" name="robots" />
+
         <Meta />
         <Links />
         <script

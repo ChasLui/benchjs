@@ -28,7 +28,8 @@ export function meta({}: Route.MetaArgs) {
     { title: "BenchJS - JavaScript Benchmarking" },
     {
       name: "description",
-      content: "BenchJS - JavaScript benchmarking in your browser",
+      content:
+        "BenchJS - JavaScript benchmarking in your browser. Run, compare, and share JavaScript benchmarks with ease.",
     },
   ];
 }
