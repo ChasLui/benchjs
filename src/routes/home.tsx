@@ -524,10 +524,10 @@ export const run = () => {
                         <div className="text-left">
                           <h3 className="flex gap-2 items-center mb-2 font-semibold">
                             <GitBranch className="w-5 h-5 text-yellow-700" />
-                            MIT License
+                            GPL-3.0
                           </h3>
                           <p className="text-sm text-zinc-600 dark:text-zinc-400">
-                            Free and open source under the MIT License. Use it however you want.
+                            Free and open source under the GPL-3.0 license.
                           </p>
                         </div>
                         <div className="text-left">
