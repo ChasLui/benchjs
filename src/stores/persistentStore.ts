@@ -14,10 +14,9 @@ const hybridStorage: StateStorage = {
         const decompressed = decompressFromEncodedURIComponent(encoded);
         if (!decompressed) return null;
 
-        const hashData = JSON.parse(decompressed);
         // update localStorage with hash data
-        localStorage.setItem(key, JSON.stringify(hashData));
-        return hashData;
+        localStorage.setItem(key, decompressed);
+        return decompressed; 
       }
 
       // fall back to localStorage
