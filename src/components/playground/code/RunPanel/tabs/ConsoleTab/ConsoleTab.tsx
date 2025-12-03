@@ -16,16 +16,16 @@ interface ConsoleTabProps {
 const getLogColor = (type: string) => {
   switch (type) {
     case "error": {
-      return "text-red-600";
+      return "text-red-600 dark:text-red-400 font-semibold";
     }
     case "warn": {
-      return "text-yellow-600";
+      return "text-yellow-600 dark:text-yellow-400";
     }
     case "info": {
-      return "text-blue-600";
+      return "text-muted-foreground";
     }
     case "debug": {
-      return "text-purple-600";
+      return "text-muted-foreground/70";
     }
     default: {
       return "text-foreground";

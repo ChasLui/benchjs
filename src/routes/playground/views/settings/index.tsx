@@ -96,7 +96,7 @@ export function SettingsView({ dependencyService }: SettingsViewProps) {
           <Card className="mb-8">
             <CardHeader>
               <CardTitle className="flex justify-between items-center">
-                <span>Libraries</span>
+                <span>Dependencies</span>
                 <Button variant="outline" onClick={handleClearCache}>
                   Clear Cache {cacheCount > 0 && `(${cacheCount})`}
                 </Button>
@@ -127,70 +127,77 @@ export function SettingsView({ dependencyService }: SettingsViewProps) {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {store.libraries.map((lib) => {
-                      const dependency = dependencies.dependencyMap[lib.name];
-                      const isEditing = editingName === lib.name;
+                    {store.libraries.length === 0 ?
+                      <TableRow>
+                        <TableCell colSpan={5} className="h-24 text-center text-muted-foreground">
+                          No dependencies added yet. Add one above to get started.
+                        </TableCell>
+                      </TableRow>
+                    : store.libraries.map((lib) => {
+                        const dependency = dependencies.dependencyMap[lib.name];
+                        const isEditing = editingName === lib.name;
 
-                      return (
-                        <TableRow key={lib.name}>
-                          <TableCell className="font-medium">
-                            {isEditing ?
-                              <Input
-                                className="h-8"
-                                value={editValue}
-                                onChange={(e) => setEditValue(e.target.value)}
-                              />
-                            : lib.name}
-                          </TableCell>
-                          <TableCell>{dependency?.package?.version || "-"}</TableCell>
-                          <TableCell className="max-w-md truncate">
-                            {dependency?.package?.description || "-"}
-                          </TableCell>
-                          <TableCell>
-                            {dependency ?
-                              <>
-                                {getStatusBadge(dependency.status)}
-                                {dependency.error && (
-                                  <span className="ml-2 text-sm text-red-600 dark:text-red-400">
-                                    {dependency.error}
-                                  </span>
-                                )}
-                              </>
-                            : getStatusBadge("loading")}
-                          </TableCell>
-                          <TableCell>
-                            <div className="flex gap-2">
+                        return (
+                          <TableRow key={lib.name}>
+                            <TableCell className="font-medium">
                               {isEditing ?
+                                <Input
+                                  className="h-8"
+                                  value={editValue}
+                                  onChange={(e) => setEditValue(e.target.value)}
+                                />
+                              : lib.name}
+                            </TableCell>
+                            <TableCell>{dependency?.package?.version || "-"}</TableCell>
+                            <TableCell className="max-w-md truncate">
+                              {dependency?.package?.description || "-"}
+                            </TableCell>
+                            <TableCell>
+                              {dependency ?
                                 <>
-                                  <Button size="icon" variant="ghost" onClick={handleSave}>
-                                    <Check className="w-4 h-4" />
-                                  </Button>
-                                  <Button size="icon" variant="ghost" onClick={handleCancelEdit}>
-                                    <X className="w-4 h-4" />
-                                  </Button>
+                                  {getStatusBadge(dependency.status)}
+                                  {dependency.error && (
+                                    <span className="ml-2 text-sm text-destructive-foreground">
+                                      {dependency.error}
+                                    </span>
+                                  )}
                                 </>
-                              : <>
-                                  <Button
-                                    size="icon"
-                                    variant="ghost"
-                                    onClick={() => handleStartEdit(lib.name)}
-                                  >
-                                    <Pencil className="w-4 h-4" />
-                                  </Button>
-                                  <Button
-                                    size="icon"
-                                    variant="ghost"
-                                    onClick={() => handleRemoveLibrary(lib.name)}
-                                  >
-                                    <Trash2 className="w-4 h-4" />
-                                  </Button>
-                                </>
-                              }
-                            </div>
-                          </TableCell>
-                        </TableRow>
-                      );
-                    })}
+                              : getStatusBadge("loading")}
+                            </TableCell>
+                            <TableCell>
+                              <div className="flex gap-2">
+                                {isEditing ?
+                                  <>
+                                    <Button size="icon" variant="ghost" onClick={handleSave}>
+                                      <Check className="w-4 h-4" />
+                                    </Button>
+                                    <Button size="icon" variant="ghost" onClick={handleCancelEdit}>
+                                      <X className="w-4 h-4" />
+                                    </Button>
+                                  </>
+                                : <>
+                                    <Button
+                                      size="icon"
+                                      variant="ghost"
+                                      onClick={() => handleStartEdit(lib.name)}
+                                    >
+                                      <Pencil className="w-4 h-4" />
+                                    </Button>
+                                    <Button
+                                      size="icon"
+                                      variant="ghost"
+                                      onClick={() => handleRemoveLibrary(lib.name)}
+                                    >
+                                      <Trash2 className="w-4 h-4" />
+                                    </Button>
+                                  </>
+                                }
+                              </div>
+                            </TableCell>
+                          </TableRow>
+                        );
+                      })
+                    }
                   </TableBody>
                 </Table>
               </div>

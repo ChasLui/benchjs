@@ -41,9 +41,9 @@ export const RunTab = ({ isRunning, latestRun, onRun, onStop, chartData, clearCh
   }, [clearChartData, latestRun, onRun]);
 
   return (
-    <div className="p-4 pb-6 space-y-4 max-w-[1024px]">
+    <div className="p-3 pb-6 space-y-3 max-w-[1024px]">
       {/* actions */}
-      <div className="flex items-center space-x-2">
+      <div className="flex items-center space-x-1.5">
         <Button className="px-2.5" disabled={isRunning} onClick={handleRun}>
           {isRunning && <Loader2Icon className="w-4 h-4 animate-spin" />}
           {!isRunning && <PlayIcon className="w-4 h-4" />}
@@ -62,9 +62,9 @@ export const RunTab = ({ isRunning, latestRun, onRun, onStop, chartData, clearCh
 
       {/* error */}
       {error && (
-        <Card className="bg-red-50 border-red-500">
+        <Card className="border-destructive">
           <CardContent className="py-2 px-4">
-            <div className="flex gap-2.5 items-start text-sm text-red-500">
+            <div className="flex gap-2.5 items-start text-sm">
               <TriangleAlertIcon className="w-8 h-8" />
               <div className="flex flex-col flex-1 justify-center">
                 <p>Error: {error}</p>
@@ -74,10 +74,10 @@ export const RunTab = ({ isRunning, latestRun, onRun, onStop, chartData, clearCh
         </Card>
       )}
 
-      <div className="p-4 rounded-lg border shadow-sm bg-muted border-zinc-200">
-        <h3 className="mb-2 font-medium">Overview</h3>
-        <div className="space-y-4">
-          <div className="space-y-2">
+      <div className="p-3 rounded-lg border-2 border-border bg-muted">
+        <h3 className="mb-1.5 font-medium">Overview</h3>
+        <div className="space-y-3">
+          <div className="space-y-1.5">
             <div className="flex justify-between text-sm">
               <span className="text-muted-foreground">Progress</span>
               <span className="font-medium">{progress.toFixed(1)}%</span>
@@ -112,9 +112,9 @@ export const RunTab = ({ isRunning, latestRun, onRun, onStop, chartData, clearCh
       </div>
 
       {stats && (
-        <div className="p-4 rounded-lg border shadow-sm bg-muted border-zinc-200">
-          <h3 className="mb-2 font-medium">Stats</h3>
-          <div className="grid grid-cols-3 gap-4">
+        <div className="p-3 rounded-lg border-2 border-border bg-muted">
+          <h3 className="mb-1.5 font-medium">Stats</h3>
+          <div className="grid grid-cols-3 gap-3">
             <div>
               <p className="text-sm text-muted-foreground">Samples</p>
               <p className="text-lg font-semibold">{formatCount(stats.samples)}</p>
@@ -140,9 +140,9 @@ export const RunTab = ({ isRunning, latestRun, onRun, onStop, chartData, clearCh
               <p className="text-lg font-semibold">{formatDuration(stats.time.max)}</p>
             </div>
           </div>
-          <div className="pt-4 mt-4 border-t">
-            <h4 className="mb-2 font-medium">Percentiles</h4>
-            <div className="grid grid-cols-3 gap-4">
+          <div className="pt-3 mt-3 border-t">
+            <h4 className="mb-1.5 font-medium">Percentiles</h4>
+            <div className="grid grid-cols-3 gap-3">
               <div>
                 <p className="text-sm text-muted-foreground">50th Percentile</p>
                 <p className="text-lg font-semibold">{formatDuration(stats.time.percentile50)}</p>
@@ -157,9 +157,9 @@ export const RunTab = ({ isRunning, latestRun, onRun, onStop, chartData, clearCh
               </div>
             </div>
           </div>
-          <div className="pt-4 mt-4 border-t">
-            <h4 className="mb-2 font-medium">Ops/Second</h4>
-            <div className="grid grid-cols-3 gap-4">
+          <div className="pt-3 mt-3 border-t">
+            <h4 className="mb-1.5 font-medium">Ops/Second</h4>
+            <div className="grid grid-cols-3 gap-3">
               <div>
                 <p className="text-sm text-muted-foreground">Average ops/sec</p>
                 <p className="text-lg font-semibold">{formatCount(Math.round(stats.opsPerSecond.average))}</p>
@@ -177,8 +177,8 @@ export const RunTab = ({ isRunning, latestRun, onRun, onStop, chartData, clearCh
         </div>
       )}
 
-      <div className="p-4 rounded-lg border shadow-sm bg-muted border-zinc-200">
-        <h3 className="mb-2 font-medium">Real-time Performance</h3>
+      <div className="p-3 rounded-lg border-2 border-border bg-muted">
+        <h3 className="mb-1.5 font-medium">Real-time Performance</h3>
         <div className="h-[200px]">
           <ResponsiveContainer height="100%" width="100%">
             <LineChart data={chartData} margin={{ top: 5, right: 30, left: 30, bottom: 5 }}>

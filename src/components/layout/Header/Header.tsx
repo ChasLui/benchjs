@@ -26,14 +26,14 @@ export const Header = ({ postLogoElement, customNav, className }: HeaderProps) =
   return (
     <div
       className={cn(
-        `fixed top-0 left-0 right-0 z-50 transition-all duration-2001`,
-        isScrolled ? "bg-white/80 dark:bg-zinc-900/80 backdrop-blur-md shadow-sm" : "",
+        `fixed top-0 left-0 right-0 z-50 transition-all duration-200`,
+        isScrolled ? "bg-background/80 backdrop-blur-md border-b border-border" : "",
         className,
       )}
     >
-      <header className="flex justify-between items-center py-1 px-4 border-b dark:border-zinc-800">
+      <header className="flex justify-between items-center py-1 px-2 border-b border-border">
         {/* logo */}
-        <div className="flex gap-4 items-center">
+        <div className="flex gap-2 items-center">
           <Link to="/">
             <Logo noIcon />
           </Link>
@@ -41,24 +41,17 @@ export const Header = ({ postLogoElement, customNav, className }: HeaderProps) =
         </div>
 
         {/* navigation */}
-        <nav className="flex gap-2 items-center">
+        <nav className="flex gap-1.5 items-center">
           <ThemeSwitcher />
           {customNav}
           {!customNav && (
             <>
-              <Link
-                className="text-zinc-900 dark:text-zinc-100 dark:hover:text-zinc-300 hover:text-zinc-700"
-                to="/playground"
-              >
+              <Link to="/playground">
                 <Button type="button" variant="link">
                   Playground
                 </Button>
               </Link>
-              <Link
-                className="text-sm dark:text-zinc-100"
-                target="_blank"
-                to="https://github.com/3rd/benchjs"
-              >
+              <Link target="_blank" to="https://github.com/3rd/benchjs">
                 <Button type="button" variant="link">
                   GitHub
                 </Button>

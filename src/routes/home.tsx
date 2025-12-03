@@ -71,7 +71,7 @@ const Section = ({ children, className }: { children: React.ReactNode; className
       ref={ref}
       animate={controls}
       className={cn(
-        "container overflow-hidden relative py-12 sm:py-16 px-6 sm:px-12 mx-auto max-w-6xl bg-zinc-100 rounded-3xl dark:bg-zinc-800",
+        "container overflow-hidden relative py-12 sm:py-16 px-6 sm:px-12 mx-auto max-w-6xl border-2 border-border rounded-lg",
         className,
       )}
       initial="hidden"
@@ -168,7 +168,7 @@ export default function HomePage() {
   return (
     <AnimatePresence mode="wait">
       <motion.div
-        className="min-h-screen bg-gradient-to-b to-white from-zinc-50 dark:from-zinc-900 dark:to-zinc-800"
+        className="min-h-screen bg-background"
         exit={{ opacity: 0 }}
         initial={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
@@ -224,7 +224,7 @@ export default function HomePage() {
                   {/* <p className="text-xl font-semibold sm:text-2xl md:text-3xl text-zinc-700 dark:text-zinc-300"> */}
                   {/*   Easy JavaScript Benchmarking */}
                   {/* </p> */}
-                  <p className="md:text-lg text-zinc-500 dark:text-zinc-400">
+                  <p className="md:text-lg text-muted-foreground">
                     Run, compare, and share JavaScript benchmarks in your browser.
                   </p>
 
@@ -265,19 +265,7 @@ export default function HomePage() {
                   variants={fadeInUp}
                 >
                   <div className="relative">
-                    <motion.div
-                      animate={{
-                        scale: [1, 1.02, 1],
-                        opacity: [0.5, 0.6, 0.5],
-                      }}
-                      className="absolute inset-0 bg-gradient-to-r rounded-lg from-yellow-700/20 via-pink-600/20 to-blue-600/20 blur-xl"
-                      transition={{
-                        duration: 4,
-                        repeat: Infinity,
-                        ease: "easeInOut",
-                      }}
-                    />
-                    <div className="relative">
+                    <div className="border-2 border-border rounded-lg overflow-hidden">
                       <img alt="Screenshot" src="https://root.b-cdn.net/benchjs/Hero.png" />
                     </div>
                   </div>
@@ -290,7 +278,7 @@ export default function HomePage() {
               <section className="space-y-8">
                 <motion.div className="mx-auto max-w-2xl text-center" variants={fadeInUp}>
                   <h2 className="mb-4 text-3xl font-bold">Features</h2>
-                  <p className="text-zinc-600 dark:text-zinc-300">
+                  <p className="text-muted-foreground">
                     Built with modern web technologies and designed for developers.
                     <br />
                     Every feature is open source and community-driven.
@@ -301,18 +289,17 @@ export default function HomePage() {
                     <MotionCard
                       // eslint-disable-next-line react/no-array-index-key
                       key={index}
-                      className="h-full bg-white border-none shadow-lg transition-colors backdrop-blur group dark:bg-zinc-900 dark:hover:bg-zinc-700 hover:bg-zinc-50"
+                      className="h-full transition-colors group hover:bg-muted"
                       variants={fadeInUp}
-                      whileHover={{ y: -5 }}
                     >
                       <CardHeader>
-                        <div className="flex justify-center items-center mb-4 w-12 h-12 bg-yellow-300 rounded-lg transition-colors group-hover:bg-yellow-400 dark:bg-yellow-600/80 dark:group-hover:bg-yellow-600/90">
+                        <div className="flex justify-center items-center mb-4 w-12 h-12 bg-foreground text-background rounded-lg transition-colors group-hover:bg-foreground/90">
                           {feature.icon}
                         </div>
                         <CardTitle>{feature.title}</CardTitle>
                       </CardHeader>
                       <CardContent>
-                        <p className="text-zinc-600 dark:text-zinc-300">{feature.description}</p>
+                        <p className="text-muted-foreground">{feature.description}</p>
                       </CardContent>
                     </MotionCard>
                   ))}
@@ -327,7 +314,7 @@ export default function HomePage() {
                 <div className="relative">
                   <div className="mx-auto mb-16 max-w-2xl text-center">
                     <h2 className="mb-4 text-3xl font-bold">How It Works</h2>
-                    <p className="text-zinc-600 dark:text-zinc-300">
+                    <p className="text-muted-foreground">
                       Three simple steps to create a kick-ass benchmark.
                     </p>
                   </div>
@@ -337,33 +324,33 @@ export default function HomePage() {
                     <div className="flex flex-col gap-4 items-center sm:gap-12 lg:flex-row">
                       <div className="space-y-6 lg:w-1/2">
                         <div className="flex gap-4 items-center">
-                          <div className="flex justify-center items-center w-12 h-12 text-xl font-bold bg-yellow-300 rounded-full text-zinc-800 dark:bg-yellow-600/80">
+                          <div className="flex justify-center items-center w-12 h-12 text-xl font-bold bg-foreground text-background rounded-full">
                             1
                           </div>
                           <h3 className="text-2xl font-bold">Write Your Code</h3>
                         </div>
-                        <p className="text-zinc-600 dark:text-zinc-300">
+                        <p className="text-muted-foreground">
                           Create benchmarks with TypeScript or JavaScript using our powerful editor.
                         </p>
                         <ul className="space-y-3">
                           <li className="flex gap-3 items-center">
-                            <Check className="w-5 h-5 text-green-500" />
+                            <Check className="w-5 h-5" />
                             <span>Full TypeScript support</span>
                           </li>
                           <li className="flex gap-3 items-center">
-                            <Check className="w-5 h-5 text-green-500" />
+                            <Check className="w-5 h-5" />
                             <span>Import ESM packages directly</span>
                           </li>
                         </ul>
                       </div>
                       <div className="w-full lg:w-1/2">
-                        <div className="p-6 bg-black rounded-lg shadow-xl dark:bg-black">
+                        <div className="p-6 bg-foreground rounded-lg border-2 border-border">
                           <div className="flex gap-2 items-center mb-4">
-                            <div className="w-3 h-3 bg-red-500 rounded-full" />
-                            <div className="w-3 h-3 bg-yellow-500 rounded-full" />
-                            <div className="w-3 h-3 bg-green-500 rounded-full" />
+                            <div className="w-3 h-3 bg-background rounded-full" />
+                            <div className="w-3 h-3 bg-background/60 rounded-full" />
+                            <div className="w-3 h-3 bg-background/30 rounded-full" />
                           </div>
-                          <pre className="font-mono text-sm text-zinc-300">
+                          <pre className="font-mono text-sm text-muted-foreground">
                             <code>{`import { pick } from "lodash-es";
 
 export const run = () => {
@@ -380,53 +367,59 @@ export const run = () => {
                     <div className="flex flex-col gap-12 items-center lg:flex-row-reverse">
                       <div className="space-y-6 lg:w-1/2">
                         <div className="flex gap-4 items-center">
-                          <div className="flex justify-center items-center w-12 h-12 text-xl font-bold bg-yellow-300 rounded-full text-zinc-800 dark:bg-yellow-600/80">
+                          <div className="flex justify-center items-center w-12 h-12 text-xl font-bold bg-foreground text-background rounded-full">
                             2
                           </div>
                           <h3 className="text-2xl font-bold">Run Benchmarks</h3>
                         </div>
-                        <p className="text-zinc-600 dark:text-zinc-300">
+                        <p className="text-muted-foreground">
                           Run the benchmarks and get detailed performance metrics.
                         </p>
                         <ul className="space-y-3">
                           <li className="flex gap-3 items-center">
-                            <Check className="w-5 h-5 text-green-500" />
+                            <Check className="w-5 h-5" />
                             <span>Real-time progress tracking</span>
                           </li>
                           <li className="flex gap-3 items-center">
-                            <Check className="w-5 h-5 text-green-500" />
+                            <Check className="w-5 h-5" />
                             <span>Detailed metrics</span>
                           </li>
                         </ul>
                       </div>
                       <div className="w-full lg:w-1/2">
-                        <div className="flex-1 p-6 bg-white rounded-lg shadow-xl backdrop-blur dark:bg-zinc-900">
+                        <div className="flex-1 p-6 border-2 border-border rounded-lg">
                           <div className="space-y-6">
                             <div>
                               <div className="flex justify-between mb-2 text-sm">
                                 <span className="font-medium">QuickSort</span>
-                                <span className="font-bold text-green-700">1,234,567 ops/sec</span>
+                                <span className="font-bold">1,234,567 ops/sec</span>
                               </div>
-                              <div className="w-full h-2.5 rounded-full bg-zinc-200 dark:bg-zinc-700">
-                                <div className="h-2.5 bg-green-700 rounded-full" style={{ width: "100%" }} />
+                              <div className="w-full h-2.5 rounded-full bg-muted">
+                                <div className="h-2.5 bg-foreground rounded-full" style={{ width: "100%" }} />
                               </div>
                             </div>
                             <div>
                               <div className="flex justify-between mb-2 text-sm">
                                 <span className="font-medium">MergeSort</span>
-                                <span className="font-bold text-blue-600">987,654 ops/sec</span>
+                                <span className="font-bold">987,654 ops/sec</span>
                               </div>
-                              <div className="w-full h-2.5 rounded-full bg-zinc-200 dark:bg-zinc-700">
-                                <div className="h-2.5 bg-blue-600 rounded-full" style={{ width: "80%" }} />
+                              <div className="w-full h-2.5 rounded-full bg-muted">
+                                <div
+                                  className="h-2.5 bg-foreground/70 rounded-full"
+                                  style={{ width: "80%" }}
+                                />
                               </div>
                             </div>
                             <div>
                               <div className="flex justify-between mb-2 text-sm">
                                 <span className="font-medium">BubbleSort</span>
-                                <span className="font-bold text-blue-600">567,890 ops/sec</span>
+                                <span className="font-bold">567,890 ops/sec</span>
                               </div>
-                              <div className="w-full h-2.5 rounded-full bg-zinc-200 dark:bg-zinc-700">
-                                <div className="h-2.5 bg-blue-600 rounded-full" style={{ width: "45%" }} />
+                              <div className="w-full h-2.5 rounded-full bg-muted">
+                                <div
+                                  className="h-2.5 bg-foreground/50 rounded-full"
+                                  style={{ width: "45%" }}
+                                />
                               </div>
                             </div>
                           </div>
@@ -440,18 +433,18 @@ export const run = () => {
                     <div className="flex flex-col gap-12 items-center lg:flex-row">
                       <div className="space-y-6 lg:w-1/2">
                         <div className="flex gap-4 items-center">
-                          <div className="flex justify-center items-center w-12 h-12 text-xl font-bold bg-yellow-300 rounded-full text-zinc-800 dark:bg-yellow-600/80">
+                          <div className="flex justify-center items-center w-12 h-12 text-xl font-bold bg-foreground text-background rounded-full">
                             3
                           </div>
                           <h3 className="text-2xl font-bold">Share Results</h3>
                         </div>
-                        <p className="text-zinc-600 dark:text-zinc-300">
+                        <p className="text-muted-foreground">
                           Share an image of your benchmark results or a link for others to run them on their
                           own.
                         </p>
                       </div>
                       <div className="lg:w-1/2">
-                        <div className="bg-white rounded-lg shadow-xl dark:bg-zinc-900">
+                        <div className="border-2 border-border rounded-lg overflow-hidden">
                           <img
                             alt="Shared benchmark results"
                             src="https://root.b-cdn.net/benchjs/benchmark-comparison%20(4).png"
@@ -501,14 +494,14 @@ export const run = () => {
             {/* </Section> */}
 
             {/* Open Source Section */}
-            <Section className="bg-gradient-to-br from-yellow-200 to-orange-200 dark:from-yellow-900/50 dark:to-orange-900/50">
+            <Section className="bg-muted">
               <section>
                 <div className="absolute inset-0 bg-grid-black/[0.03] dark:bg-grid-white/[0.03]" />
                 <div className="relative">
                   <div className="flex flex-col gap-12 items-center lg:flex-row">
                     <div className="text-center lg:w-1/2 lg:text-left">
                       <h2 className="mb-6 text-4xl font-bold">Built by the Community</h2>
-                      <p className="mb-8 text-xl text-zinc-600 dark:text-zinc-300">
+                      <p className="mb-8 text-xl text-muted-foreground">
                         BenchJS thrives on community contributions. From bug fixes to new features, every
                         improvement comes from developers like you.
                       </p>
@@ -523,55 +516,55 @@ export const run = () => {
                       <div className="grid grid-cols-2 gap-8 mt-8">
                         <div className="text-left">
                           <h3 className="flex gap-2 items-center mb-2 font-semibold">
-                            <GitBranch className="w-5 h-5 text-yellow-700" />
+                            <GitBranch className="w-5 h-5" />
                             GPL-3.0
                           </h3>
-                          <p className="text-sm text-zinc-600 dark:text-zinc-400">
+                          <p className="text-sm text-muted-foreground">
                             Free and open source under the GPL-3.0 license.
                           </p>
                         </div>
                         <div className="text-left">
                           <h3 className="flex gap-2 items-center mb-2 font-semibold">
-                            <Users className="w-5 h-5 text-yellow-700" />
+                            <Users className="w-5 h-5" />
                             Active Community
                           </h3>
-                          <p className="text-sm text-zinc-600 dark:text-zinc-400">
+                          <p className="text-sm text-muted-foreground">
                             Join our Discord for discussions, help, and collaboration.
                           </p>
                         </div>
                       </div>
                     </div>
-                    <div className="p-8 bg-white rounded-xl shadow-xl lg:w-1/2 backdrop-blur dark:bg-zinc-900">
+                    <div className="p-8 border-2 border-border rounded-lg lg:w-1/2">
                       <div className="space-y-6">
                         <div className="flex gap-4 items-start">
-                          <div className="flex flex-shrink-0 justify-center items-center w-8 h-8 bg-yellow-200 rounded-full dark:bg-purple-900/30">
-                            <Code className="w-4 h-4 text-yellow-700" />
+                          <div className="flex flex-shrink-0 justify-center items-center w-8 h-8 bg-foreground text-background rounded-full">
+                            <Code className="w-4 h-4" />
                           </div>
                           <div>
                             <h3 className="mb-1 font-semibold">Contribute Code</h3>
-                            <p className="text-sm text-zinc-600 dark:text-zinc-400">
+                            <p className="text-sm text-muted-foreground">
                               Help improve the core functionality, fix bugs, or add new features.
                             </p>
                           </div>
                         </div>
                         <div className="flex gap-4 items-start">
-                          <div className="flex flex-shrink-0 justify-center items-center w-8 h-8 bg-yellow-200 rounded-full dark:bg-purple-900/30">
-                            <BookOpen className="w-4 h-4 text-yellow-700" />
+                          <div className="flex flex-shrink-0 justify-center items-center w-8 h-8 bg-foreground text-background rounded-full">
+                            <BookOpen className="w-4 h-4" />
                           </div>
                           <div>
                             <h3 className="mb-1 font-semibold">Improve Docs</h3>
-                            <p className="text-sm text-zinc-600 dark:text-zinc-400">
+                            <p className="text-sm text-muted-foreground">
                               Help make our documentation better, clearer, and more comprehensive.
                             </p>
                           </div>
                         </div>
                         <div className="flex gap-4 items-start">
-                          <div className="flex flex-shrink-0 justify-center items-center w-8 h-8 bg-yellow-200 rounded-full dark:bg-purple-900/30">
-                            <MessageSquare className="w-4 h-4 text-yellow-700" />
+                          <div className="flex flex-shrink-0 justify-center items-center w-8 h-8 bg-foreground text-background rounded-full">
+                            <MessageSquare className="w-4 h-4" />
                           </div>
                           <div>
                             <h3 className="mb-1 font-semibold">Join Discussions</h3>
-                            <p className="text-sm text-zinc-600 dark:text-zinc-400">
+                            <p className="text-sm text-muted-foreground">
                               Share ideas, report issues, and help shape the future of BenchJS.
                             </p>
                           </div>
@@ -585,16 +578,16 @@ export const run = () => {
           </main>
 
           {/* footer */}
-          <footer className="py-4 w-full bg-zinc-100 dark:bg-zinc-700/30">
+          <footer className="py-4 w-full border-t-2 border-border">
             <div className="container flex justify-between items-center px-4 mx-auto max-w-6xl">
-              <p className="text-xs text-zinc-500 dark:text-zinc-400">
+              <p className="text-xs text-muted-foreground">
                 <a href="https://andrei.fyi" rel="noopener noreferrer" target="_blank">
                   Built with ❤️
                 </a>
               </p>
               <div className="flex space-x-4">
                 <a
-                  className="text-zinc-500 dark:hover:text-zinc-300 hover:text-zinc-600"
+                  className="text-muted-foreground hover:text-foreground transition-colors"
                   href="https://github.com/3rd/benchjs"
                 >
                   <span className="sr-only">GitHub</span>

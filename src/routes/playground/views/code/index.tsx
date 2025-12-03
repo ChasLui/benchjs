@@ -196,8 +196,8 @@ export const CodeView = ({ monacoTabs, dependencyService }: CodeViewProps) => {
     <ResizablePanelGroup className="flex flex-1 w-full" direction="horizontal">
       <ResizablePanel className={cn("flex")} defaultSize={defaultSidebarSize} id="file-tree-panel">
         {/* left - file tree */}
-        <div className="flex-1 px-1 h-full text-sm bg-zinc-100 dark:bg-zinc-900">
-          <div className="p-2 font-medium uppercase text-zinc-900 dark:text-zinc-100">Code</div>
+        <div className="flex-1 px-1 h-full text-sm bg-muted border-r-2 border-border">
+          <div className="p-2 font-medium uppercase">Code</div>
           <FileTree
             activeFileId={monacoTabs.activeTabId || undefined}
             item={root}

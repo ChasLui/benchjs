@@ -20,7 +20,7 @@ export const SidebarIcon = ({
     <div className="relative">
       <div
         className={cn(
-          "flex items-center justify-center h-12 w-12 hover:bg-[#e8e8e8] dark:hover:bg-zinc-500/20 cursor-pointer relative",
+          "flex items-center justify-center h-12 w-12 hover:bg-accent cursor-pointer relative",
           isActive && "border-l-2 border-blue-600 dark:border-yellow-600",
         )}
         onClick={onClick}
@@ -38,7 +38,7 @@ export const SidebarIcon = ({
         )}
       </div>
       {isHovered && (
-        <div className="absolute top-1/2 left-full z-50 py-1 px-2 ml-2 text-xs text-white bg-black rounded -translate-y-1/2 dark:text-black dark:bg-yellow-500">
+        <div className="absolute top-1/2 left-full z-50 py-1 px-2 ml-2 text-xs bg-foreground text-background rounded -translate-y-1/2">
           {tooltip}
         </div>
       )}

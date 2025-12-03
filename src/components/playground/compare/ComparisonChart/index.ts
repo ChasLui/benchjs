@@ -1,1 +1,1 @@
-export { ComparisonChart } from './ComparisonChart'; 
+export { ComparisonChart } from "./ComparisonChart";

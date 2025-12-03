@@ -188,7 +188,7 @@ export const Monaco = ({
       {/* tabs */}
       {tabs && tabs.length > 0 && (
         <DndContext modifiers={[restrictToHorizontalAxis]} sensors={sensors} onDragEnd={handleDragEnd}>
-          <div className="flex border-b bg-zinc-50 dark:bg-zinc-900">
+          <div className="flex border-b border-border bg-muted">
             <SortableContext items={tabs.map((f) => f.name)} strategy={horizontalListSortingStrategy}>
               <div className="flex overflow-x-auto overflow-y-hidden custom-scrollbar">
                 {tabs.map((file) => (

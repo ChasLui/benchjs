@@ -53,21 +53,21 @@ export const RunPanelTabs = ({
     >
       <TabsList
         className={cn(
-          "flex overflow-auto justify-start p-0 w-full rounded-none border-b bg-zinc-50 dark:bg-zinc-900 dark:border-zinc-800",
+          "flex overflow-auto justify-start p-0 w-full rounded-none border-b border-border bg-muted",
           isVerticalCollapsed && "h-full items-start",
         )}
       >
         {!isVerticalCollapsed && (
           <>
             <TabsTrigger
-              className="data-[state=active]:bg-white dark:data-[state=active]:bg-zinc-800 px-4 rounded-none border-r dark:border-zinc-800 py-1.5 flex items-center gap-1 h-full"
+              className="data-[state=active]:bg-background data-[state=active]:border-t-2 data-[state=active]:border-t-yellow-500 px-4 rounded-none border-r border-border py-1.5 flex items-center gap-1 h-full"
               value="run"
             >
               <FlameIcon className="w-4 h-4" />
               <span>Run</span>
             </TabsTrigger>
             <TabsTrigger
-              className="data-[state=active]:bg-white dark:data-[state=active]:bg-zinc-800 px-4 rounded-none border-r dark:border-zinc-800 py-1.5 flex items-center gap-1 h-full"
+              className="data-[state=active]:bg-background data-[state=active]:border-t-2 data-[state=active]:border-t-yellow-500 px-4 rounded-none border-r border-border py-1.5 flex items-center gap-1 h-full"
               value="console"
             >
               <SquareChevronRightIcon className="w-4 h-4" />
@@ -185,7 +185,7 @@ export const RunPanel = ({
         onTabChange={handleSetTab}
         onToggleCollapse={handleToggleCollapse}
       >
-        <div className="overflow-auto h-full">
+        <div className="overflow-y-auto h-full pb-2">
           <TabsContent className="m-0" value="run">
             <RunTab
               chartData={chartData}

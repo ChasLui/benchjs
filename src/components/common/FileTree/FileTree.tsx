@@ -74,10 +74,10 @@ export const FileTree = ({ item, level = 0, onFileClick, activeFileId }: FileTre
     return (
       <div
         className={cn(
-          "flex items-center h-7 px-2 hover:bg-[#e8e8e8] dark:hover:bg-zinc-500/20 cursor-pointer rounded group relative",
-          isActive && "bg-blue-100 dark:bg-zinc-300/20 dark:hover:bg-zinc-300/20",
+          "flex items-center h-6 px-2 hover:bg-accent cursor-pointer rounded group relative",
+          isActive && "bg-blue-100 dark:bg-zinc-300/20",
         )}
-        style={{ paddingLeft: `${(level + 1) * 12}px` }}
+        style={{ paddingLeft: `${(level + 1) * 10}px` }}
         onContextMenu={(e) => {
           if (item.actions?.onRename ?? item.actions?.onDelete) {
             e.preventDefault();
@@ -88,7 +88,7 @@ export const FileTree = ({ item, level = 0, onFileClick, activeFileId }: FileTre
         {/* icon */}
         <FileIcon
           className={cn(
-            "mr-2 ml-1 w-4 h-4 shrink-0",
+            "mr-1.5 ml-0.5 w-3.5 h-3.5 shrink-0",
             isActive ? "text-blue-700 dark:text-yellow-500" : "text-blue-600 dark:text-yellow-500",
           )}
         />
@@ -100,7 +100,7 @@ export const FileTree = ({ item, level = 0, onFileClick, activeFileId }: FileTre
               <Input
                 className={cn(
                   "py-0 w-40 h-6 text-sm",
-                  renameError && "border-red-500 focus-visible:ring-red-500",
+                  renameError && "border-destructive focus-visible:ring-destructive",
                 )}
                 value={newName}
                 autoFocus
@@ -136,8 +136,8 @@ export const FileTree = ({ item, level = 0, onFileClick, activeFileId }: FileTre
               {/* name */}
               <span
                 className={cn(
-                  "truncate flex-1 text-sm text-left dark:text-zinc-300",
-                  isActive && "text-blue-900 dark:text-yellow-500",
+                  "truncate flex-1 text-sm text-left",
+                  isActive && "text-blue-900 dark:text-yellow-500 font-medium",
                 )}
               >
                 {item.name}
@@ -185,7 +185,6 @@ export const FileTree = ({ item, level = 0, onFileClick, activeFileId }: FileTre
                     )}
                     {item.actions?.onDelete && (
                       <DropdownMenuItem
-                        className="text-red-600 dark:text-red-400 focus:text-red-600 dark:focus:text-red-400"
                         onClick={(event) => {
                           stopPropagation(event);
                           item.actions?.onDelete?.();
@@ -211,17 +210,15 @@ export const FileTree = ({ item, level = 0, onFileClick, activeFileId }: FileTre
       {/* directory */}
       {!isRoot && (
         <div
-          className={cn(
-            "flex items-center h-7 px-2 hover:bg-[#e8e8e8] cursor-pointer rounded group relative dark:hover:bg-zinc-500/20",
-          )}
-          style={{ paddingLeft: `${level * 12}px` }}
+          className={cn("flex items-center h-6 px-2 hover:bg-accent cursor-pointer rounded group relative")}
+          style={{ paddingLeft: `${level * 10}px` }}
           onClick={() => setIsOpen(!isOpen)}
         >
           {/* icon */}
-          <ChevronRight className={cn("h-4 w-4 shrink-0 transition-transform", isOpen && "rotate-90")} />
+          <ChevronRight className={cn("h-3.5 w-3.5 shrink-0 transition-transform", isOpen && "rotate-90")} />
           {isOpen ?
-            <FolderOpen className="mr-2 w-4 h-4 text-blue-600 dark:text-yellow-500 shrink-0" />
-          : <FolderClosed className="mr-2 w-4 h-4 text-blue-600 dark:text-yellow-500 shrink-0" />}
+            <FolderOpen className="mr-1.5 w-3.5 h-3.5 text-blue-600 dark:text-yellow-500 shrink-0" />
+          : <FolderClosed className="mr-1.5 w-3.5 h-3.5 text-blue-600 dark:text-yellow-500 shrink-0" />}
 
           {/* name */}
           <span className="flex-1 text-sm truncate">{item.name}</span>
@@ -246,7 +243,7 @@ export const FileTree = ({ item, level = 0, onFileClick, activeFileId }: FileTre
 
           {/* count badge */}
           {item.count && (
-            <span className="px-1 ml-2 text-xs text-blue-800 bg-blue-100 rounded-sm dark:text-yellow-500 dark:bg-zinc-300">
+            <span className="px-1 ml-1.5 text-xs text-blue-800 bg-blue-100 rounded-sm dark:text-yellow-500 dark:bg-zinc-300">
               {item.count}
             </span>
           )}

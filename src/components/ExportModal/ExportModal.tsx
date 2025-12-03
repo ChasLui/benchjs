@@ -33,4 +33,3 @@ export function ExportModal({ open, onOpenChange, value }: ExportModalProps) {
     </Dialog>
   );
 }
-

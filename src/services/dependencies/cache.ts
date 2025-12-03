@@ -31,4 +31,3 @@ export const cache = {
     return db?.count(STORE_NAME) ?? 0;
   },
 };
-

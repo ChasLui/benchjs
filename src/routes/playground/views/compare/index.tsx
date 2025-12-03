@@ -121,9 +121,9 @@ export const CompareView = () => {
                     {/* eslint-disable-next-line no-nested-ternary */}
                     {isRunning ?
                       "Running..."
-                    : (implementations.some((item) => item.selected) ?
+                    : implementations.some((item) => item.selected) ?
                       "Run Selected"
-                    : "Run All")}
+                    : "Run All"}
                   </Button>
                 </div>
               </CardTitle>

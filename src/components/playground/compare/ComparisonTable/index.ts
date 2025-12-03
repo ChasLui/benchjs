@@ -1,1 +1,1 @@
-export { ComparisonTable } from './ComparisonTable'; 
+export { ComparisonTable } from "./ComparisonTable";

@@ -52,7 +52,7 @@ export const MonacoTab = ({
 
   const tabContent = (
     <div className="flex gap-2 items-center py-2 px-3 h-[34px]">
-      <span className="text-sm truncate text-zinc-700 dark:text-zinc-300">{tab.name}</span>
+      <span className="text-sm truncate">{tab.name}</span>
       <Button
         className={cn("p-0 w-4 h-4 opacity-0 group-hover:opacity-100 ml-auto", tab.active && "opacity-100")}
         size="sm"
@@ -79,12 +79,10 @@ export const MonacoTab = ({
       <div
         ref={setNodeRef}
         className={cn(
-          "group relative border-r border-zinc-200 cursor-pointer min-w-[120px] dark:border-zinc-700/50",
-          tab.active ? "bg-white dark:bg-zinc-800" : (
-            "bg-zinc-50 hover:bg-zinc-100 dark:bg-zinc-500/20 dark:hover:bg-zinc-500/20"
-          ),
+          "group relative border-r border-border cursor-pointer min-w-[120px]",
+          tab.active ? "bg-background" : "bg-muted hover:bg-accent",
           tab.active &&
-            "before:absolute before:top-0 before:left-0 before:right-0 before:h-[2px] before:bg-blue-600",
+            "before:absolute before:top-0 before:left-0 before:right-0 before:h-[2px] before:bg-yellow-500",
         )}
         style={style}
         onClick={handleClick}

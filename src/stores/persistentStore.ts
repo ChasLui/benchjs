@@ -7,19 +7,18 @@ const { compressToEncodedURIComponent, decompressFromEncodedURIComponent } = lz;
 
 const hybridStorage: StateStorage = {
   getItem: (key): string | null => {
+    if (typeof window === "undefined") return null;
+
     try {
-      // check hash storage first
       if (location.hash.length > 2) {
         const encoded = location.hash.slice(2);
         const decompressed = decompressFromEncodedURIComponent(encoded);
         if (!decompressed) return null;
 
-        // update localStorage with hash data
         localStorage.setItem(key, decompressed);
-        return decompressed; 
+        return decompressed;
       }
 
-      // fall back to localStorage
       const stored = localStorage.getItem(key);
       if (!stored) return null;
       JSON.parse(stored);
@@ -30,12 +29,16 @@ const hybridStorage: StateStorage = {
     }
   },
   setItem: (key, newValue): void => {
+    if (typeof window === "undefined") return;
+
     const parsed = JSON.parse(newValue);
     const compressed = compressToEncodedURIComponent(newValue);
     location.hash = `#/${compressed}`;
     localStorage.setItem(key, JSON.stringify(parsed));
   },
   removeItem: (key): void => {
+    if (typeof window === "undefined") return;
+
     location.hash = "";
     localStorage.removeItem(key);
   },

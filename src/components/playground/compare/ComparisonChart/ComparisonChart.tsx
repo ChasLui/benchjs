@@ -71,4 +71,3 @@ export const ComparisonChart = ({ implementations, runs }: ComparisonChartProps)
     </div>
   );
 };
-
