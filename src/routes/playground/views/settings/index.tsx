@@ -1,14 +1,15 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Check, Pencil, Trash2, X } from "lucide-react";
+import { Trash2 } from "lucide-react";
 import { useDependenciesStore } from "@/stores/dependenciesStore";
 import { usePersistentStore } from "@/stores/persistentStore";
 import { cache } from "@/services/dependencies/cache";
 import { DependencyService } from "@/services/dependencies/DependencyService";
+import { searchNpmPackages } from "@/services/dependencies/npmSearch";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
+import { Combobox, type ComboboxOption } from "@/components/ui/combobox";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
 interface SettingsViewProps {
@@ -20,8 +21,11 @@ export function SettingsView({ dependencyService }: SettingsViewProps) {
   const dependencies = useDependenciesStore();
   const [libraryName, setLibraryName] = useState("");
   const [cacheCount, setCacheCount] = useState(0);
-  const [editingName, setEditingName] = useState<string | null>(null);
-  const [editValue, setEditValue] = useState("");
+  const [suggestions, setSuggestions] = useState<ComboboxOption[]>([]);
+  const [isSearching, setIsSearching] = useState(false);
+  const [searchError, setSearchError] = useState<string | null>(null);
+  const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const abortControllerRef = useRef<AbortController | null>(null);
 
   const getStatusBadge = (status: "error" | "loading" | "success") => {
     if (status === "error") return <Badge variant="destructive">{status}</Badge>;
@@ -29,14 +33,110 @@ export function SettingsView({ dependencyService }: SettingsViewProps) {
     return <Badge variant="success">{status}</Badge>;
   };
 
-  const handleAddLibrary = async () => {
-    if (!libraryName.trim()) return;
-    if (store.libraries.some((lib) => lib.name === libraryName.trim())) return;
+  const getPackageNameFromSpec = (spec: string): string => {
+    const match = spec.match(/^(@?[^@]+)(?:@.+)?$/);
+    return match ? match[1] : spec;
+  };
+
+  const addPackage = async (packageSpec: string, packageNameFromOption?: string) => {
+    if (!packageSpec.trim()) return;
+    const trimmedName = packageSpec.trim();
+    const packageName = packageNameFromOption || getPackageNameFromSpec(trimmedName);
+
+    const libsToRemove = store.libraries.filter((lib) => {
+      const libPackageName = getPackageNameFromSpec(lib.name);
+      return libPackageName === packageName;
+    });
+
+    libsToRemove.forEach((lib) => {
+      store.removeLibrary(lib.name);
+    });
+
     setLibraryName("");
-    store.addLibrary(libraryName.trim());
-    await dependencyService.addLibrary({ name: libraryName.trim() });
+    setSuggestions([]);
+    store.addLibrary(trimmedName);
+    await dependencyService.addLibrary({ name: trimmedName });
     setCacheCount(await cache.count());
   };
+
+  const handleAddLibrary = async () => {
+    const selectedOption = suggestions.find((opt) => opt.value === libraryName.trim());
+    await addPackage(libraryName, selectedOption?.packageName);
+  };
+
+  const handleSelectPackage = async (packageValue: string) => {
+    const selectedOption = suggestions.find((opt) => opt.value === packageValue.trim());
+    await addPackage(packageValue, selectedOption?.packageName);
+  };
+
+  const handleSearchChange = (query: string) => {
+    setLibraryName(query);
+    setSearchError(null);
+
+    // cancel previous timeout
+    if (searchTimeoutRef.current) {
+      clearTimeout(searchTimeoutRef.current);
+    }
+
+    // cancel previous request
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+
+    // don't search if query is too short
+    if (query.trim().length < 2) {
+      setSuggestions([]);
+      setIsSearching(false);
+      return;
+    }
+
+    // debounce search
+    searchTimeoutRef.current = setTimeout(async () => {
+      setIsSearching(true);
+      const controller = new AbortController();
+      abortControllerRef.current = controller;
+
+      try {
+        const results = await searchNpmPackages(query, 10, controller.signal);
+        if (controller.signal.aborted) return;
+
+        const isVersionSelection = query.trim().endsWith("@");
+
+        const options: ComboboxOption[] = results.map((pkg) => ({
+          value: pkg.name,
+          label: isVersionSelection ? pkg.version : pkg.name,
+          description: pkg.description,
+          metadata: pkg.version,
+          packageName: pkg.packageName,
+          monthlyDownloads: pkg.monthlyDownloads,
+          license: pkg.license,
+        }));
+
+        setSuggestions(options);
+        setSearchError(null);
+      } catch (error) {
+        if (controller.signal.aborted) return;
+        setSearchError(error instanceof Error ? error.message : "Failed to search packages");
+        setSuggestions([]);
+      } finally {
+        if (!controller.signal.aborted) {
+          setIsSearching(false);
+        }
+      }
+    }, 300);
+  };
+
+  // cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (searchTimeoutRef.current) {
+        clearTimeout(searchTimeoutRef.current);
+      }
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+    };
+  }, []);
 
   const handleRemoveLibrary = (name: string) => {
     store.removeLibrary(name);
@@ -45,36 +145,6 @@ export function SettingsView({ dependencyService }: SettingsViewProps) {
   const handleClearCache = async () => {
     await cache.clear();
     setCacheCount(0);
-  };
-
-  const handleStartEdit = (name: string) => {
-    setEditingName(name);
-    setEditValue(name);
-  };
-
-  const handleCancelEdit = () => {
-    setEditingName(null);
-    setEditValue("");
-  };
-
-  const handleSave = async () => {
-    if (!editingName || !editValue.trim()) return;
-    const oldName = editingName;
-    const newName = editValue.trim();
-
-    if (oldName === newName) {
-      setEditingName(null);
-      return;
-    }
-    if (store.libraries.some((lib) => lib.name === newName)) return;
-
-    store.removeLibrary(oldName);
-    store.addLibrary(newName);
-    await dependencyService.addLibrary({ name: newName });
-
-    setEditingName(null);
-    setEditValue("");
-    setCacheCount(await cache.count());
   };
 
   // update cache size
@@ -106,11 +176,15 @@ export function SettingsView({ dependencyService }: SettingsViewProps) {
               <div className="space-y-4">
                 {/* add library */}
                 <div className="flex gap-2">
-                  <Input
+                  <Combobox
                     className="flex-1"
-                    placeholder="lodash"
+                    placeholder="Search packages..."
                     value={libraryName}
-                    onChange={(e) => setLibraryName(e.target.value)}
+                    onChange={handleSearchChange}
+                    onSelect={handleSelectPackage}
+                    options={suggestions}
+                    isLoading={isSearching}
+                    error={searchError}
                   />
                   <Button onClick={handleAddLibrary}>Add</Button>
                 </div>
@@ -135,19 +209,10 @@ export function SettingsView({ dependencyService }: SettingsViewProps) {
                       </TableRow>
                     : store.libraries.map((lib) => {
                         const dependency = dependencies.dependencyMap[lib.name];
-                        const isEditing = editingName === lib.name;
 
                         return (
                           <TableRow key={lib.name}>
-                            <TableCell className="font-medium">
-                              {isEditing ?
-                                <Input
-                                  className="h-8"
-                                  value={editValue}
-                                  onChange={(e) => setEditValue(e.target.value)}
-                                />
-                              : lib.name}
-                            </TableCell>
+                            <TableCell className="font-medium">{getPackageNameFromSpec(lib.name)}</TableCell>
                             <TableCell>{dependency?.package?.version || "-"}</TableCell>
                             <TableCell className="max-w-md truncate">
                               {dependency?.package?.description || "-"}
@@ -165,34 +230,13 @@ export function SettingsView({ dependencyService }: SettingsViewProps) {
                               : getStatusBadge("loading")}
                             </TableCell>
                             <TableCell>
-                              <div className="flex gap-2">
-                                {isEditing ?
-                                  <>
-                                    <Button size="icon" variant="ghost" onClick={handleSave}>
-                                      <Check className="w-4 h-4" />
-                                    </Button>
-                                    <Button size="icon" variant="ghost" onClick={handleCancelEdit}>
-                                      <X className="w-4 h-4" />
-                                    </Button>
-                                  </>
-                                : <>
-                                    <Button
-                                      size="icon"
-                                      variant="ghost"
-                                      onClick={() => handleStartEdit(lib.name)}
-                                    >
-                                      <Pencil className="w-4 h-4" />
-                                    </Button>
-                                    <Button
-                                      size="icon"
-                                      variant="ghost"
-                                      onClick={() => handleRemoveLibrary(lib.name)}
-                                    >
-                                      <Trash2 className="w-4 h-4" />
-                                    </Button>
-                                  </>
-                                }
-                              </div>
+                              <Button
+                                size="icon"
+                                variant="ghost"
+                                onClick={() => handleRemoveLibrary(lib.name)}
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </Button>
                             </TableCell>
                           </TableRow>
                         );

@@ -35,7 +35,9 @@ class DependencyService {
   }
 
   async acquireTypes(packageName: string) {
-    await this.ata(`import "${packageName}"`);
+    const match = packageName.match(/^(@?[^@]+)(?:@.+)?$/);
+    const cleanName = match ? match[1] : packageName;
+    await this.ata(`import "${cleanName}"`);
   }
 
   addExtraLib(content: string, path: string) {
